@@ -1,0 +1,13 @@
+author: "Larry Li <lingyv.li@gmail.com>"
+description: "New Dart runtime for ANTLR4."
+homepage: "https://github.com/antlr/antlr4"
+name: "antlr4"
+version: "4.7.2"
+license: "BSD-3-Clause"
+dependencies: 
+  charcode: "^1.1.1"
+  string_scanner: "^1.0.1"
+  logging:
+  collection:
+# dev_dependencies: 
+#   test: "^0.12.16"
