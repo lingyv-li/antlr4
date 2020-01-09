@@ -4,142 +4,214 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 //
-import 'dart:developer';
+import 'Token.dart';
+import 'error/ErrorListener.dart';
+import 'CommonTokenFactory.dart';
+import 'IntStream.dart';
+import 'RuleContext.dart';
+import 'Utils.dart';
+import 'Vocabulary.dart';
+import 'atn/ATN.dart';
+import 'atn/ATNSimulator.dart';
+import 'atn/info.dart';
+import 'error/Errors.dart';
 
-import './Token.dart';
-import './error/ErrorListener.dart';
+abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
+  static const EOF = -1;
 
-class Recognizer {
-  var _listeners = [ConsoleErrorListener.INSTANCE];
-  var _interp = null;
-  var _stateNumber = -1;
+  static final Map<Vocabulary, Map<String, int>> tokenTypeMapCache = {};
+  static final Map<List<String>, Map<String, int>> ruleIndexMapCache = {};
+  List<ErrorListener> _listeners = [ConsoleErrorListener.INSTANCE];
+  ATNInterpreter interp;
+  int _stateNumber = -1;
 
-  static final tokenTypeMapCache = {};
-  static final ruleIndexMapCache = {};
+  List<String> getRuleNames();
 
-  var ruleNames = []; // TODO what is this
+  /**
+   * Get the vocabulary used by the recognizer.
+   *
+   * @return A {@link Vocabulary} instance providing information about the
+   * vocabulary used by the grammar.
+   */
+  Vocabulary getVocabulary();
 
-  checkVersion(toolVersion) {
-    var runtimeVersion = "4.7.2";
-    if (runtimeVersion != toolVersion) {
-      log("ANTLR runtime and generated code versions disagree: $runtimeVersion!=$toolVersion");
-    }
-  }
+  /**
+   * Get a map from token names to token types.
+   *
+   * <p>Used for XPath and tree pattern compilation.</p>
+   */
+  Map<String, int> getTokenTypeMap() {
+    Vocabulary vocabulary = getVocabulary();
 
-  addErrorListener(listener) {
-    this._listeners.add(listener);
-  }
-
-  removeErrorListeners() {
-    this._listeners = [];
-  }
-
-  getTokenTypeMap() {
-    var tokenNames = this.getTokenNames();
-    if (tokenNames == null) {
-      throw ("The current recognizer does not provide a list of token names.");
-    }
-    var result = tokenTypeMapCache[tokenNames];
+    Map<String, int> result = tokenTypeMapCache[vocabulary];
     if (result == null) {
-      result = tokenNames.reduce((o, k, i) {
-        o[k] = i;
-      });
-      result.EOF = Token.EOF;
-      tokenTypeMapCache[tokenNames] = result;
+      result = {};
+      for (int i = 0; i <= getATN().maxTokenType; i++) {
+        String literalName = vocabulary.getLiteralName(i);
+        if (literalName != null) {
+          result[literalName] = i;
+        }
+
+        String symbolicName = vocabulary.getSymbolicName(i);
+        if (symbolicName != null) {
+          result[symbolicName] = i;
+        }
+      }
+
+      result["EOF"] = Token.EOF;
+      result = Map.unmodifiable(result);
+      tokenTypeMapCache[vocabulary] = result;
     }
+
     return result;
   }
 
-// Get a map from rule names to rule indexes.
-//
-// <p>Used for XPath and tree pattern compilation.</p>
-//
-  getRuleIndexMap() {
-    var ruleNames = this.ruleNames;
+  /**
+   * Get a map from rule names to rule indexes.
+   *
+   * <p>Used for XPath and tree pattern compilation.</p>
+   */
+  Map<String, int> getRuleIndexMap() {
+    final ruleNames = getRuleNames();
     if (ruleNames == null) {
-      throw ("The current recognizer does not provide a list of rule names.");
+      throw UnsupportedError(
+          "The current recognizer does not provide a list of rule names.");
     }
+
     var result = ruleIndexMapCache[ruleNames];
     if (result == null) {
-      result = ruleNames.reduce((o, k, i) {
-        o[k] = i;
-      });
+      result = Map.unmodifiable(toMap(ruleNames));
       ruleIndexMapCache[ruleNames] = result;
     }
+
     return result;
   }
 
-  getTokenType(tokenName) {
-    var ttype = this.getTokenTypeMap()[tokenName];
-    if (ttype != null) {
-      return ttype;
-    } else {
-      return Token.INVALID_TYPE;
+  int getTokenType(String tokenName) {
+    final ttype = getTokenTypeMap()[tokenName];
+    if (ttype != null) return ttype;
+    return Token.INVALID_TYPE;
+  }
+
+  /**
+   * If this recognizer was generated, it will have a serialized ATN
+   * representation of the grammar.
+   *
+   * <p>For interpreters, we don't know their serialized ATN despite having
+   * created the interpreter from it.</p>
+   */
+  String getSerializedATN() {
+    throw new UnsupportedError("there is no serialized ATN");
+  }
+
+  /** For debugging and other purposes, might want the grammar name.
+   *  Have ANTLR generate an implementation for this method.
+   */
+  String getGrammarFileName();
+
+  /**
+   * Get the {@link ATN} used by the recognizer for prediction.
+   *
+   * @return The {@link ATN} used by the recognizer for prediction.
+   */
+  ATN getATN();
+
+  /**
+   * Get the ATN interpreter used by the recognizer for prediction.
+   *
+   * @return The ATN interpreter used by the recognizer for prediction.
+   */
+  ATNInterpreter getInterpreter() {
+    return interp;
+  }
+
+  /** If profiling during the parse/lex, this will return DecisionInfo records
+   *  for each decision in recognizer in a ParseInfo object.
+   *
+   * @since 4.3
+   */
+  ParseInfo getParseInfo() {
+    return null;
+  }
+
+  /**
+   * Set the ATN interpreter used by the recognizer for prediction.
+   *
+   * @param interpreter The ATN interpreter used by the recognizer for
+   * prediction.
+   */
+  void setInterpreter(ATNInterpreter interpreter) {
+    interp = interpreter;
+  }
+
+  /** What is the error header, normally line/character position information? */
+  String getErrorHeader(RecognitionException e) {
+    int line = e.offendingToken.line;
+    int charPositionInLine = e.offendingToken.charPositionInLine;
+    return "line $line:$charPositionInLine";
+  }
+
+  /**
+   * @exception NullPointerException if {@code listener} is {@code null}.
+   */
+  void addErrorListener(ErrorListener listener) {
+    if (listener == null) {
+      throw new ArgumentError.notNull("listener");
     }
+
+    _listeners.add(listener);
   }
 
-// What is the error header, normally line/character position information?//
-  getErrorHeader(e) {
-    var line = e.getOffendingToken().line;
-    var column = e.getOffendingToken().column;
-    return "line " + line + ":" + column;
+  void removeErrorListener(ErrorListener listener) {
+    _listeners.remove(listener);
   }
 
-// How should a token be displayed in an error message? The default
-//  is to display just the text, but during development you might
-//  want to have a lot of information spit out.  Override in that case
-//  to use t.toString() (which, for CommonToken, dumps everything about
-//  the token). This is better than forcing you to override a method in
-//  your token objects because you don't have to go modify your lexer
-//  so that it creates a new Java type.
-//
-// @deprecated This method is not called by the ANTLR 4 Runtime. Specific
-// implementations of {@link ANTLRErrorStrategy} may provide a similar
-// feature when necessary. For example, see
-// {@link DefaultErrorStrategy//getTokenErrorDisplay}.
-//
-  getTokenErrorDisplay(t) {
-    if (t == null) {
-      return "<no token>";
-    }
-    var s = t.text;
-    if (s == null) {
-      if (t.type == Token.EOF) {
-        s = "<EOF>";
-      } else {
-        s = "<" + t.type + ">";
-      }
-    }
-    s = s.replace("\n", r"\n").replace("\r", r"\r").replace("\t", r"\t");
-    return "'" + s + "'";
+  void removeErrorListeners() {
+    _listeners.clear();
   }
 
-  getErrorListenerDispatch() {
-    return new ProxyErrorListener(this._listeners);
+  List<ErrorListener> getErrorListeners() {
+    return _listeners;
   }
 
-// subclass needs to override these if there are sempreds or actions
-// that the ATN interp needs to execute
-  sempred(localctx, ruleIndex, actionIndex) {
+  ErrorListener getErrorListenerDispatch() {
+    return new ProxyErrorListener(getErrorListeners());
+  }
+
+  // subclass needs to override these if there are sempreds or actions
+  // that the ATN interp needs to execute
+  bool sempred(RuleContext _localctx, int ruleIndex, int actionIndex) {
     return true;
   }
 
-  precpred(localctx, precedence) {
+  bool precpred(RuleContext localctx, int precedence) {
     return true;
   }
 
-//Indicate that the recognizer has changed internal state that is
-//consistent with the ATN state passed in.  This way we always know
-//where we are in the ATN as the parser goes along. The rule
-//context objects form a stack that lets us see the stack of
-//invoking rules. Combine this and we have complete ATN
-//configuration information.
+  void action(RuleContext _localctx, int ruleIndex, int actionIndex) {}
 
-  get state {
-    return this._stateNumber;
+  int get state {
+    return _stateNumber;
   }
 
-  set state(state) {
-    this._stateNumber = state;
+  /** Indicate that the recognizer has changed internal state that is
+   *  consistent with the ATN state passed in.  This way we always know
+   *  where we are in the ATN as the parser goes along. The rule
+   *  context objects form a stack that lets us see the stack of
+   *  invoking rules. Combine this and we have complete ATN
+   *  configuration information.
+   */
+  void set state(int atnState) {
+//		System.err.println("setState "+atnState);
+    _stateNumber = atnState;
+//		if ( traceATNStates ) _ctx.trace(atnState);
   }
+
+  IntStream getInputStream();
+
+  void setInputStream(IntStream input);
+
+  TokenFactory getTokenFactory();
+
+  void setTokenFactory(TokenFactory input);
 }

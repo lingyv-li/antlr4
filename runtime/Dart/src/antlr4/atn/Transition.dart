@@ -4,182 +4,151 @@
  */
 //
 
-//  An ATN transition between any two ATN states.  Subclasses define
-//  atom, set, epsilon, action, predicate, rule transitions.
-//
-//  <p>This is a one way link.  It emanates from a state (usually via a list of
-//  transitions) and has a target state.</p>
-//
-//  <p>Since we never have to change the ATN transitions once we construct it,
-//  we can fix these transitions as specific classes. The DFA transitions
-//  on the other hand need to update the labels as it adds transitions to
-//  the states. We'll use the term Edge for the DFA to distinguish them from
-//  ATN transitions.</p>
 import '../Token.dart';
 import '../IntervalSet.dart';
-import './SemanticContext.dart';
+import 'SemanticContext.dart';
+import 'ATNState.dart';
 
-class Transition {
-  var target;
-  bool isEpsilon;
-  var label;
-  Transition(target) {
-    // The target of this transition.
-    if (target == null || target == null) {
-      throw "target cannot be null.";
+enum TransitionType {
+  EPSILON,
+  RANGE,
+  RULE,
+  PREDICATE, // e.g., {isType(input.LT(1))}?
+  ATOM,
+  ACTION,
+  SET, // ~(A|B) or ~atom, wildcard, which convert to next 2
+  NOT_SET,
+  WILDCARD,
+  PRECEDENCE,
+}
+
+/** An ATN transition between any two ATN states.  Subclasses define
+ *  atom, set, epsilon, action, predicate, rule transitions.
+ *
+ *  <p>This is a one way link.  It emanates from a state (usually via a list of
+ *  transitions) and has a target state.</p>
+ *
+ *  <p>Since we never have to change the ATN transitions once we construct it,
+ *  we can fix these transitions as specific classes. The DFA transitions
+ *  on the other hand need to update the labels as it adds transitions to
+ *  the states. We'll use the term Edge for the DFA to distinguish them from
+ *  ATN transitions.</p>
+ */
+abstract class Transition {
+  /** The target of this transition. */
+  ATNState target;
+
+  Transition(this.target) {
+    if (target == null) {
+      throw new ArgumentError.notNull("target cannot be null.");
     }
-    this.target = target;
-    // Are we epsilon, action, sempred?
-    this.isEpsilon = false;
-    this.label = null;
-  }
-  // constants for serialization
-  static const EPSILON = 1;
-  static const RANGE = 2;
-  static const RULE = 3;
-  static const PREDICATE = 4; // e.g., {isType(input.LT(1))}?
-  static const ATOM = 5;
-  static const ACTION = 6;
-  static const SET = 7; // ~(A|B) or ~atom, wildcard, which convert to next 2
-  static const NOT_SET = 8;
-  static const WILDCARD = 9;
-  static const PRECEDENCE = 10;
-
-  static const serializationNames = [
-    "INVALID",
-    "EPSILON",
-    "RANGE",
-    "RULE",
-    "PREDICATE",
-    "ATOM",
-    "ACTION",
-    "SET",
-    "NOT_SET",
-    "WILDCARD",
-    "PRECEDENCE"
-  ];
-
-  static const serializationTypes = {
-    EpsilonTransition: Transition.EPSILON,
-    RangeTransition: Transition.RANGE,
-    RuleTransition: Transition.RULE,
-    PredicateTransition: Transition.PREDICATE,
-    AtomTransition: Transition.ATOM,
-    ActionTransition: Transition.ACTION,
-    SetTransition: Transition.SET,
-    NotSetTransition: Transition.NOT_SET,
-    WildcardTransition: Transition.WILDCARD,
-    PrecedencePredicateTransition: Transition.PRECEDENCE
-  };
-}
-
-// TODO: make all transitions sets? no, should remove set edges
-class AtomTransition extends Transition {
-  var label_;
-  var serializationType;
-
-  AtomTransition(target, label) : super(target) {
-    this.label_ =
-        label; // The token type or character value; or, signifies special label.
-    this.label = this.makeLabel();
-    this.serializationType = Transition.ATOM;
   }
 
-  makeLabel() {
-    var s = new IntervalSet();
-    s.addOne(this.label_);
-    return s;
-  }
+  TransitionType get type;
 
-  matches(symbol, minVocabSymbol, maxVocabSymbol) {
-    return this.label_ == symbol;
-  }
+  /**
+   * Determines if the transition is an "epsilon" transition.
+   *
+   * <p>The default implementation returns {@code false}.</p>
+   *
+   * @return {@code true} if traversing this transition in the ATN does not
+   * consume an input symbol; otherwise, {@code false} if traversing this
+   * transition consumes (matches) an input symbol.
+   */
+  get isEpsilon => false;
 
-  toString() {
-    return this.label_;
-  }
-}
+  IntervalSet get label => null;
 
-class RuleTransition extends Transition {
-  var ruleIndex;
-  var precedence;
-  var followState;
-  var serializationType;
-  RuleTransition(ruleStart, ruleIndex, precedence, followState)
-      : super(ruleStart) {
-    this.ruleIndex = ruleIndex; // ptr to the rule definition object for this rule ref
-    this.precedence = precedence;
-    this.followState = followState; // what node to begin computations following ref to rule
-    this.serializationType = Transition.RULE;
-    this.isEpsilon = true;
-  }
-
-  matches(symbol, minVocabSymbol, maxVocabSymbol) => false;
-  
+  bool matches(int symbol, int minVocabSymbol, int maxVocabSymbol);
 }
 
 class EpsilonTransition extends Transition {
-  var serializationType;
-  var outermostPrecedenceReturn;
-  EpsilonTransition(target, {outermostPrecedenceReturn}) : super(target) {
-    this.serializationType = Transition.EPSILON;
-    this.isEpsilon = true;
-    this.outermostPrecedenceReturn = outermostPrecedenceReturn;
+  /**
+   * @return the rule index of a precedence rule for which this transition is
+   * returning from, where the precedence value is 0; otherwise, -1.
+   *
+   * @see ATNConfig#isPrecedenceFilterSuppressed()
+   * @see ParserATNSimulator#applyPrecedenceFilter(ATNConfigSet)
+   * @since 4.4.1
+   */
+  final int outermostPrecedenceReturn;
+
+  EpsilonTransition(ATNState target, [this.outermostPrecedenceReturn = -1])
+      : super(target);
+
+  get isEpsilon => true;
+
+  bool matches(int symbol, int minVocabSymbol, int maxVocabSymbol) {
+    return false;
   }
 
-  matches(symbol, minVocabSymbol, maxVocabSymbol) => false;
-  
+  String toString() {
+    return "epsilon";
+  }
 
-  toString() => "epsilon";
+  @override
+  TransitionType get type => TransitionType.EPSILON;
 }
 
 class RangeTransition extends Transition {
-  var serializationType;
-  var start;
-  var stop;
-  RangeTransition(target, start, stop) : super(target) {
-    this.serializationType = Transition.RANGE;
-    this.start = start;
-    this.stop = stop;
-    this.label = this.makeLabel();
+  final int from;
+  final int to;
+
+  RangeTransition(ATNState target, this.from, this.to) : super(target);
+
+  IntervalSet get label {
+    return IntervalSet.ofRange(from, to);
   }
 
-  makeLabel() {
-    var s = new IntervalSet();
-    s.addRange(this.start, this.stop);
-    return s;
+  bool matches(int symbol, int minVocabSymbol, int maxVocabSymbol) {
+    return symbol >= from && symbol <= to;
   }
 
-  matches(symbol, minVocabSymbol, maxVocabSymbol) {
-    return symbol >= this.start && symbol <= this.stop;
+  String toString() {
+    return "'$from..$to'";
   }
 
-  toString() {
-    return "'" +
-        String.fromCharCode(this.start) +
-        "'..'" +
-        String.fromCharCode(this.stop) +
-        "'";
-  }
+  @override
+  TransitionType get type => TransitionType.RANGE;
 }
 
-class AbstractPredicateTransition extends Transition {
-  AbstractPredicateTransition(target) : super(target);
+class RuleTransition extends Transition {
+  /** Ptr to the rule definition object for this rule ref */
+  int ruleIndex; // no Rule object at runtime
+
+  int precedence;
+
+  /** What node to begin computations following ref to rule */
+  ATNState followState;
+
+  RuleTransition(RuleStartState ruleStart, this.ruleIndex, this.precedence,
+      this.followState)
+      : super(ruleStart);
+
+  get isEpsilon => true;
+
+  bool matches(int symbol, int minVocabSymbol, int maxVocabSymbol) {
+    return false;
+  }
+
+  @override
+  TransitionType get type => TransitionType.RULE;
+}
+
+abstract class AbstractPredicateTransition extends Transition {
+  AbstractPredicateTransition(ATNState target) : super(target);
 }
 
 class PredicateTransition extends Transition {
-  var serializationType;
-  var ruleIndex;
-  var predIndex;
-  var isCtxDependent;
-  PredicateTransition(target, ruleIndex, predIndex, isCtxDependent)
-      : super(target) {
-    this.serializationType = Transition.PREDICATE;
-    this.ruleIndex = ruleIndex;
-    this.predIndex = predIndex;
-    this.isCtxDependent = isCtxDependent; // e.g., $i ref in pred
-    this.isEpsilon = true;
-  }
+  int ruleIndex;
+  int predIndex;
+  bool isCtxDependent; // e.g., $i ref in pred
+
+  PredicateTransition(
+      target, this.ruleIndex, this.predIndex, this.isCtxDependent)
+      : super(target);
+
+  get isEpsilon => true;
 
   matches(symbol, minVocabSymbol, maxVocabSymbol) {
     return false;
@@ -190,45 +159,64 @@ class PredicateTransition extends Transition {
   }
 
   toString() {
-    return "pred_" + this.ruleIndex + ":" + this.predIndex;
+    return "pred_$ruleIndex:$predIndex";
   }
+
+  @override
+  TransitionType get type => TransitionType.PREDICATE;
+}
+
+/** TODO: make all transitions sets? no, should remove set edges */
+class AtomTransition extends Transition {
+  /** The token type or character value; or, signifies special label. */
+  int atomLabel;
+
+  AtomTransition(ATNState target, this.atomLabel) : super(target);
+
+  IntervalSet get label {
+    return IntervalSet.ofOne(atomLabel);
+  }
+
+  bool matches(int symbol, int minVocabSymbol, int maxVocabSymbol) {
+    return label == symbol;
+  }
+
+  String toString() {
+    return label.toString();
+  }
+
+  @override
+  TransitionType get type => TransitionType.ATOM;
 }
 
 class ActionTransition extends Transition {
-  int serializationType;
   int ruleIndex;
   int actionIndex;
-  bool isCtxDependent;
-  ActionTransition(target, ruleIndex, actionIndex, isCtxDependent)
-      : super(target) {
-    this.serializationType = Transition.ACTION;
-    this.ruleIndex = ruleIndex;
-    this.actionIndex = actionIndex == null ? -1 : actionIndex;
-    this.isCtxDependent =
-        isCtxDependent == null ? false : isCtxDependent; // e.g., $i ref in pred
-    this.isEpsilon = true;
-  }
+  bool isCtxDependent; // e.g., $i ref in pred
 
-  matches(symbol, minVocabSymbol, maxVocabSymbol) {
-    return false;
-  }
+  ActionTransition(target, this.ruleIndex,
+      [this.actionIndex = -1, this.isCtxDependent = false])
+      : super(target);
+
+  bool get isEpsilon =>
+      true; // we are to be ignored by analysis 'cept for predicates
+
+  matches(symbol, minVocabSymbol, maxVocabSymbol) => false;
 
   toString() {
     return "action_$ruleIndex:$actionIndex";
   }
+
+  @override
+  TransitionType get type => TransitionType.ACTION;
 }
 
 // A transition containing a set of values.
 class SetTransition extends Transition {
-  int serializationType;
-  SetTransition(target, st) : super(target) {
-    this.serializationType = Transition.SET;
-    if (st != null) {
-      this.label = st;
-    } else {
-      this.label = new IntervalSet();
-      this.label.addOne(Token.INVALID_TYPE);
-    }
+  IntervalSet label;
+
+  SetTransition(ATNState target, [IntervalSet st]) : super(target) {
+    this.label = st ?? IntervalSet.ofOne(Token.INVALID_TYPE);
   }
 
   matches(symbol, minVocabSymbol, maxVocabSymbol) {
@@ -238,29 +226,30 @@ class SetTransition extends Transition {
   toString() {
     return this.label.toString();
   }
+
+  @override
+  TransitionType get type => TransitionType.SET;
 }
 
 class NotSetTransition extends SetTransition {
-  NotSetTransition(target, st) : super(target, st) {
-    this.serializationType = Transition.NOT_SET;
-  }
+  NotSetTransition(target, st) : super(target, st);
 
   matches(symbol, minVocabSymbol, maxVocabSymbol) {
     return symbol >= minVocabSymbol &&
         symbol <= maxVocabSymbol &&
-        super.matches(symbol, minVocabSymbol, maxVocabSymbol);
+        !super.matches(symbol, minVocabSymbol, maxVocabSymbol);
   }
 
   toString() {
     return '~' + super.toString();
   }
+
+  @override
+  TransitionType get type => TransitionType.NOT_SET;
 }
 
 class WildcardTransition extends Transition {
-  int serializationType;
-  WildcardTransition(target) : super(target) {
-    this.serializationType = Transition.WILDCARD;
-  }
+  WildcardTransition(target) : super(target);
 
   matches(symbol, minVocabSymbol, maxVocabSymbol) {
     return symbol >= minVocabSymbol && symbol <= maxVocabSymbol;
@@ -269,26 +258,26 @@ class WildcardTransition extends Transition {
   toString() {
     return ".";
   }
+
+  @override
+  TransitionType get type => TransitionType.WILDCARD;
 }
 
 class PrecedencePredicateTransition extends AbstractPredicateTransition {
-  int serializationType;
   int precedence;
-  PrecedencePredicateTransition(target, precedence) : super(target) {
-    this.serializationType = Transition.PRECEDENCE;
-    this.precedence = precedence;
-    this.isEpsilon = true;
+
+  PrecedencePredicateTransition(target, this.precedence) : super(target);
+
+  get isEpsilon => true;
+
+  matches(symbol, minVocabSymbol, maxVocabSymbol) => false;
+
+  PrecedencePredicate getPredicate() {
+    return new PrecedencePredicate(precedence);
   }
 
-  matches(symbol, minVocabSymbol, maxVocabSymbol) {
-    return false;
-  }
+  toString() => "$precedence >= _p";
 
-  getPredicate() {
-    return new PrecedencePredicate(this.precedence);
-  }
-
-  toString() {
-    return "$precedence >= _p";
-  }
+  @override
+  TransitionType get type => TransitionType.PRECEDENCE;
 }

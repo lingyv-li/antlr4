@@ -5,43 +5,48 @@
  */
 //
 
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
-import './Token.dart';
+import 'Token.dart';
+import 'CharStream.dart';
+import 'IntStream.dart';
+import 'IntervalSet.dart';
+
 // Vacuum all input from a string and then treat it like a buffer.
-
-_loadString(stream) {
-  stream._index = 0;
-  stream.data = [];
-  if (stream.decodeToUnicodeCodePoints) {
-    for (var i = 0; i < stream.strdata.length;) {
-      var codePoint = stream.strdata.codePointAt(i);
-      stream.data.push(codePoint);
-      i += codePoint <= 0xFFFF ? 1 : 2;
-    }
-  } else {
-    for (var i = 0; i < stream.strdata.length; i++) {
-      var codeUnit = stream.strdata.charCodeAt(i);
-      stream.data.push(codeUnit);
-    }
-  }
-  stream._size = stream.data.length;
-}
-
-// If decodeToUnicodeCodePoints is true, the input is treated
-// as a series of Unicode code points.
-//
-// Otherwise, the input is treated as a series of 16-bit UTF-16 code
-// units.
-class InputStream {
+class InputStream extends CharStream {
   var name = "<empty>";
-  var strdata;
+  List<int> data;
   int _index;
   int _size;
   bool decodeToUnicodeCodePoints;
-  InputStream(data, {this.decodeToUnicodeCodePoints = false}) {
-    this.strdata = data;
-    _loadString(this);
+
+  InputStream(List<int> data) {
+    this.data = data;
+  }
+
+  InputStream.fromString(String data) {
+    this.data = data.codeUnits;
+  }
+
+  static Future<InputStream> fromStringStream(Stream<String> stream) async {
+    final data = StringBuffer();
+    await stream.listen((buf) {
+      data.write(buf);
+    }).asFuture();
+    return InputStream.fromString(data.toString());
+  }
+
+  static Future<InputStream> fromStream(Stream<List<int>> stream,
+      {Encoding encoding = utf8}) {
+    final data = stream.transform(encoding.decoder);
+    return fromStringStream(data);
+  }
+
+  static Future<InputStream> fromPath(String path, {Encoding encoding = utf8}) {
+    return fromStream(File(path).openRead());
   }
 
   get index {
@@ -52,10 +57,9 @@ class InputStream {
     return this._size;
   }
 
-// Reset the stream so that it's in the same state it was
-// when the object was created *except* the data array is not
-// touched.
-//
+  /// Reset the stream so that it's in the same state it was
+  /// when the object was created *except* the data array is not
+  /// touched.
   reset() {
     this._index = 0;
   }
@@ -68,7 +72,7 @@ class InputStream {
     this._index += 1;
   }
 
-  LA(offset) {
+  int LA(int offset) {
     if (offset == 0) {
       return 0; // undefined
     }
@@ -83,21 +87,16 @@ class InputStream {
     return this.data[pos];
   }
 
-  LT(offset) {
-    return this.LA(offset);
-  }
-
-// mark/release do nothing; we have entire buffer
-  mark() {
+  /// mark/release do nothing; we have entire buffer
+  int mark() {
     return -1;
   }
 
-  release(marker) {}
+  release(int marker) {}
 
-// consume() ahead until p==_index; can't just set p=_index as we must
-// update line and column. If we seek backwards, just set p
-//
-  seek(_index) {
+  /// consume() ahead until p==_index; can't just set p=_index as we must
+  /// update line and column. If we seek backwards, just set p
+  seek(int _index) {
     if (_index <= this._index) {
       this._index = _index; // just jump; don't update stream state (line,
       // ...)
@@ -107,26 +106,19 @@ class InputStream {
     this._index = min(_index, this._size);
   }
 
-  getText(start, stop) {
-    if (stop >= this._size) {
-      stop = this._size - 1;
-    }
-    if (start >= this._size) {
-      return "";
-    } else {
-      if (this.decodeToUnicodeCodePoints) {
-        var result = "";
-        for (var i = start; i <= stop; i++) {
-          result += String.fromCharCode(this.data[i]);
-        }
-        return result;
-      } else {
-        return this.strdata.slice(start, stop + 1);
-      }
-    }
+  String getText(Interval interval) {
+    final startIdx = min(interval.a, size);
+    final len = min(interval.b - interval.a + 1, size - startIdx);
+    return String.fromCharCodes(this.data, startIdx, startIdx + len);
   }
 
   toString() {
-    return this.strdata;
+    return String.fromCharCodes(this.data);
+  }
+
+  @override
+  String get sourceName {
+    // TODO: implement getSourceName
+    return IntStream.UNKNOWN_SOURCE_NAME;
   }
 }

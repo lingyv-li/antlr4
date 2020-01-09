@@ -2,125 +2,235 @@
  * Use of this file is governed by the BSD 3-clause license that
  * can be found in the LICENSE.txt file in the project root.
  */
+import 'dart:core';
+
+import '../IntervalSet.dart';
+import '../Parser.dart';
 import '../Token.dart';
-import './Tree.dart';
+import '../Utils.dart';
+import 'Tree.dart';
 import '../ParserRuleContext.dart';
 import '../RuleContext.dart';
 import '../atn/ATN.dart';
 
 /** A set of utility routines useful for all kinds of ANTLR trees. */
 class Trees {
-// Print out a whole tree in LISP form. {@link //getNodeText} is used on the
-//  node payloads to get the text for the nodes.  Detect
-//  parse trees and extract data appropriately.
-  static toStringTree(tree, {ruleNames = null, recog = null}) {
-    if (recog != null) {
-      ruleNames = recog.ruleNames;
+  /** Print out a whole tree in LISP form. {@link #getNodeText} is used on the
+   *  node payloads to get the text for the nodes.  Detect
+   *  parse trees and extract data appropriately.
+   */
+  static String toStringTree(Tree t, {Parser recog, List<String> ruleNames}) {
+    if (ruleNames == null) {
+      ruleNames = recog?.getRuleNames();
     }
-    var s = Trees.getNodeText(tree, ruleNames: ruleNames);
-    s = Utils.escapeWhitespace(s, false);
-    var c = tree.getChildCount();
-    if (c == 0) {
-      return s;
+    String s = escapeWhitespace(getNodeText(t, ruleNames: ruleNames), false);
+    if (t.getChildCount() == 0) return s;
+    StringBuffer buf = new StringBuffer();
+    buf.write("(");
+    s = escapeWhitespace(getNodeText(t, ruleNames: ruleNames), false);
+    buf.write(s);
+    buf.write(' ');
+    for (int i = 0; i < t.getChildCount(); i++) {
+      if (i > 0) buf.write(' ');
+      buf.write(toStringTree(t.getChild(i), ruleNames: ruleNames));
     }
-    var res = "(" + s + ' ';
-    if (c > 0) {
-      s = Trees.toStringTree(tree.getChild(0), ruleNames: ruleNames);
-      res += s;
-    }
-    for (var i = 1; i < c; i++) {
-      s = Trees.toStringTree(tree.getChild(i), ruleNames: ruleNames);
-      res += (' ' + s);
-    }
-    res += ")";
-    return res;
+    buf.write(")");
+    return buf.toString();
   }
 
-  static getNodeText(t, {ruleNames = null, recog = null}) {
-    if (recog != null) {
-      ruleNames = recog.ruleNames;
+  static String getNodeText(Tree t, {Parser recog, List<String> ruleNames}) {
+    if (ruleNames == null) {
+      ruleNames = recog?.getRuleNames();
     }
     if (ruleNames != null) {
       if (t is RuleContext) {
-        var altNumber = t.getAltNumber();
+        int ruleIndex = t.ruleContext.ruleIndex;
+        String ruleName = ruleNames[ruleIndex];
+        int altNumber = t.getAltNumber();
         if (altNumber != ATN.INVALID_ALT_NUMBER) {
-          return ruleNames[t.ruleIndex] + ":" + altNumber;
+          return ruleName + ":$altNumber";
         }
-        return ruleNames[t.ruleIndex];
+        return ruleName;
       } else if (t is ErrorNode) {
         return t.toString();
       } else if (t is TerminalNode) {
-        if (t.symbol != null) {
-          return t.symbol.text;
+        Token symbol = (t).symbol;
+        if (symbol != null) {
+          String s = symbol.text;
+          return s;
         }
       }
     }
     // no recog for rule names
-    var payload = t.getPayload();
+    Object payload = t.getPayload();
     if (payload is Token) {
       return payload.text;
     }
     return t.getPayload().toString();
   }
 
-// Return ordered list of all children of this node
-  static getChildren(t) {
-    var list = [];
-    for (var i = 0; i < t.getChildCount(); i++) {
-      list.add(t.getChild(i));
+  /** Return ordered list of all children of this node */
+  static List<Tree> getChildren(Tree t) {
+    List<Tree> kids = [];
+    for (int i = 0; i < t.getChildCount(); i++) {
+      kids.add(t.getChild(i));
     }
-    return list;
+    return kids;
   }
 
-// Return a list of all ancestors of this node.  The first node of
-//  list is the root and the last is the parent of this node.
-//
-  static getAncestors(t) {
-    var ancestors = [];
+  /** Return a list of all ancestors of this node.  The first node of
+   *  list is the root and the last is the parent of this node.
+   *
+   *  @since 4.5.1
+   */
+  static List<Tree> getAncestors(Tree t) {
+    if (t.getParent() == null) return [];
+    List<Tree> ancestors = [];
     t = t.getParent();
     while (t != null) {
-      ancestors = [t] + (ancestors);
+      ancestors.insert(0, t); // insert at start
       t = t.getParent();
     }
     return ancestors;
   }
 
-  static findAllTokenNodes(t, ttype) {
-    return Trees.findAllNodes(t, ttype, true);
+  /** Return true if t is u's parent or a node on path to root from u.
+   *  Use == not equals().
+   *
+   *  @since 4.5.1
+   */
+  static bool isAncestorOf(Tree t, Tree u) {
+    if (t == null || u == null || t.getParent() == null) return false;
+    Tree p = u.getParent();
+    while (p != null) {
+      if (t == p) return true;
+      p = p.getParent();
+    }
+    return false;
   }
 
-  static findAllRuleNodes(t, ruleIndex) {
-    return Trees.findAllNodes(t, ruleIndex, false);
+  static List<ParseTree> findAllTokenNodes(ParseTree t, int ttype) {
+    return findAllNodes(t, ttype, true);
   }
 
-  static findAllNodes(t, index, findTokens) {
-    var nodes = [];
-    Trees._findAllNodes(t, index, findTokens, nodes);
+  static List<ParseTree> findAllRuleNodes(ParseTree t, int ruleIndex) {
+    return findAllNodes(t, ruleIndex, false);
+  }
+
+  static List<ParseTree> findAllNodes(ParseTree t, int index, bool findTokens) {
+    List<ParseTree> nodes = [];
+    _findAllNodes(t, index, findTokens, nodes);
     return nodes;
   }
 
-  static _findAllNodes(t, index, findTokens, nodes) {
+  static void _findAllNodes(
+      ParseTree t, int index, bool findTokens, List<ParseTree> nodes) {
     // check this node (the root) first
-    if (findTokens && (t is TerminalNode)) {
-      if (t.symbol.type == index) {
-        nodes.push(t);
-      }
-    } else if (!findTokens && (t is ParserRuleContext)) {
-      if (t.ruleIndex == index) {
-        nodes.push(t);
-      }
+    if (findTokens && t is TerminalNode) {
+      TerminalNode tnode = t;
+      if (tnode.symbol.type == index) nodes.add(t);
+    } else if (!findTokens && t is ParserRuleContext) {
+      ParserRuleContext ctx = t;
+      if (ctx.ruleIndex == index) nodes.add(t);
     }
     // check children
-    for (var i = 0; i < t.getChildCount(); i++) {
-      Trees._findAllNodes(t.getChild(i), index, findTokens, nodes);
+    for (int i = 0; i < t.getChildCount(); i++) {
+      _findAllNodes(t.getChild(i), index, findTokens, nodes);
     }
   }
 
-  static descendants(t) {
-    var nodes = [t];
-    for (var i = 0; i < t.getChildCount(); i++) {
-      nodes += Trees.descendants(t.getChild(i));
+  /** Get all descendents; includes t itself.
+   *
+   * @since 4.5.1
+   */
+  static List<ParseTree> getDescendants(ParseTree t) {
+    List<ParseTree> nodes = [];
+    nodes.add(t);
+
+    int n = t.getChildCount();
+    for (int i = 0; i < n; i++) {
+      nodes.addAll(getDescendants(t.getChild(i)));
     }
     return nodes;
   }
+
+  /** @deprecated */
+  static List<ParseTree> descendants(ParseTree t) {
+    return getDescendants(t);
+  }
+
+  /** Find smallest subtree of t enclosing range startTokenIndex..stopTokenIndex
+   *  inclusively using postorder traversal.  Recursive depth-first-search.
+   *
+   *  @since 4.5.1
+   */
+  static ParserRuleContext getRootOfSubtreeEnclosingRegion(
+      ParseTree t,
+      int startTokenIndex, // inclusive
+      int stopTokenIndex) // inclusive
+  {
+    int n = t.getChildCount();
+    for (int i = 0; i < n; i++) {
+      ParseTree child = t.getChild(i);
+      ParserRuleContext r = getRootOfSubtreeEnclosingRegion(
+          child, startTokenIndex, stopTokenIndex);
+      if (r != null) return r;
+    }
+    if (t is ParserRuleContext) {
+      ParserRuleContext r = t;
+      if (startTokenIndex >=
+              r.getStart().tokenIndex && // is range fully contained in t?
+          (r.getStop() == null || stopTokenIndex <= r.getStop().tokenIndex)) {
+        // note: r.getStop()==null likely implies that we bailed out of parser and there's nothing to the right
+        return r;
+      }
+    }
+    return null;
+  }
+
+  /** Replace any subtree siblings of root that are completely to left
+   *  or right of lookahead range with a CommonToken(Token.INVALID_TYPE,"...")
+   *  node. The source interval for t is not altered to suit smaller range!
+   *
+   *  WARNING: destructive to t.
+   *
+   *  @since 4.5.1
+   */
+  static void stripChildrenOutOfRange(ParserRuleContext t,
+      ParserRuleContext root, int startIndex, int stopIndex) {
+    if (t == null) return;
+    for (int i = 0; i < t.getChildCount(); i++) {
+      ParseTree child = t.getChild(i);
+      Interval range = child.getSourceInterval();
+      if (child is ParserRuleContext &&
+          (range.b < startIndex || range.a > stopIndex)) {
+        if (isAncestorOf(child, root)) {
+          // replace only if subtree doesn't have displayed root
+          CommonToken abbrev = new CommonToken(Token.INVALID_TYPE, text: "...");
+          t.children[i] = new TerminalNodeImpl(abbrev);
+        }
+      }
+    }
+  }
+
+  /** Return first node satisfying the pred
+   *
+   *  @since 4.5.1
+   */
+  static Tree findNodeSuchThat(Tree t, Predicate<Tree> pred) {
+    if (pred.test(t)) return t;
+
+    if (t == null) return null;
+
+    int n = t.getChildCount();
+    for (int i = 0; i < n; i++) {
+      Tree u = findNodeSuchThat(t.getChild(i), pred);
+      if (u != null) return u;
+    }
+    return null;
+  }
+}
+
+abstract class Predicate<T> {
+  bool test(T t);
 }

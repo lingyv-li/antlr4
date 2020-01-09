@@ -5,72 +5,74 @@
 
 // A DFA walker that knows how to dump them to serialized strings.#/
 
-class DFASerializer {
-  var dfa;
-  List<String> literalNames;
-  List<String> symbolicNames;
-  DFASerializer(dfa, literalNames, symbolicNames) {
-    this.dfa = dfa;
-    this.literalNames = literalNames ?? [];
-    this.symbolicNames = symbolicNames ?? [];
-  }
+import '../Utils.dart';
+import '../Vocabulary.dart';
+import 'DFA.dart';
+import 'DFAState.dart';
 
-  toString() {
-    if (this.dfa.s0 == null) {
-      return null;
-    }
-    var buf = "";
-    var states = this.dfa.sortedStates();
-    for (var i = 0; i < states.length; i++) {
-      var s = states[i];
-      if (s.edges != null) {
-        var n = s.edges.length;
-        for (var j = 0; j < n; j++) {
-          var t = s.edges[j] ?? null;
-          if (t != null && t.stateNumber != 0x7FFFFFFF) {
-            buf += this.getStateString(s);
-            buf += "-";
-            buf += this.getEdgeLabel(j);
-            buf += "->";
-            buf += this.getStateString(t);
-            buf += '\n';
-          }
+/** A DFA walker that knows how to dump them to serialized strings. */
+class DFASerializer {
+
+  final DFA dfa;
+
+  final Vocabulary vocabulary;
+
+  DFASerializer(this.dfa, this.vocabulary);
+
+  String toString() {
+    if (dfa.s0 == null) return null;
+    StringBuffer buf = new StringBuffer();
+    List<DFAState> states = dfa.getStates();
+    for (DFAState s in states) {
+      int n = 0;
+      if (s.edges != null) n = s.edges.length;
+      for (int i = 0; i < n; i++) {
+        DFAState t = s.edges[i];
+        if (t != null && t.stateNumber != 0x7FFFFFFF) {
+          buf.write(getStateString(s));
+          String label = getEdgeLabel(i);
+          buf.write("-");
+          buf.write(label);
+          buf.write("->");
+          buf.write(getStateString(t));
+          buf.write('\n');
         }
       }
     }
-    return buf.length == 0 ? null : buf;
+
+    String output = buf.toString();
+    if (output.length == 0) return null;
+    //return Utils.sortLinesInString(output);
+    return output;
   }
 
-  String getEdgeLabel(i) {
-    if (i == 0) {
-      return "EOF";
-    } else if (this.literalNames != null || this.symbolicNames != null) {
-      return this.literalNames[i - 1] ?? this.symbolicNames[i - 1];
-    } else {
-      return String.fromCharCode(i - 1);
-    }
+  String getEdgeLabel(int i) {
+    return vocabulary.getDisplayName(i - 1);
   }
 
-  getStateString(s) {
-    var baseStateStr = (s.isAcceptState ? ":" : "") +
-        "s" +
-        s.stateNumber +
+
+  String getStateString(DFAState s) {
+    int n = s.stateNumber;
+    final String baseStateStr = (s.isAcceptState ? ":" : "") + "s$n" +
         (s.requiresFullContext ? "^" : "");
     if (s.isAcceptState) {
       if (s.predicates != null) {
-        return baseStateStr + "=>" + s.predicates.toString();
-      } else {
-        return baseStateStr + "=>" + s.prediction.toString();
+        return baseStateStr + "=>${arrayToString(s.predicates)}";
       }
-    } else {
+      else {
+        return baseStateStr + "=>${s.prediction}";
+      }
+    }
+    else {
       return baseStateStr;
     }
   }
 }
 
 class LexerDFASerializer extends DFASerializer {
-  LexerDFASerializer(dfa) : super(dfa, null, null);
-  getEdgeLabel(i) {
+  LexerDFASerializer(dfa) : super(dfa, VocabularyImpl.EMPTY_VOCABULARY);
+
+  String getEdgeLabel(i) {
     return "'" + String.fromCharCode(i) + "'";
   }
 }

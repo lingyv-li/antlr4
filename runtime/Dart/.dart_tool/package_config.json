@@ -2,6 +2,12 @@
   "configVersion": 2,
   "packages": [
     {
+      "name": "bit_array",
+      "rootUri": "file:///Users/lli5/.pub-cache/hosted/pub.dartlang.org/bit_array-2.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.2"
+    },
+    {
       "name": "charcode",
       "rootUri": "file:///Users/lli5/.pub-cache/hosted/pub.dartlang.org/charcode-1.1.2",
       "packageUri": "lib/",
@@ -12,6 +18,18 @@
       "rootUri": "file:///Users/lli5/.pub-cache/hosted/pub.dartlang.org/collection-1.14.12",
       "packageUri": "lib/",
       "languageVersion": "2.0"
+    },
+    {
+      "name": "convert",
+      "rootUri": "file:///Users/lli5/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "1.17"
+    },
+    {
+      "name": "crypto",
+      "rootUri": "file:///Users/lli5/.pub-cache/hosted/pub.dartlang.org/crypto-2.1.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
     },
     {
       "name": "logging",
@@ -50,13 +68,25 @@
       "languageVersion": "1.8"
     },
     {
+      "name": "typed_data",
+      "rootUri": "file:///Users/lli5/.pub-cache/hosted/pub.dartlang.org/typed_data-1.1.6",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "uuid",
+      "rootUri": "file:///Users/lli5/.pub-cache/hosted/pub.dartlang.org/uuid-2.0.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "antlr4",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "2.7"
     }
   ],
-  "generated": "2020-01-05T10:54:18.648633Z",
+  "generated": "2020-01-08T06:01:27.866840Z",
   "generator": "pub",
   "generatorVersion": "2.7.0"
 }

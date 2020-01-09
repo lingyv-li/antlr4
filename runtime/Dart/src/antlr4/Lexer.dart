@@ -4,70 +4,20 @@
  */
 import 'dart:developer';
 
-///
-
-// A lexer is recognizer that draws input symbols from a character stream.
-//  lexer grammars result in a subclass of this object. A Lexer object
-//  uses simplified match() and error recovery mechanisms in the interest of speed.
-
-import './Token.dart';
+import 'Token.dart';
+import 'CharStream.dart';
 import 'CommonTokenFactory.dart';
+import 'IntStream.dart';
+import 'IntervalSet.dart';
 import 'Recognizer.dart';
+import 'TokenSource.dart';
+import 'atn/LexerATNSimulator.dart';
+import 'error/ErrorListener.dart';
 import 'error/Errors.dart';
+import 'misc/Pair.dart';
 
-class TokenSource {}
-
-class Lexer extends Recognizer {
-  var _input;
-  var _factory = CommonTokenFactory.DEFAULT;
-  var _tokenFactorySourcePair;
-
-  var _interp = null; // child classes must populate this
-
-  // The goal of all lexer rules/methods is to create a token object.
-  // this is an instance variable as multiple rules may collaborate to
-  // create a single token. nextToken will return this object after
-  // matching lexer rule(s). If you subclass to allow multiple token
-  // emissions, then set this to the last token to be matched or
-  // something nonnull so that the auto token emit mechanism will not
-  // emit another token.
-  var _token = null;
-
-  // What character index in the stream did the current token start at?
-  // Needed, for example, to get the text for current token. Set at
-  // the start of nextToken.
-  var _tokenStartCharIndex = -1;
-
-  // The line on which the first character of the token resides///
-  var _tokenStartLine = -1;
-
-  // The character position of first character within the line///
-  var _tokenStartColumn = -1;
-
-  // Once we see EOF on char stream, next token will be EOF.
-  // If you have DONE : EOF ; then you see DONE EOF.
-  var _hitEOF = false;
-
-  // The channel number for the current token///
-  var _channel = Token.DEFAULT_CHANNEL;
-
-  // The token type for the current token///
-  var _type = Token.INVALID_TYPE;
-
-  var _modeStack = [];
-  var _mode = Lexer.DEFAULT_MODE;
-
-  // You can set the text for the current token to override what is in
-  // the input char buffer. Use setText() or can set this instance var.
-  // /
-  var _text = null;
-
-  Lexer(input) {
-    this._input = input;
-
-    this._tokenFactorySourcePair = [this, input];
-  }
-
+abstract class Lexer extends Recognizer<LexerATNSimulator>
+    implements TokenSource {
   static final DEFAULT_MODE = 0;
   static final MORE = -2;
   static final SKIP = -3;
@@ -77,97 +27,133 @@ class Lexer extends Recognizer {
   static final MIN_CHAR_VALUE = 0x0000;
   static final MAX_CHAR_VALUE = 0x10FFFF;
 
-  reset() {
-    // wack Lexer state variables
-    if (this._input != null) {
-      this._input.seek(0); // rewind the input
-    }
-    this._token = null;
-    this._type = Token.INVALID_TYPE;
-    this._channel = Token.DEFAULT_CHANNEL;
-    this._tokenStartCharIndex = -1;
-    this._tokenStartColumn = -1;
-    this._tokenStartLine = -1;
-    this._text = null;
+  CharStream _input;
 
-    this._hitEOF = false;
-    this._mode = Lexer.DEFAULT_MODE;
-    this._modeStack = [];
+  Pair<TokenSource, CharStream> _tokenFactorySourcePair;
+  TokenFactory _factory = CommonTokenFactory.DEFAULT;
 
-    this._interp.reset();
+  // The goal of all lexer rules/methods is to create a token object.
+  // this is an instance variable as multiple rules may collaborate to
+  // create a single token. nextToken will return this object after
+  // matching lexer rule(s). If you subclass to allow multiple token
+  // emissions, then set this to the last token to be matched or
+  // something nonnull so that the auto token emit mechanism will not
+  // emit another token.
+  Token _token = null;
+
+  // What character index in the stream did the current token start at?
+  // Needed, for example, to get the text for current token. Set at
+  // the start of nextToken.
+  int tokenStartCharIndex = -1;
+
+  // The line on which the first character of the token resides///
+  int _tokenStartLine = -1;
+
+  // The character position of first character within the line///
+  int _tokenStartCharPositionInLine = -1;
+
+  // Once we see EOF on char stream, next token will be EOF.
+  // If you have DONE : EOF ; then you see DONE EOF.
+  bool _hitEOF = false;
+
+  // The channel number for the current token///
+  int _channel = Token.DEFAULT_CHANNEL;
+
+  // The token type for the current token///
+  int _type = Token.INVALID_TYPE;
+
+  List<int> _modeStack = [];
+  int _mode = Lexer.DEFAULT_MODE;
+
+  /// You can set the text for the current token to override what is in
+  /// the input char buffer. Use setText() or can set this instance var.
+  String _text = null;
+
+  Lexer(CharStream input) {
+    this._input = input;
+    this._tokenFactorySourcePair = Pair(this, input);
   }
 
-// Return a token from this source; i.e., match a token on the char stream.
-  nextToken() {
-    if (this._input == null) {
-      throw "nextToken requires a non-null input stream.";
+  reset() {
+    // wack Lexer state variables
+    if (_input != null) {
+      _input.seek(0); // rewind the input
+    }
+    _token = null;
+    _type = Token.INVALID_TYPE;
+    _channel = Token.DEFAULT_CHANNEL;
+    tokenStartCharIndex = -1;
+    _tokenStartCharPositionInLine = -1;
+    _tokenStartLine = -1;
+    _text = null;
+
+    _hitEOF = false;
+    _mode = Lexer.DEFAULT_MODE;
+    _modeStack.clear();
+
+    getInterpreter().reset();
+  }
+
+  /// Return a token from this source; i.e., match a token on the char stream.
+  Token nextToken() {
+    if (_input == null) {
+      throw new StateError("nextToken requires a non-null input stream.");
     }
 
     // Mark start location in char stream so unbuffered streams are
     // guaranteed at least have text of current token
-    var tokenStartMarker = this._input.mark();
+    int tokenStartMarker = _input.mark();
     try {
+      outer:
       while (true) {
-        if (this._hitEOF) {
-          this.emitEOF();
-          return this._token;
+        if (_hitEOF) {
+          emitEOF();
+          return _token;
         }
-        this._token = null;
-        this._channel = Token.DEFAULT_CHANNEL;
-        this._tokenStartCharIndex = this._input.index;
-        this._tokenStartColumn = this._interp.column;
-        this._tokenStartLine = this._interp.line;
-        this._text = null;
-        var continueOuter = false;
-        while (true) {
-          this._type = Token.INVALID_TYPE;
-          var ttype = Lexer.SKIP;
+
+        _token = null;
+        _channel = Token.DEFAULT_CHANNEL;
+        tokenStartCharIndex = _input.index;
+        _tokenStartCharPositionInLine =
+            getInterpreter().getCharPositionInLine();
+        _tokenStartLine = getInterpreter().getLine();
+        _text = null;
+        do {
+          _type = Token.INVALID_TYPE;
+//				System.out.println("nextToken line "+tokenStartLine+" at "+((char)input.LA(1))+
+//								   " in mode "+mode+
+//								   " at index "+input.index());
+          int ttype;
           try {
-            ttype = this._interp.match(this._input, this._mode);
-          } catch (e) {
-            if (e is RecognitionException) {
-              this.notifyListeners(e); // report error
-              this.recover(e);
-            } else {
-              log(e.stack);
-              throw e;
-            }
+            ttype = getInterpreter().match(_input, _mode);
+          } on LexerNoViableAltException catch (e) {
+            notifyListeners(e); // report error
+            recover(e);
+            ttype = SKIP;
           }
-          if (this._input.LA(1) == Token.EOF) {
-            this._hitEOF = true;
+          if (_input.LA(1) == IntStream.EOF) {
+            _hitEOF = true;
           }
-          if (this._type == Token.INVALID_TYPE) {
-            this._type = ttype;
+          if (_type == Token.INVALID_TYPE) _type = ttype;
+          if (_type == SKIP) {
+            continue outer;
           }
-          if (this._type == Lexer.SKIP) {
-            continueOuter = true;
-            break;
-          }
-          if (this._type != Lexer.MORE) {
-            break;
-          }
-        }
-        if (continueOuter) {
-          continue;
-        }
-        if (this._token == null) {
-          this.emit();
-        }
-        return this._token;
+        } while (_type == MORE);
+        if (_token == null) emit();
+        return _token;
       }
     } finally {
       // make sure we release marker after match or
       // unbuffered char stream will keep buffering
-      this._input.release(tokenStartMarker);
+      _input.release(tokenStartMarker);
     }
   }
 
-// Instruct the lexer to skip creating a token for current lexer rule
-// and look for another token. nextToken() knows to keep looking when
-// a lexer rule finishes with token set to SKIP_TOKEN. Recall that
-// if token==null at end of any token rule, it creates one for you
-// and emits it.
-// /
+  /// Instruct the lexer to skip creating a token for current lexer rule
+  /// and look for another token. nextToken() knows to keep looking when
+  /// a lexer rule finishes with token set to SKIP_TOKEN. Recall that
+  /// if token==null at end of any token rule, it creates one for you
+  /// and emits it.
   skip() {
     this._type = Lexer.SKIP;
   }
@@ -176,166 +162,216 @@ class Lexer extends Recognizer {
     this._type = Lexer.MORE;
   }
 
-  mode(m) {
+  mode(int m) {
     this._mode = m;
   }
 
-  pushMode(m) {
-    if (this._interp.debug) {
-      log("pushMode " + m);
+  pushMode(int m) {
+    if (LexerATNSimulator.debug) {
+      log("pushMode $m");
     }
-    this._modeStack.add(this._mode);
-    this.mode(m);
+    _modeStack.add(_mode);
+    mode(m);
   }
 
-  popMode() {
-    if (this._modeStack.length == 0) {
-      throw "Empty Stack";
-    }
-    if (this._interp.debug) {
-      log("popMode back to " + this._modeStack.slice(0, -1));
-    }
-    this.mode(this._modeStack.removeLast());
-    return this._mode;
+  int popMode() {
+    if (_modeStack.isEmpty) throw new StateError("");
+    if (LexerATNSimulator.debug) log("popMode back to ${_modeStack.last}");
+    mode(_modeStack.removeLast());
+    return _mode;
   }
 
-// Set the char stream and reset the lexer
-
-  get inputStream {
-    return this._input;
+  void setTokenFactory(TokenFactory factory) {
+    this._factory = factory;
   }
 
-  set inputStream(input) {
+  TokenFactory getTokenFactory() {
+    return _factory;
+  }
+
+  /** Set the char stream and reset the lexer */
+
+  void setInputStream(IntStream input) {
     this._input = null;
-    this._tokenFactorySourcePair = [this, this._input];
-    this.reset();
+    this._tokenFactorySourcePair =
+        new Pair<TokenSource, CharStream>(this, _input);
+    reset();
     this._input = input;
-    this._tokenFactorySourcePair = [this, this._input];
+    this._tokenFactorySourcePair =
+        new Pair<TokenSource, CharStream>(this, _input);
   }
 
-  get sourceName {
-    return this._input.sourceName;
+  String get sourceName {
+    return _input.sourceName;
   }
 
-// By default does not support multiple emits per nextToken invocation
-// for efficiency reasons. Subclass and override this method, nextToken,
-// and getToken (to push tokens into a list and pull from that list
-// rather than a single variable as this implementation does).
-// /
-  emitToken(token) {
+  CharStream getInputStream() {
+    return _input;
+  }
+
+  /** By default does not support multiple emits per nextToken invocation
+   *  for efficiency reasons.  Subclass and override this method, nextToken,
+   *  and getToken (to push tokens into a list and pull from that list
+   *  rather than a single variable as this implementation does).
+   */
+  void emitToken(Token token) {
+    //System.err.println("emit "+token);
     this._token = token;
   }
 
-// The standard method called to automatically emit a token at the
-// outermost lexical rule. The token object should point into the
-// char buffer start..stop. If there is a text override in 'text',
-// use that to set the token's text. Override this method to emit
-// custom Token objects or provide a new factory.
-// /
-  emit() {
-    var t = this._factory.create(
-        this._tokenFactorySourcePair,
-        this._type,
-        this._text,
-        this._channel,
-        this._tokenStartCharIndex,
-        this.getCharIndex() - 1,
-        this._tokenStartLine,
-        this._tokenStartColumn);
-    this.emitToken(t);
+  /** The standard method called to automatically emit a token at the
+   *  outermost lexical rule.  The token object should point into the
+   *  char buffer start..stop.  If there is a text override in 'text',
+   *  use that to set the token's text.  Override this method to emit
+   *  custom Token objects or provide a new factory.
+   */
+  Token emit() {
+    Token t = _factory.create(
+        _type,
+        _text,
+        _tokenFactorySourcePair,
+        _channel,
+        tokenStartCharIndex,
+        getCharIndex() - 1,
+        _tokenStartLine,
+        _tokenStartCharPositionInLine);
+    emitToken(t);
     return t;
   }
 
-  emitEOF() {
-    var cpos = this.column;
-    var lpos = this.line;
-    var eof = this._factory.create(
-        this._tokenFactorySourcePair,
-        Token.EOF,
-        null,
-        Token.DEFAULT_CHANNEL,
-        this._input.index,
-        this._input.index - 1,
-        lpos,
-        cpos);
-    this.emitToken(eof);
+  Token emitEOF() {
+    int cpos = getCharPositionInLine();
+    int line = getLine();
+    Token eof = _factory.create(Token.EOF, null, _tokenFactorySourcePair,
+        Token.DEFAULT_CHANNEL, _input.index, _input.index - 1, line, cpos);
+    emitToken(eof);
     return eof;
   }
 
-  get type {
-    return this.type;
+  int getLine() {
+    return getInterpreter().getLine();
   }
 
-  set type(type) {
-    this._type = type;
+  int getCharPositionInLine() {
+    return getInterpreter().getCharPositionInLine();
   }
 
-  get line {
-    return this._interp.line;
+  void setLine(int line) {
+    getInterpreter().setLine(line);
   }
 
-  set line(line) {
-    this._interp.line = line;
+  void setCharPositionInLine(int charPositionInLine) {
+    getInterpreter().setCharPositionInLine(charPositionInLine);
   }
 
-  get column {
-    return this._interp.column;
+  /** What is the index of the current character of lookahead? */
+  int getCharIndex() {
+    return _input.index;
   }
 
-  set column(column) {
-    this._interp.column = column;
-  }
-
-// What is the index of the current character of lookahead?///
-  getCharIndex() {
-    return this._input.index;
-  }
-
-// Return the text matched so far for the current token or any text override.
-//Set the complete text of this token; it wipes any previous changes to the text.
-
-  get text {
-    if (this._text != null) {
-      return this._text;
-    } else {
-      return this._interp.getText(this._input);
+  /** Return the text matched so far for the current token or any
+   *  text override.
+   */
+  String getText() {
+    if (_text != null) {
+      return _text;
     }
+    return getInterpreter().getText(_input);
   }
 
-  set text(text) {
+  /** Set the complete text of this token; it wipes any previous
+   *  changes to the text.
+   */
+  void setText(String text) {
     this._text = text;
   }
 
-// Return a list of all Token objects in input char stream.
-// Forces load of all tokens. Does not include EOF token.
-// /
-  getAllTokens() {
-    var tokens = [];
-    var t = this.nextToken();
+  /** Override if emitting multiple tokens. */
+  Token getToken() {
+    return _token;
+  }
+
+  void setToken(Token _token) {
+    this._token = _token;
+  }
+
+  void setType(int ttype) {
+    _type = ttype;
+  }
+
+  int getType() {
+    return _type;
+  }
+
+  void setChannel(int channel) {
+    _channel = channel;
+  }
+
+  int getChannel() {
+    return _channel;
+  }
+
+  List<String> getChannelNames() {
+    return null;
+  }
+
+  List<String> getModeNames() {
+    return null;
+  }
+
+  /** Return a list of all Token objects in input char stream.
+   *  Forces load of all tokens. Does not include EOF token.
+   */
+  List<Token> getAllTokens() {
+    List<Token> tokens = [];
+    Token t = nextToken();
     while (t.type != Token.EOF) {
       tokens.add(t);
-      t = this.nextToken();
+      t = nextToken();
     }
     return tokens;
   }
 
-  notifyListeners(e) {
-    var start = this._tokenStartCharIndex;
-    var stop = this._input.index;
-    var text = this._input.getText(start, stop);
-    var msg =
-        "token recognition error at: '" + this.getErrorDisplay(text) + "'";
-    var listener = this.getErrorListenerDispatch();
+  void notifyListeners(LexerNoViableAltException e) {
+    String text =
+        _input.getText(Interval.of(tokenStartCharIndex, _input.index));
+    String msg = "token recognition error at: '" + getErrorDisplay(text) + "'";
+
+    ErrorListener listener = getErrorListenerDispatch();
     listener.syntaxError(
-        this, null, this._tokenStartLine, this._tokenStartColumn, msg, e);
+        this, null, _tokenStartLine, _tokenStartCharPositionInLine, msg, e);
   }
 
-  getErrorDisplay(s) {
-    var d = [];
-    for (var i = 0; i < s.length; i++) {
-      d.add(s[i]);
+  String getErrorDisplay(String s) {
+    StringBuffer buf = new StringBuffer();
+    for (int c in s.codeUnits) {
+      buf.write(getErrorDisplayForChar(c));
     }
-    return d.join('');
+    return buf.toString();
+  }
+
+  String getCharErrorDisplay(int c) {
+    String s = getErrorDisplay(String.fromCharCode(c));
+    return "'$s'";
+  }
+
+  /** Lexers can normally match any char in it's vocabulary after matching
+   *  a token, so do the easy thing and just kill a character and hope
+   *  it all works out.  You can instead use the rule invocation stack
+   *  to do sophisticated error recovery if you are in a fragment rule.
+   */
+  void recover(RecognitionException re) {
+    if (re is LexerNoViableAltException) {
+      if (_input.LA(1) != IntStream.EOF) {
+        // skip a char and try again
+        getInterpreter().consume(_input);
+      }
+    } else {
+      //System.out.println("consuming char "+(char)input.LA(1)+" during recovery");
+      //re.printStackTrace();
+      // TODO: Do we lose character or line position information?
+      _input.consume();
+    }
   }
 
   getErrorDisplayForChar(c) {
@@ -349,27 +385,6 @@ class Lexer extends Recognizer {
       return "\\r";
     } else {
       return c;
-    }
-  }
-
-  getCharErrorDisplay(c) {
-    return "'${getErrorDisplayForChar(c)}'";
-  }
-
-// Lexers can normally match any char in it's vocabulary after matching
-// a token, so do the easy thing and just kill a character and hope
-// it all works out. You can instead use the rule invocation stack
-// to do sophisticated error recovery if you are in a fragment rule.
-// /
-  recover(re) {
-    if (this._input.LA(1) != Token.EOF) {
-      if (re is LexerNoViableAltException) {
-        // skip a char and try again
-        this._interp.consume(this._input);
-      } else {
-        // TODO: Do we lose character or line position information?
-        this._input.consume();
-      }
     }
   }
 }

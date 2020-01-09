@@ -3,179 +3,250 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-// The root of the ANTLR exception hierarchy. In general, ANTLR tracks just
-//  3 kinds of errors: prediction errors, failed predicate errors, and
-//  mismatched input errors. In each case, the parser knows where it is
-//  in the input, where it is in the ATN, the rule invocation stack,
-//  and what kind of problem occurred.
-import 'package:meta/meta.dart';
-import '../atn/SemanticContext.dart';
+import '../CharStream.dart';
+import '../IntStream.dart';
+import '../IntervalSet.dart';
+import '../Lexer.dart';
+import '../Parser.dart';
+import '../ParserRuleContext.dart';
+import '../Recognizer.dart';
+import '../RuleContext.dart';
+import '../Token.dart';
+import '../TokenStream.dart';
+import '../Utils.dart';
+import '../atn/ATNConfigSet.dart';
+import '../atn/ATNState.dart';
 import '../atn/Transition.dart';
 
-class RecognitionException extends Error {
-  String message;
-  var recognizer;
-  var input;
-  var ctx;
-  var offendingToken;
-  var offendingState;
-  RecognitionException({@required message,@required  recognizer,@required  input,@required  ctx}) {
-    this.stackTrace;
-    this.message = message;
-    this.recognizer = recognizer;
-    this.input = input;
-    this.ctx = ctx;
-    // The current {@link Token} when an error occurred. Since not all streams
-    // support accessing symbols by index, we have to track the {@link Token}
-    // instance itself.
-    this.offendingToken = null;
-    // Get the ATN state number the parser was in at the time the error
-    // occurred. For {@link NoViableAltException} and
-    // {@link LexerNoViableAltException} exceptions, this is the
-    // {@link DecisionState} number. For others, it is the state whose outgoing
-    // edge we couldn't match.
-    this.offendingState = -1;
-    if (this.recognizer != null) {
-      this.offendingState = this.recognizer.state;
-    }
+/** The root of the ANTLR exception hierarchy. In general, ANTLR tracks just
+ *  3 kinds of errors: prediction errors, failed predicate errors, and
+ *  mismatched input errors. In each case, the parser knows where it is
+ *  in the input, where it is in the ATN, the rule invocation stack,
+ *  and what kind of problem occurred.
+ */
+class RecognitionException extends StateError {
+  /**
+   * Gets the {@link Recognizer} where this exception occurred.
+   *
+   * <p>If the recognizer is not available, this method returns {@code null}.</p>
+   *
+   * @return The recognizer where this exception occurred, or {@code null} if
+   * the recognizer is not available.
+   */
+  final Recognizer recognizer;
+
+  /**
+   * Gets the {@link RuleContext} at the time this exception was thrown.
+   *
+   * <p>If the context is not available, this method returns {@code null}.</p>
+   *
+   * @return The {@link RuleContext} at the time this exception was thrown.
+   * If the context is not available, this method returns {@code null}.
+   */
+  final RuleContext ctx;
+
+  /**
+   * Gets the input stream which is the symbol source for the recognizer where
+   * this exception was thrown.
+   *
+   * <p>If the input stream is not available, this method returns {@code null}.</p>
+   *
+   * @return The input stream which is the symbol source for the recognizer
+   * where this exception was thrown, or {@code null} if the stream is not
+   * available.
+   */
+  final IntStream inputStream;
+
+  /**
+   * The current {@link Token} when an error occurred. Since not all streams
+   * support accessing symbols by index, we have to track the {@link Token}
+   * instance itself.
+   */
+  Token offendingToken;
+
+  /**
+   * Get the ATN state number the parser was in at the time the error
+   * occurred. For {@link NoViableAltException} and
+   * {@link LexerNoViableAltException} exceptions, this is the
+   * {@link DecisionState} number. For others, it is the state whose outgoing
+   * edge we couldn't match.
+   *
+   * <p>If the state number is not known, this method returns -1.</p>
+   */
+  int offendingState = -1;
+
+  RecognitionException(this.recognizer, this.inputStream, this.ctx,
+      [String message = ""])
+      : super(message) {
+    if (recognizer != null) this.offendingState = recognizer.state;
   }
 
-// <p>If the state number is not known, this method returns -1.</p>
-
-//
-// Gets the set of input symbols which could potentially follow the
-// previously matched symbol at the time this exception was thrown.
-//
-// <p>If the set of expected tokens is not known and could not be computed,
-// this method returns {@code null}.</p>
-//
-// @return The set of token types that could potentially follow the current
-// state in the ATN, or {@code null} if the information is not available.
-// /
-  getExpectedTokens() {
-    if (this.recognizer != null) {
-      return this
-          .recognizer
-          .atn
-          .getExpectedTokens(this.offendingState, this.ctx);
-    } else {
-      return null;
+  /**
+   * Gets the set of input symbols which could potentially follow the
+   * previously matched symbol at the time this exception was thrown.
+   *
+   * <p>If the set of expected tokens is not known and could not be computed,
+   * this method returns {@code null}.</p>
+   *
+   * @return The set of token types that could potentially follow the current
+   * state in the ATN, or {@code null} if the information is not available.
+   */
+  IntervalSet getExpectedTokens() {
+    if (recognizer != null) {
+      return recognizer.getATN().getExpectedTokens(offendingState, ctx);
     }
-  }
-
-  toString() {
-    return this.message;
+    return null;
   }
 }
-
-final a = {"message": 2};
 
 class LexerNoViableAltException extends RecognitionException {
-  var startIndex;
-  var deadEndConfigs;
-  LexerNoViableAltException(lexer, input, startIndex, deadEndConfigs)
-  : super(message: "", recognizer: lexer, input: input, ctx: null) {
-    this.startIndex = startIndex;
-    this.deadEndConfigs = deadEndConfigs;
+  /** Matching attempted at what input index? */
+  final int startIndex;
+
+  /** Which configurations did we try at input.index() that couldn't match input.LA(1)? */
+  final ATNConfigSet deadEndConfigs;
+
+  LexerNoViableAltException(
+      Lexer lexer, CharStream input, this.startIndex, this.deadEndConfigs)
+      : super(lexer, input, null);
+
+  int getStartIndex() {
+    return startIndex;
   }
 
-  toString() {
-    var symbol = "";
-    if (this.startIndex >= 0 && this.startIndex < this.input.size) {
-      symbol = this.input.getText(this.startIndex, this.startIndex);
+  ATNConfigSet getDeadEndConfigs() {
+    return deadEndConfigs;
+  }
+
+  CharStream get inputStream {
+    return super.inputStream;
+  }
+
+  String toString() {
+    String symbol = "";
+    if (startIndex >= 0 && startIndex < inputStream.size) {
+      symbol = inputStream.getText(Interval.of(startIndex, startIndex));
+      symbol = escapeWhitespace(symbol);
     }
-    return "LexerNoViableAltException" + symbol;
+
+    return "${LexerNoViableAltException}('${symbol}')";
   }
 }
 
-// Indicates that the parser could not decide which of two or more paths
-// to take based upon the remaining input. It tracks the starting token
-// of the offending input and also knows where the parser was
-// in the various paths when the error. Reported by reportNoViableAlternative()
-//
+/** Indicates that the parser could not decide which of two or more paths
+ *  to take based upon the remaining input. It tracks the starting token
+ *  of the offending input and also knows where the parser was
+ *  in the various paths when the error. Reported by reportNoViableAlternative()
+ */
 class NoViableAltException extends RecognitionException {
-  var deadEndConfigs;
-  var startToken;
-  NoViableAltException(
-      recognizer, input, startToken, offendingToken, deadEndConfigs, ctx)
-      : super(
-          message: "",
-          recognizer: recognizer,
-          input: input,
-          ctx: ctx
-        ) {
-    ctx = ctx || recognizer._ctx;
-    offendingToken = offendingToken || recognizer.getCurrentToken();
-    startToken = startToken || recognizer.getCurrentToken();
-    input = input || recognizer.getInputStream();
+  /** Which configurations did we try at input.index() that couldn't match input.LT(1)? */
 
-    // Which configurations did we try at input.index() that couldn't match
-    // input.LT(1)?//
-    this.deadEndConfigs = deadEndConfigs;
-    // The token object at the start index; the input stream might
-    // not be buffering tokens so get a reference to it. (At the
-    // time the error occurred, of course the stream needs to keep a
-    // buffer all of the tokens but later we might not have access to those.)
-    this.startToken = startToken;
+  final ATNConfigSet deadEndConfigs;
+
+  /** The token object at the start index; the input stream might
+   * 	not be buffering tokens so get a reference to it. (At the
+   *  time the error occurred, of course the stream needs to keep a
+   *  buffer all of the tokens but later we might not have access to those.)
+   */
+
+  final Token startToken;
+
+//   NoViableAltException(Parser recognizer) { // LL(1) error
+//    this(recognizer,
+//        recognizer.getInputStream(),
+//        recognizer.getCurrentToken(),
+//        recognizer.getCurrentToken(),
+//        null,
+//        recognizer._ctx);
+//  }
+
+  NoViableAltException._(Parser recognizer, TokenStream input, this.startToken,
+      Token offendingToken, this.deadEndConfigs, ParserRuleContext ctx)
+      : super(recognizer, input, ctx) {
+    this.offendingToken = offendingToken;
+  }
+
+  NoViableAltException(Parser recognizer,
+      [TokenStream input,
+      Token startToken,
+      Token offendingToken,
+      ATNConfigSet deadEndConfigs,
+      ParserRuleContext ctx])
+      : this._(
+            recognizer,
+            input ?? recognizer.getInputStream(),
+            startToken ?? recognizer.getCurrentToken(),
+            offendingToken ?? recognizer.getCurrentToken(),
+            deadEndConfigs ?? null,
+            ctx ?? recognizer.getContext());
+
+  Token getStartToken() {
+    return startToken;
+  }
+
+  ATNConfigSet getDeadEndConfigs() {
+    return deadEndConfigs;
+  }
+}
+
+/** This signifies any kind of mismatched input exceptions such as
+ *  when the current input does not match the expected token.
+ */
+class InputMismatchException extends RecognitionException {
+  InputMismatchException(Parser recognizer,
+      [int state = -1, ParserRuleContext ctx])
+      : super(recognizer, recognizer.getInputStream(),
+            ctx ?? recognizer.getContext()) {
+    this.offendingState = state;
     this.offendingToken = offendingToken;
   }
 }
 
-// This signifies any kind of mismatched input exceptions such as
-// when the current input does not match the expected token.
-//
-class InputMismatchException extends RecognitionException {
-  InputMismatchException(recognizer)
-      : super(
-          message: "",
-          recognizer: recognizer,
-          input: recognizer.getInputStream(),
-          ctx: recognizer._ctx
-        ) {
-    this.offendingToken = recognizer.getCurrentToken();
-  }
-}
-
-// A semantic predicate failed during validation. Validation of predicates
-// occurs when normally parsing the alternative just like matching a token.
-// Disambiguating predicate evaluation occurs when we test a predicate during
-// prediction.
-
+/** A semantic predicate failed during validation.  Validation of predicates
+ *  occurs when normally parsing the alternative just like matching a token.
+ *  Disambiguating predicate evaluation occurs when we test a predicate during
+ *  prediction.
+ */
 class FailedPredicateException extends RecognitionException {
   int ruleIndex;
   int predicateIndex;
-  Predicate predicate;
-  FailedPredicateException(recognizer, predicate, message)
-      : super(
-          message: this.formatMessage(predicate, message || null),
-          recognizer: recognizer,
-          input: recognizer.getInputStream(),
-          ctx: recognizer._ctx
-        ) {
-    var s = recognizer._interp.atn.states[recognizer.state];
-    var trans = s.transitions[0];
+  final String predicate;
+
+  FailedPredicateException(Parser recognizer,
+      [this.predicate = null, String message = null])
+      : super(recognizer, recognizer.getInputStream(), recognizer.getContext(),
+            formatMessage(predicate, message)) {
+    ATNState s = recognizer.getInterpreter().atn.states[recognizer.state];
+
+    AbstractPredicateTransition trans = s.transition(0);
     if (trans is PredicateTransition) {
-      this.ruleIndex = trans.ruleIndex;
-      this.predicateIndex = trans.predIndex;
+      this.ruleIndex = (trans as PredicateTransition).ruleIndex;
+      this.predicateIndex = (trans as PredicateTransition).predIndex;
     } else {
       this.ruleIndex = 0;
       this.predicateIndex = 0;
     }
-    this.predicate = predicate;
+
     this.offendingToken = recognizer.getCurrentToken();
   }
 
-  formatMessage(predicate, message) {
+  int getRuleIndex() {
+    return ruleIndex;
+  }
+
+  int getPredIndex() {
+    return predicateIndex;
+  }
+
+  String getPredicate() {
+    return predicate;
+  }
+
+  static String formatMessage(String predicate, String message) {
     if (message != null) {
       return message;
-    } else {
-      return "failed predicate: {" + predicate + "}?";
     }
-  }
-}
 
-class ParseCancellationException extends Error {
-  ParseCancellationException(): super() {
-    this.stackTrace;
+    return "failed predicate: {$predicate}?";
   }
 }
