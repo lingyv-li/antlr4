@@ -1,0 +1,296 @@
+writeln(s) ::= <<print(<s>);>>
+write(s) ::= <<stdout.write(<s>);>>
+writeList(s) ::= <<print(<s; separator="+">);>>
+
+False() ::= "false"
+
+True() ::= "true"
+
+Not(v) ::= "!<v>"
+
+Assert(s) ::= <<assert(<s>);>>
+
+Cast(t,v) ::= "(<v> as <T>)"
+
+Append(a,b) ::= "<a> + <b>"
+
+AppendStr(a,b) ::= <%<Append(a,b)>%>
+
+Concat(a,b) ::= "<a><b>"
+
+AssertIsList(v) ::= "assert (<v> is List);" // just use static type system
+
+AssignLocal(s,v) ::= "<s> = <v>;"
+
+InitIntMember(n,v) ::= <%int <n> = <v>;%>
+
+InitBooleanMember(n,v) ::= <%bool <n> = <v>;%>
+
+InitIntVar(n,v) ::= <%<InitIntMember(n,v)>%>
+
+IntArg(n) ::= "int <n>"
+
+VarRef(n) ::= "<n>"
+
+GetMember(n) ::= <%this.<n>%>
+
+SetMember(n,v) ::= <%this.<n> = <v>;%>
+
+AddMember(n,v) ::= <%this.<n> += <v>;%>
+
+MemberEquals(n,v) ::= <%this.<n> == <v>%>
+
+ModMemberEquals(n,m,v) ::= <%this.<n> % <m> == <v>%>
+
+ModMemberNotEquals(n,m,v) ::= <%this.<n> % <m> != <v>%>
+
+DumpDFA() ::= "this.dumpDFA();"
+
+Pass() ::= ""
+
+StringList() ::= "List\<String>"
+
+BuildParseTrees() ::= "setBuildParseTree(true);"
+
+BailErrorStrategy() ::= <%setErrorHandler(new BailErrorStrategy());%>
+
+ToStringTree(s) ::= <%<s>.toStringTree(this)%>
+
+Column() ::= "this.charPositionInLine"
+
+Text() ::= "this.text"
+
+ValEquals(a,b) ::= <%<a>==<b>%>
+
+TextEquals(a) ::= <%this.text == "<a>"%>
+
+PlusText(a) ::= <%"<a>" + this.text%>
+
+InputText() ::= "this._input.text"
+
+LTEquals(i, v) ::= <%this._input.LT(<i>).text == <v>%>
+
+LANotEquals(i, v) ::= <%this._input.LA(<i>)!=<v>%>
+
+TokenStartColumnEquals(i) ::= <%this.tokenStartCharPositionInLine==<i>%>
+
+ImportListener(X) ::= ""
+
+GetExpectedTokenNames() ::= "this.expectedTokens.toString(this.tokenNames)"
+
+RuleInvocationStack() ::= "getRuleInvocationStack()"
+
+LL_EXACT_AMBIG_DETECTION() ::= <<_interp.setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);>>
+
+ParserToken(parser, token) ::= <%<parser>.<token>%>
+
+Production(p) ::= <%<p>%>
+
+Result(r) ::= <%<r>%>
+
+ParserPropertyMember() ::= <<
+@members {
+bool Property() {
+  return true;
+}
+}
+>>
+
+ParserPropertyCall(p, call) ::= "<p>.<call>"
+
+PositionAdjustingLexerDef() ::= ""
+
+PositionAdjustingLexer() ::= <<
+
+@override
+Token nextToken() {
+	if (!(_interp instanceof PositionAdjustingLexerATNSimulator)) {
+		_interp = new PositionAdjustingLexerATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
+	}
+
+	return super.nextToken();
+}
+
+@override
+Token emit() {
+	switch (_type) {
+	case TOKENS:
+		handleAcceptPositionForKeyword("tokens");
+		break;
+
+	case LABEL:
+		handleAcceptPositionForIdentifier();
+		break;
+
+	default:
+		break;
+	}
+
+	return super.emit();
+}
+
+bool handleAcceptPositionForIdentifier() {
+	String tokenText = text;
+	int identifierLength = 0;
+	while (identifierLength \< tokenText.length && isIdentifierChar(tokenText.charAt(identifierLength))) {
+		identifierLength++;
+	}
+
+	if (inputStream.index() > tokenStartCharIndex + identifierLength) {
+		int offset = identifierLength - 1;
+		getInterpreter().resetAcceptPosition(inputStream, tokenStartCharIndex + offset, tokenStartLine, tokenStartCharPositionInLine + offset);
+		return true;
+	}
+
+	return false;
+}
+
+bool handleAcceptPositionForKeyword(String keyword) {
+	if (inputStream.index() > tokenStartCharIndex + keyword.length) {
+		int offset = keyword.length - 1;
+		getInterpreter().resetAcceptPosition(inputStream, tokenStartCharIndex + offset, tokenStartLine, tokenStartCharPositionInLine + offset);
+		return true;
+	}
+
+	return false;
+}
+
+@override
+PositionAdjustingLexerATNSimulator getInterpreter() {
+	return (PositionAdjustingLexerATNSimulator)super.getInterpreter();
+}
+
+static bool isIdentifierChar(char c) {
+	return Character.isLetterOrDigit(c) || c == '_';
+}
+
+protected class PositionAdjustingLexerATNSimulator extends LexerATNSimulator {
+
+	PositionAdjustingLexerATNSimulator(Lexer recog, ATN atn,
+											  DFA[] decisionToDFA,
+											  PredictionContextCache sharedContextCache)
+	{
+		super(recog, atn, decisionToDFA, sharedContextCache);
+	}
+
+	protected void resetAcceptPosition(CharStream input, int index, int line, int charPositionInLine) {
+		input.seek(index);
+		this.line = line;
+		this.charPositionInLine = charPositionInLine;
+		consume(input);
+	}
+
+}
+
+>>
+
+BasicListener(X) ::= <<
+@parser::members {
+class LeafListener extends TBaseListener {
+	void visitTerminal(TerminalNode node) {
+		print(node.symbol.text);
+	}
+}
+}
+>>
+
+WalkListener(s) ::= <<
+ParseTreeWalker walker = new ParseTreeWalker();
+walker.walk(new LeafListener(), <s>);
+>>
+
+TreeNodeWithAltNumField(X) ::= <<
+@parser::members {
+class MyRuleNode extends ParserRuleContext {
+	int altNum;
+	MyRuleNode(ParserRuleContext parent, int invokingStateNumber) {
+		super(parent, invokingStateNumber);
+	}
+	@override int getAltNumber() { return altNum; }
+	@override void setAltNumber(int altNum) { this.altNum = altNum; }
+}
+}
+>>
+
+TokenGetterListener(X) ::= <<
+@parser::members {
+class LeafListener extends TBaseListener {
+	void exitA(TParser.AContext ctx) {
+		if (ctx.getChildCount()==2)
+			System.out.printf("%s %s %s",ctx.INT(0).symbol.text,
+				ctx.INT(1).symbol.text,ctx.INT());
+		else
+			print(ctx.ID().symbol);
+	}
+}
+}
+>>
+
+RuleGetterListener(X) ::= <<
+@parser::members {
+class LeafListener extends TBaseListener {
+	void exitA(TParser.AContext ctx) {
+		if (ctx.getChildCount()==2) {
+			System.out.printf("%s %s %s",ctx.b(0).start.text,
+				ctx.b(1).start.text,ctx.b().get(0).start.text);
+		} else
+			print(ctx.b(0).start.text);
+	}
+}
+}
+>>
+
+
+LRListener(X) ::= <<
+@parser::members {
+class LeafListener extends TBaseListener {
+	void exitE(TParser.EContext ctx) {
+		if (ctx.getChildCount()==3) {
+			System.out.printf("%s %s %s\n",ctx.e(0).start.text,
+				ctx.e(1).start.text, ctx.e().get(0).start.text);
+		} else
+			print(ctx.INT().symbol.text);
+	}
+}
+}
+>>
+
+LRWithLabelsListener(X) ::= <<
+@parser::members {
+class LeafListener extends TBaseListener {
+	void exitCall(TParser.CallContext ctx) {
+		System.out.printf("%s %s",ctx.e().start.text,ctx.eList());
+	}
+	void exitInt(TParser.IntContext ctx) {
+		print(ctx.INT().symbol.text);
+	}
+}
+}
+>>
+
+DeclareContextListGettersFunction() ::= <<
+void foo() {
+	SContext s = null;
+	List\<AContext> a = s.a();
+	List\<BContext> b = s.b();
+}
+>>
+
+Declare_foo() ::= <<
+	void foo() {print("foo");}
+>>
+
+Invoke_foo() ::= "foo();"
+
+Declare_pred() ::= <<bool pred(bool v) {
+	print("eval="+v);
+	return v;
+}
+>>
+
+Invoke_pred(v) ::= <<this.pred(<v>)>>
+
+ParserTokenType(t) ::= "Parser.<t>"
+ContextRuleFunction(ctx, rule) ::= "<ctx>.<rule>"
+StringType() ::= "String"
+ContextMember(ctx, subctx, member) ::= "<ctx>.<subctx>.<member>"

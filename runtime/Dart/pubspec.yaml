@@ -9,7 +9,6 @@ dependencies:
   string_scanner: "^1.0.1"
   logging:
   collection:
-  bit_array:
   uuid:
 # dev_dependencies: 
 #   test: "^0.12.16"
