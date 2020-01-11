@@ -3,35 +3,11 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-//* A rule invocation record for parsing.
-//
-//  Contains all of the information about the current rule not stored in the
-//  RuleContext. It handles parse tree children list, Any ATN state
-//  tracing, and the default values available for rule indications:
-//  start, stop, rule index, current alt number, current
-//  ATN state.
-//
-//  Subclasses made for each rule and grammar track the parameters,
-//  return values, locals, and labels specific to that rule. These
-//  are the objects that are returned from rules.
-//
-//  Note text is not an actual field of a rule return value; it is computed
-//  from start and stop using the input stream's toString() method.  I
-//  could add a ctor to this so that we can pass in and store the input
-//  stream, but I'm not sure we want to do that.  It would seem to be undefined
-//  to get the .text property anyway if the rule matches tokens from multiple
-//  input streams.
-//
-//  I do not use getters for fields of objects that are used simply to
-//  group values such as this aggregate.  The getters/setters are there to
-//  satisfy the superclass interface.
-
-import 'rule_context.dart';
-import 'tree/tree.dart';
+import 'error/error.dart';
 import 'interval_set.dart';
 import 'parser.dart';
+import 'rule_context.dart';
 import 'token.dart';
-import 'error/errors.dart';
 import 'tree/tree.dart';
 
 /** A rule invocation record for parsing.
@@ -73,7 +49,7 @@ class ParserRuleContext extends RuleContext {
   /// completed, this is {@code null}.
   RecognitionException exception = null;
 
-  ParserRuleContext({RuleContext parent, int invokingStateNumber})
+  ParserRuleContext([RuleContext parent, int invokingStateNumber])
       : super(parentCtx: parent, invokingState: invokingStateNumber);
 
   /** COPY a ctx (I'm deliberately not using copy constructor) to avoid
@@ -324,7 +300,7 @@ class InterpreterRuleContext extends ParserRuleContext {
    */
   InterpreterRuleContext(
       ParserRuleContext parent, int invokingStateNumber, int ruleIndex)
-      : super(parent: parent, invokingStateNumber: invokingStateNumber) {
+      : super(parent, invokingStateNumber) {
     this.ruleIndex = ruleIndex;
   }
 

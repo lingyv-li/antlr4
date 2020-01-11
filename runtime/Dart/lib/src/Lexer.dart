@@ -4,17 +4,15 @@
  */
 import 'dart:developer';
 
-import 'token.dart';
-import 'char_stream.dart';
-import 'common_token_factory.dart';
-import 'int_stream.dart';
+import 'atn/atn.dart';
+import 'error/error.dart';
+import 'input_stream.dart';
 import 'interval_set.dart';
+import 'misc/pair.dart';
 import 'recognizer.dart';
+import 'token.dart';
+import 'token_factory.dart';
 import 'token_source.dart';
-import 'atn/lexer_atn_simulator.dart';
-import 'error/error_listener.dart';
-import 'error/errors.dart';
-import 'misc/Pair.dart';
 
 abstract class Lexer extends Recognizer<LexerATNSimulator>
     implements TokenSource {
@@ -239,7 +237,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
   }
 
   Token emitEOF() {
-    int cpos = getCharPositionInLine();
+    int cpos = charPositionInLine;
     int line = getLine();
     Token eof = _factory.create(Token.EOF, null, _tokenFactorySourcePair,
         Token.DEFAULT_CHANNEL, _input.index, _input.index - 1, line, cpos);
@@ -251,7 +249,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
     return getInterpreter().getLine();
   }
 
-  int getCharPositionInLine() {
+  int get charPositionInLine {
     return getInterpreter().getCharPositionInLine();
   }
 
@@ -259,7 +257,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
     getInterpreter().setLine(line);
   }
 
-  void setCharPositionInLine(int charPositionInLine) {
+  void set charPositionInLine(int charPositionInLine) {
     getInterpreter().setCharPositionInLine(charPositionInLine);
   }
 
@@ -271,7 +269,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
   /** Return the text matched so far for the current token or any
    *  text override.
    */
-  String getText() {
+  String get text {
     if (_text != null) {
       return _text;
     }
@@ -281,12 +279,12 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
   /** Set the complete text of this token; it wipes any previous
    *  changes to the text.
    */
-  void setText(String text) {
+  void set text(String text) {
     this._text = text;
   }
 
   /** Override if emitting multiple tokens. */
-  Token getToken() {
+  Token get token {
     return _token;
   }
 

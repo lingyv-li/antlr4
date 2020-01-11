@@ -3,14 +3,13 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import 'tree/tree.dart';
-
 import 'atn/atn.dart';
 import 'interval_set.dart';
 import 'parser.dart';
 import 'parser_rule_context.dart';
 import 'recognizer.dart';
-import 'tree/Trees.dart';
+import 'tree/tree.dart';
+import 'tree/tree.dart';
 
 /** A rule context is a record of a single rule invocation.
  *
@@ -155,7 +154,8 @@ abstract class RuleContext extends RuleNode {
     return Trees.toStringTree(this, ruleNames: ruleNames, recog: parser);
   }
 
-  String toString({List<String> ruleNames, Recognizer recog, RuleContext stop}) {
+  String toString(
+      {List<String> ruleNames, Recognizer recog, RuleContext stop}) {
     ruleNames = ruleNames ?? recog.getRuleNames();
     final buf = new StringBuffer();
     var p = this;

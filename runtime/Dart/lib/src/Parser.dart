@@ -5,32 +5,20 @@
 
 import 'dart:developer';
 
-import 'common_token_factory.dart';
-import 'int_stream.dart';
+import 'atn/atn.dart';
+import 'dfa/dfa.dart';
+import 'error/error.dart';
+import 'input_stream.dart';
 import 'interval_set.dart';
 import 'lexer.dart';
 import 'parser_rule_context.dart';
 import 'recognizer.dart';
 import 'rule_context.dart';
 import 'token.dart';
+import 'token_factory.dart';
 import 'token_source.dart';
 import 'token_stream.dart';
-import 'atn/atn.dart';
-import 'atn/atn_deserialization_options.dart';
-import 'atn/atn_deserializer.dart';
-import 'atn/atn_simulator.dart';
-import 'atn/atn_state.dart';
-import 'atn/parser_atn_simulator.dart';
-import 'atn/prediction_mode.dart';
-import 'atn/profiling_atn_simulator.dart';
-import 'atn/Transition.dart';
-import 'atn/info.dart';
-import 'dfa/dfa.dart';
-import 'error/error_listener.dart';
-import 'error/error_strategy.dart';
-import 'error/errors.dart';
 import 'tree/tree.dart';
-import 'tree/pattern/parse_tree_match.dart';
 
 /** This is all the parsing support code essentially; most of it is error recovery stuff. */
 abstract class Parser extends Recognizer<ParserATNSimulator> {

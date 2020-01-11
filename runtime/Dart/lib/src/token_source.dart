@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'char_stream.dart';
-import 'common_token_factory.dart';
+import 'input_stream.dart';
+import 'misc/pair.dart';
 import 'token.dart';
-import 'misc/Pair.dart';
+import 'token_factory.dart';
 
 /**
  * A source of tokens must provide a sequence of tokens via {@link #nextToken()}
@@ -197,15 +197,8 @@ class ListTokenSource implements TokenSource {
         }
 
         int stop = max(-1, start - 1);
-        eofToken = _factory.create(
-            Token.EOF,
-            "EOF",
-            Pair(this, inputStream),
-            Token.DEFAULT_CHANNEL,
-            start,
-            stop,
-            getLine(),
-            charPositionInLine);
+        eofToken = _factory.create(Token.EOF, "EOF", Pair(this, inputStream),
+            Token.DEFAULT_CHANNEL, start, stop, getLine(), charPositionInLine);
       }
 
       return eofToken;

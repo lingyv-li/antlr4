@@ -2,14 +2,12 @@
  * Use of this file is governed by the BSD 3-clause license that
  * can be found in the LICENSE.txt file in the project root.
  */
-//
 
-import 'char_stream.dart';
-import 'int_stream.dart';
+import 'input_stream.dart';
 import 'interval_set.dart';
+import 'misc/pair.dart';
 import 'recognizer.dart';
 import 'token_source.dart';
-import 'misc/Pair.dart';
 
 /** A token has properties: text, type, line, character position in the line
  *  (so we can ignore tabs), token channel, index, and source from which

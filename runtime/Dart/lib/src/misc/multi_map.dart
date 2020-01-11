@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 
-import 'Pair.dart';
+import 'pair.dart';
 
 class MultiMap<K, V> extends DelegatingMap<K, List<V>> {
   MultiMap() : super(LinkedHashMap());

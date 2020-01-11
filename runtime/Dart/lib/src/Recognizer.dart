@@ -1,20 +1,15 @@
-//
 /* Copyright (c) 2012-2017 The ANTLR Project. All rights reserved.
  * Use of this file is governed by the BSD 3-clause license that
  * can be found in the LICENSE.txt file in the project root.
  */
-//
-import 'token.dart';
-import 'error/error_listener.dart';
-import 'common_token_factory.dart';
-import 'int_stream.dart';
-import 'rule_context.dart';
-import 'utils.dart';
-import 'Vocabulary.dart';
+import 'vocabulary.dart';
 import 'atn/atn.dart';
-import 'atn/atn_simulator.dart';
-import 'atn/info.dart';
-import 'error/errors.dart';
+import 'error/error.dart';
+import 'input_stream.dart';
+import 'rule_context.dart';
+import 'token.dart';
+import 'token_factory.dart';
+import 'util/utils.dart';
 
 abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
   static const EOF = -1;

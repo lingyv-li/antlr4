@@ -5,14 +5,11 @@
  */
 
 import './util/bit_set.dart';
-import 'atn/atn_config.dart';
-import 'interval_set.dart';
-import 'atn/atn_state.dart';
-import 'atn/Transition.dart';
-import 'prediction_context.dart';
-import 'token.dart';
-import 'rule_context.dart';
 import 'atn/atn.dart';
+import 'interval_set.dart';
+import 'prediction_context.dart';
+import 'rule_context.dart';
+import 'token.dart';
 import 'util/bit_set.dart';
 
 class LL1Analyzer {

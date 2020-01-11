@@ -3,14 +3,13 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-/*jslint smarttabs:true */
 import 'dart:math';
 
 import 'package:collection/collection.dart';
 
-import 'token.dart';
+import 'vocabulary.dart';
 import 'lexer.dart';
-import 'Vocabulary.dart';
+import 'token.dart';
 import 'util/murmur_hash.dart';
 
 /** An immutable inclusive interval a..b */
@@ -59,7 +58,7 @@ class Interval {
     return b - a + 1;
   }
 
-  bool operator == (Object o) {
+  bool operator ==(Object o) {
     if (o == null || !(o is Interval)) {
       return false;
     }
@@ -237,7 +236,7 @@ class IntervalSet {
     }
     for (int i = 0; i < intervals.length;) {
       Interval r = intervals[i];
-      if (addition ==r) {
+      if (addition == r) {
         return;
       }
       if (addition.adjacent(r) || !addition.disjoint(r)) {
@@ -567,7 +566,7 @@ class IntervalSet {
    *  by the List.equals() method to check the ranges.
    */
 
-  bool operator == (Object obj) {
+  bool operator ==(Object obj) {
     if (obj == null || !(obj is IntervalSet)) {
       return false;
     }

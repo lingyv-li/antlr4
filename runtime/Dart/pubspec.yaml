@@ -12,3 +12,5 @@ dependencies:
   uuid:
 # dev_dependencies: 
 #   test: "^0.12.16"
+environment:
+  sdk: ">=2.0.0 <3.0.0"

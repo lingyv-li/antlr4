@@ -6,19 +6,15 @@
 
 import 'dart:collection';
 
+import 'vocabulary.dart';
+import 'atn/atn.dart';
+import 'dfa/dfa.dart';
+import 'error/error.dart';
+import 'misc/pair.dart';
 import 'parser.dart';
 import 'parser_rule_context.dart';
 import 'token.dart';
 import 'token_stream.dart';
-import 'Vocabulary.dart';
-import 'atn/atn.dart';
-import 'atn/atn_state.dart';
-import 'atn/parser_atn_simulator.dart';
-import 'atn/prediction_context_cache.dart';
-import 'atn/Transition.dart';
-import 'dfa/dfa.dart';
-import 'error/errors.dart';
-import 'misc/Pair.dart';
 
 /** A parser simulator that mimics what ANTLR's generated
  *  parser code does. A ParserATNSimulator is used to make
