@@ -103,20 +103,20 @@ abstract class Token {
 }
 
 abstract class WritableToken extends Token {
-  void setText(String text);
+  void set text(String text);
 
-  void setType(int ttype);
+  void set type(int ttype);
 
-  void setLine(int line);
+  void set line(int line);
 
-  void setCharPositionInLine(int pos);
+  void set charPositionInLine(int pos);
 
-  void setChannel(int channel);
+  void set channel(int channel);
 
-  void setTokenIndex(int index);
+  void set tokenIndex(int index);
 }
 
-class CommonToken extends Token {
+class CommonToken extends WritableToken {
   /**
    * An empty {@link Pair} which is used as the default value of
    * {@link #source} for tokens that do not have a source.
@@ -171,19 +171,19 @@ class CommonToken extends Token {
    * This is the backing field for {@link #getTokenIndex} and
    * {@link #setTokenIndex}.
    */
-  int index = -1;
+  int tokenIndex = -1;
 
   /**
    * This is the backing field for {@link #getStartIndex} and
    * {@link #setStartIndex}.
    */
-  int start;
+  int startIndex;
 
   /**
    * This is the backing field for {@link #getStopIndex} and
    * {@link #setStopIndex}.
    */
-  int stop;
+  int stopIndex;
 
   /**
    * Constructs a new {@link CommonToken} with the specified token type and
@@ -195,8 +195,8 @@ class CommonToken extends Token {
   CommonToken(this.type,
       {this.source = EMPTY_SOURCE,
       this.channel = Token.DEFAULT_CHANNEL,
-      this.start,
-      this.stop,
+      this.startIndex,
+      this.stopIndex,
       text}) {
     this._text = text;
     if (source.a != null) {
@@ -221,11 +221,11 @@ class CommonToken extends Token {
   CommonToken.copy(Token oldToken) {
     type = oldToken.type;
     line = oldToken.line;
-    index = oldToken.tokenIndex;
+    tokenIndex = oldToken.tokenIndex;
     charPositionInLine = oldToken.charPositionInLine;
     channel = oldToken.channel;
-    start = oldToken.startIndex;
-    stop = oldToken.stopIndex;
+    startIndex = oldToken.startIndex;
+    stopIndex = oldToken.stopIndex;
 
     if (oldToken is CommonToken) {
       _text = oldToken.text;
@@ -237,10 +237,6 @@ class CommonToken extends Token {
     }
   }
 
-  void setLine(int line) {
-    this.line = line;
-  }
-
   String get text {
     if (_text != null) {
       return _text;
@@ -249,8 +245,8 @@ class CommonToken extends Token {
     CharStream input = inputStream;
     if (input == null) return null;
     int n = input.size;
-    if (start < n && stop < n) {
-      return input.getText(Interval.of(start, stop));
+    if (startIndex < n && stopIndex < n) {
+      return input.getText(Interval.of(startIndex, stopIndex));
     } else {
       return "<EOF>";
     }
@@ -265,7 +261,7 @@ class CommonToken extends Token {
    * should be obtained from the input along with the start and stop indexes
    * of the token.
    */
-  void setText(String text) {
+  void set text(String text) {
     this._text = text;
   }
 
@@ -287,27 +283,10 @@ class CommonToken extends Token {
     } else {
       txt = "<no text>";
     }
-    return "[@$tokenIndex,$start:$stop='$txt',<$type>" +
+    return "[@$tokenIndex,$startIndex:$stopIndex='$txt',<$type>" +
         (this.channel > 0 ? ",channel=$channel" : "") +
         ",$line:$charPositionInLine]";
   }
-
-  @override
-  int get startIndex => start;
-
-  set startIndex(start) {
-    this.start = start;
-  }
-
-  @override
-  int get stopIndex => stop;
-
-  set stopIndex(stop) {
-    this.stop = stop;
-  }
-
-  @override
-  int get tokenIndex => index;
 }
 
 /**
@@ -407,7 +386,6 @@ class RuleTagToken implements Token {
    *
    * <p>The implementation for {@link RuleTagToken} always returns -1.</p>
    */
-
   int get charPositionInLine {
     return -1;
   }
@@ -417,7 +395,6 @@ class RuleTagToken implements Token {
    *
    * <p>The implementation for {@link RuleTagToken} always returns -1.</p>
    */
-
   int get tokenIndex {
     return -1;
   }
@@ -427,7 +404,6 @@ class RuleTagToken implements Token {
    *
    * <p>The implementation for {@link RuleTagToken} always returns -1.</p>
    */
-
   int get startIndex {
     return -1;
   }

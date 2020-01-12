@@ -78,7 +78,7 @@ class DiagnosticErrorListener extends BaseErrorListener {
     int decision = dfa.decision;
     int ruleIndex = dfa.atnStartState.ruleIndex;
 
-    final ruleNames = recognizer.getRuleNames();
+    final ruleNames = recognizer.ruleNames;
     if (ruleIndex < 0 || ruleIndex >= ruleNames.length) {
       return decision.toString();
     }

@@ -6,7 +6,6 @@
 
 import 'dart:collection';
 
-import 'vocabulary.dart';
 import 'atn/atn.dart';
 import 'dfa/dfa.dart';
 import 'error/error.dart';
@@ -15,6 +14,7 @@ import 'parser.dart';
 import 'parser_rule_context.dart';
 import 'token.dart';
 import 'token_stream.dart';
+import 'vocabulary.dart';
 
 /** A parser simulator that mimics what ANTLR's generated
  *  parser code does. A ParserATNSimulator is used to make
@@ -46,7 +46,7 @@ class ParserInterpreter extends Parser {
    *  in the generated function for a left-recursive rule you'd see:
    *
    *   EContext e(int _p) throws RecognitionException {
-   *      ParserRuleContext _parentctx = getContext();    // Pair.a
+   *      ParserRuleContext _parentctx = context;    // Pair.a
    *      int _parentState = state;          // Pair.b
    *      ...
    *  }
@@ -86,8 +86,8 @@ class ParserInterpreter extends Parser {
     }
 
     // get atn simulator that knows how to do predictions
-    setInterpreter(
-        new ParserATNSimulator(this, atn, decisionToDFA, sharedContextCache));
+    interpreter =
+        new ParserATNSimulator(this, atn, decisionToDFA, sharedContextCache);
   }
 
   void reset() {
@@ -102,10 +102,6 @@ class ParserInterpreter extends Parser {
 
   Vocabulary getVocabulary() {
     return vocabulary;
-  }
-
-  List<String> getRuleNames() {
-    return ruleNames;
   }
 
   String getGrammarFileName() {
@@ -130,9 +126,9 @@ class ParserInterpreter extends Parser {
       switch (p.stateType) {
         case StateType.RULE_STOP:
           // pop; return from rule
-          if (getContext().isEmpty()) {
+          if (context.isEmpty()) {
             if (startRuleStartState.isLeftRecursiveRule) {
-              ParserRuleContext result = getContext();
+              ParserRuleContext result = context;
               Pair<ParserRuleContext, int> parentContext =
                   _parentContextStack.removeLast();
               unrollRecursionContexts(parentContext.a);
@@ -151,7 +147,7 @@ class ParserInterpreter extends Parser {
             visitState(p);
           } on RecognitionException catch (e) {
             state = atn.ruleToStopState[p.ruleIndex].stateNumber;
-            getContext().exception = e;
+            context.exception = e;
             getErrorHandler().reportError(this, e);
             recover(e);
           }
@@ -164,7 +160,7 @@ class ParserInterpreter extends Parser {
   void enterRecursionRule(
       ParserRuleContext localctx, int state, int ruleIndex, int precedence) {
     Pair<ParserRuleContext, int> pair =
-        new Pair<ParserRuleContext, int>(getContext(), localctx.invokingState);
+        new Pair<ParserRuleContext, int>(context, localctx.invokingState);
     _parentContextStack.add(pair);
     super.enterRecursionRule(localctx, state, ruleIndex, precedence);
   }
@@ -191,11 +187,9 @@ class ParserInterpreter extends Parser {
           InterpreterRuleContext localctx = createInterpreterRuleContext(
               _parentContextStack.last.a,
               _parentContextStack.last.b,
-              getContext().ruleIndex);
-          pushNewRecursionContext(
-              localctx,
-              atn.ruleToStartState[p.ruleIndex].stateNumber,
-              getContext().ruleIndex);
+              context.ruleIndex);
+          pushNewRecursionContext(localctx,
+              atn.ruleToStartState[p.ruleIndex].stateNumber, context.ruleIndex);
         }
         break;
 
@@ -220,8 +214,8 @@ class ParserInterpreter extends Parser {
       case TransitionType.RULE:
         RuleStartState ruleStartState = transition.target;
         int ruleIndex = ruleStartState.ruleIndex;
-        InterpreterRuleContext newctx = createInterpreterRuleContext(
-            getContext(), p.stateNumber, ruleIndex);
+        InterpreterRuleContext newctx =
+            createInterpreterRuleContext(context, p.stateNumber, ruleIndex);
         if (ruleStartState.isLeftRecursiveRule) {
           enterRecursionRule(newctx, ruleStartState.stateNumber, ruleIndex,
               (transition as RuleTransition).precedence);
@@ -232,7 +226,7 @@ class ParserInterpreter extends Parser {
 
       case TransitionType.PREDICATE:
         PredicateTransition predicateTransition = transition;
-        if (!sempred(getContext(), predicateTransition.ruleIndex,
+        if (!sempred(context, predicateTransition.ruleIndex,
             predicateTransition.predIndex)) {
           throw new FailedPredicateException(this);
         }
@@ -241,15 +235,15 @@ class ParserInterpreter extends Parser {
 
       case TransitionType.ACTION:
         ActionTransition actionTransition = transition;
-        action(getContext(), actionTransition.ruleIndex,
-            actionTransition.actionIndex);
+        action(
+            context, actionTransition.ruleIndex, actionTransition.actionIndex);
         break;
 
       case TransitionType.PRECEDENCE:
-        if (!precpred(getContext(),
+        if (!precpred(context,
             (transition as PrecedencePredicateTransition).precedence)) {
           throw new FailedPredicateException(this,
-              "precpred(getContext(), ${(transition as PrecedencePredicateTransition).precedence})");
+              "precpred(context, ${(transition as PrecedencePredicateTransition).precedence})");
         }
         break;
 
@@ -275,8 +269,8 @@ class ParserInterpreter extends Parser {
         predictedAlt = overrideDecisionAlt;
         overrideDecisionReached = true;
       } else {
-        predictedAlt = getInterpreter()
-            .adaptivePredict(inputStream, decision, getContext());
+        predictedAlt =
+            interpreter.adaptivePredict(inputStream, decision, context);
       }
     }
     return predictedAlt;
@@ -382,7 +376,7 @@ class ParserInterpreter extends Parser {
             // invalid start/stop
             tok.line,
             tok.charPositionInLine);
-        getContext().addErrorNode(createErrorNode(getContext(), errToken));
+        context.addErrorNode(createErrorNode(context, errToken));
       } else {
         // NoViableAlt
         Token tok = e.offendingToken;
@@ -396,7 +390,7 @@ class ParserInterpreter extends Parser {
             // invalid start/stop
             tok.line,
             tok.charPositionInLine);
-        getContext().addErrorNode(createErrorNode(getContext(), errToken));
+        context.addErrorNode(createErrorNode(context, errToken));
       }
     }
   }

@@ -17,10 +17,12 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
   static final Map<Vocabulary, Map<String, int>> tokenTypeMapCache = {};
   static final Map<List<String>, Map<String, int>> ruleIndexMapCache = {};
   List<ErrorListener> _listeners = [ConsoleErrorListener.INSTANCE];
-  ATNInterpreter interp;
+
+  /// The ATN interpreter used by the recognizer for prediction.
+  ATNInterpreter interpreter;
   int _stateNumber = -1;
 
-  List<String> getRuleNames();
+  List<String> get ruleNames;
 
   /**
    * Get the vocabulary used by the recognizer.
@@ -67,16 +69,16 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
    * <p>Used for XPath and tree pattern compilation.</p>
    */
   Map<String, int> getRuleIndexMap() {
-    final ruleNames = getRuleNames();
-    if (ruleNames == null) {
+    final _ruleNames = ruleNames;
+    if (_ruleNames == null) {
       throw UnsupportedError(
           "The current recognizer does not provide a list of rule names.");
     }
 
-    var result = ruleIndexMapCache[ruleNames];
+    var result = ruleIndexMapCache[_ruleNames];
     if (result == null) {
-      result = Map.unmodifiable(toMap(ruleNames));
-      ruleIndexMapCache[ruleNames] = result;
+      result = Map.unmodifiable(toMap(_ruleNames));
+      ruleIndexMapCache[_ruleNames] = result;
     }
 
     return result;
@@ -95,14 +97,14 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
    * <p>For interpreters, we don't know their serialized ATN despite having
    * created the interpreter from it.</p>
    */
-  String getSerializedATN() {
+  String get serializedATN {
     throw new UnsupportedError("there is no serialized ATN");
   }
 
   /** For debugging and other purposes, might want the grammar name.
    *  Have ANTLR generate an implementation for this method.
    */
-  String getGrammarFileName();
+  String get grammarFileName;
 
   /**
    * Get the {@link ATN} used by the recognizer for prediction.
@@ -111,15 +113,6 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
    */
   ATN getATN();
 
-  /**
-   * Get the ATN interpreter used by the recognizer for prediction.
-   *
-   * @return The ATN interpreter used by the recognizer for prediction.
-   */
-  ATNInterpreter getInterpreter() {
-    return interp;
-  }
-
   /** If profiling during the parse/lex, this will return DecisionInfo records
    *  for each decision in recognizer in a ParseInfo object.
    *
@@ -127,16 +120,6 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
    */
   ParseInfo getParseInfo() {
     return null;
-  }
-
-  /**
-   * Set the ATN interpreter used by the recognizer for prediction.
-   *
-   * @param interpreter The ATN interpreter used by the recognizer for
-   * prediction.
-   */
-  void setInterpreter(ATNInterpreter interpreter) {
-    interp = interpreter;
   }
 
   /** What is the error header, normally line/character position information? */

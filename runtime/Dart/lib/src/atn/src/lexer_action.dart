@@ -129,7 +129,7 @@ class LexerChannelAction implements LexerAction {
    * value provided by {@link #getChannel}.</p>
    */
   void execute(Lexer lexer) {
-    lexer.setChannel(channel);
+    lexer.channel = channel;
   }
 
   get hashCode {
@@ -583,7 +583,7 @@ class LexerTypeAction implements LexerAction {
    */
 
   void execute(Lexer lexer) {
-    lexer.setType(type);
+    lexer.type = type;
   }
 
   get hashCode {

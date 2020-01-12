@@ -175,7 +175,7 @@ class NoViableAltException extends RecognitionException {
             startToken ?? recognizer.getCurrentToken(),
             offendingToken ?? recognizer.getCurrentToken(),
             deadEndConfigs ?? null,
-            ctx ?? recognizer.getContext());
+            ctx ?? recognizer.context);
 
   Token getStartToken() {
     return startToken;
@@ -193,7 +193,7 @@ class InputMismatchException extends RecognitionException {
   InputMismatchException(Parser recognizer,
       [int state = -1, ParserRuleContext ctx])
       : super(recognizer, recognizer.inputStream,
-            ctx ?? recognizer.getContext()) {
+            ctx ?? recognizer.context) {
     this.offendingState = state;
     this.offendingToken = offendingToken;
   }
@@ -211,9 +211,9 @@ class FailedPredicateException extends RecognitionException {
 
   FailedPredicateException(Parser recognizer,
       [this.predicate = null, String message = null])
-      : super(recognizer, recognizer.inputStream, recognizer.getContext(),
+      : super(recognizer, recognizer.inputStream, recognizer.context,
             formatMessage(predicate, message)) {
-    ATNState s = recognizer.getInterpreter().atn.states[recognizer.state];
+    ATNState s = recognizer.interpreter.atn.states[recognizer.state];
 
     AbstractPredicateTransition trans = s.transition(0);
     if (trans is PredicateTransition) {

@@ -220,7 +220,7 @@ import 'transition.dart';
  * mode with the {@link BailErrorStrategy}:</p>
  *
  * <pre>
- * parser.{@link Parser#getInterpreter() getInterpreter()}.{@link #setPredictionMode setPredictionMode}{@code (}{@link PredictionMode#SLL}{@code )};
+ * parser.{@link Parser#interpreter interpreter}.{@link #setPredictionMode setPredictionMode}{@code (}{@link PredictionMode#SLL}{@code )};
  * parser.{@link Parser#setErrorHandler setErrorHandler}(new {@link BailErrorStrategy}());
  * </pre>
  *
@@ -1558,7 +1558,7 @@ class ParserATNSimulator extends ATNSimulator {
           newDepth--;
           if (debug) log("dips into outer ctx: $c");
         } else {
-          if (!t.isEpsilon() && !closureBusy.add(c)) {
+          if (!t.isEpsilon && !closureBusy.add(c)) {
             // avoid infinite recursion for EOF* and EOF+
             continue;
           }
@@ -1701,7 +1701,7 @@ class ParserATNSimulator extends ATNSimulator {
       ATNState returnState = atn.states[returnStateNumber];
       // all states must have single outgoing epsilon edge
       if (returnState.getNumberOfTransitions() != 1 ||
-          !returnState.transition(0).isEpsilon()) {
+          !returnState.transition(0).isEpsilon) {
         return false;
       }
       // Look for prefix op case like 'not expr', (' type ')' expr
@@ -1725,7 +1725,7 @@ class ParserATNSimulator extends ATNSimulator {
       // return state points at block end state of (...)* internal block
       if (returnStateTarget.stateType == StateType.BLOCK_END &&
           returnStateTarget.getNumberOfTransitions() == 1 &&
-          returnStateTarget.transition(0).isEpsilon() &&
+          returnStateTarget.transition(0).isEpsilon &&
           returnStateTarget.transition(0).target == p) {
         continue;
       }
@@ -1738,7 +1738,7 @@ class ParserATNSimulator extends ATNSimulator {
   }
 
   String getRuleName(int index) {
-    if (parser != null && index >= 0) return parser.getRuleNames()[index];
+    if (parser != null && index >= 0) return parser.ruleNames[index];
     return "<rule $index>";
   }
 
@@ -2646,7 +2646,7 @@ extension PredictionModeExtension on PredictionMode {
   static List<BitSet> getConflictingAltSubsets(ATNConfigSet configs) {
     final configToAlts =
         new HashMap<ATNConfig, BitSet>(equals: (ATNConfig a, ATNConfig b) {
-      if (a == b) return true;
+      if (identical(a, b)) return true;
       if (a == null || b == null) return false;
       return a.state.stateNumber == b.state.stateNumber &&
           a.context == b.context;

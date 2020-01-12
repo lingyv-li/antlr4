@@ -156,7 +156,7 @@ abstract class RuleContext extends RuleNode {
 
   String toString(
       {List<String> ruleNames, Recognizer recog, RuleContext stop}) {
-    ruleNames = ruleNames ?? recog.getRuleNames();
+    ruleNames = ruleNames ?? recog.ruleNames;
     final buf = new StringBuffer();
     var p = this;
     buf.write("[");

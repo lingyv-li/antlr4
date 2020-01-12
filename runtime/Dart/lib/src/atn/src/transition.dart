@@ -9,6 +9,7 @@ import 'atn_state.dart';
 import 'semantic_context.dart';
 
 enum TransitionType {
+  INVALID, // 0 is not used
   EPSILON,
   RANGE,
   RULE,
@@ -54,7 +55,7 @@ abstract class Transition {
    * consume an input symbol; otherwise, {@code false} if traversing this
    * transition consumes (matches) an input symbol.
    */
-  get isEpsilon => false;
+  bool get isEpsilon => false;
 
   IntervalSet get label => null;
 

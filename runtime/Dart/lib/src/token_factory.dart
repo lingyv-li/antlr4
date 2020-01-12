@@ -82,13 +82,13 @@ class CommonTokenFactory implements TokenFactory<CommonToken> {
     }
 
     CommonToken t = new CommonToken(type,
-        source: source, channel: channel, start: start, stop: stop);
-    t.setLine(line);
+        source: source, channel: channel, startIndex: start, stopIndex: stop);
+    t.line = line;
     t.charPositionInLine = charPositionInLine;
     if (text != null) {
-      t.setText(text);
+      t.text = text;
     } else if (copyText && source.b != null) {
-      t.setText(source.b.getText(Interval.of(start, stop)));
+      t.text = source.b.getText(Interval.of(start, stop));
     }
 
     return t;

@@ -415,7 +415,7 @@ class LexerATNSimulator extends ATNSimulator {
     if (config.state is RuleStopState) {
       if (debug) {
         if (recog != null) {
-          log("closure at ${recog.getRuleNames()[config.state.ruleIndex]} rule stop $config\n",
+          log("closure at ${recog.ruleNames[config.state.ruleIndex]} rule stop $config\n",
               level: Level.FINE.value);
         } else {
           log("closure at rule stop $config\n", level: Level.FINE.value);
@@ -566,6 +566,9 @@ class LexerATNSimulator extends ATNSimulator {
       case TransitionType.NOT_SET:
         break;
       case TransitionType.WILDCARD:
+        break;
+      case TransitionType.INVALID:
+        throw ArgumentError.value(t.type, "TransitionType");
         break;
     }
 

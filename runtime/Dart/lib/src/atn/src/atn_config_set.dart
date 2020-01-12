@@ -17,19 +17,6 @@ import 'atn.dart';
 import 'atn_config.dart';
 import 'semantic_context.dart';
 
-hashATNConfig(c) {
-  return c.hashCodeForConfigSet();
-}
-
-equalATNConfigs(a, b) {
-  if (a == b) {
-    return true;
-  } else if (a == null || b == null) {
-    return false;
-  } else
-    return a.equalsForConfigSet(b);
-}
-
 class ATNConfigSet extends Iterable<ATNConfig> {
   /**
    * Indicates that the set of configurations is read-only. Do not
@@ -75,7 +62,7 @@ class ATNConfigSet extends Iterable<ATNConfig> {
 
   // TODO: these fields make me pretty uncomfortable but nice to pack up info together, saves recomputation
   // TODO: can we track conflicts as they are added to save scanning configs later?
-  int uniqueAlt;
+  int uniqueAlt = 0;
 
   /**
    * Currently this is only used when we detect SLL conflict; this does
@@ -87,8 +74,8 @@ class ATNConfigSet extends Iterable<ATNConfig> {
 
   // Used in parser and lexer. In lexer, it indicates we hit a pred
   // while computing a closure operation.  Don't make a DFA state from this.
-  bool hasSemanticContext;
-  bool dipsIntoOuterContext;
+  bool hasSemanticContext = false;
+  bool dipsIntoOuterContext = false;
 
   /** Indicates that this configuration set is part of a full context
    *  LL prediction. It will be used to determine how to merge $. With SLL

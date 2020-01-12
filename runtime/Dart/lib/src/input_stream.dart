@@ -247,8 +247,7 @@ abstract class CharStream extends IntStream {
 class InputStream extends CharStream {
   var name = "<empty>";
   List<int> data;
-  int _index;
-  int _size;
+  int _index = 0;
   bool decodeToUnicodeCodePoints;
 
   InputStream(List<int> data) {
@@ -282,7 +281,7 @@ class InputStream extends CharStream {
   }
 
   get size {
-    return this._size;
+    return this.data.length;
   }
 
   /// Reset the stream so that it's in the same state it was
@@ -293,7 +292,7 @@ class InputStream extends CharStream {
   }
 
   consume() {
-    if (this._index >= this._size) {
+    if (this._index >= this.size) {
       // assert this.LA(1) == Token.EOF
       throw ("cannot consume EOF");
     }
@@ -308,7 +307,7 @@ class InputStream extends CharStream {
       offset += 1; // e.g., translate LA(-1) to use offset=0
     }
     var pos = this._index + offset - 1;
-    if (pos < 0 || pos >= this._size) {
+    if (pos < 0 || pos >= this.size) {
       // invalid
       return Token.EOF;
     }
@@ -331,7 +330,7 @@ class InputStream extends CharStream {
       return;
     }
     // seek forward
-    this._index = min(_index, this._size);
+    this._index = min(_index, this.size);
   }
 
   String getText(Interval interval) {

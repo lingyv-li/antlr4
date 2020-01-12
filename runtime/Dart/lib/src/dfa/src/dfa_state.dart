@@ -126,7 +126,7 @@ class DFAState {
 
   bool operator ==(Object o) {
     // compare set of ATN configurations in this set with other
-    if (this == o) return true;
+    if (identical(this, o)) return true;
 
     if (!(o is DFAState)) {
       return false;

@@ -72,28 +72,9 @@ class MurmurHash {
    * @param seed the seed for the MurmurHash algorithm
    * @return the hash code of the data
    */
-  static int getHashCode(List data, int seed) {
+  static int getHashCode<T>(List<T> data, int seed) {
     int hash = initialize(seed);
 
-    for (final value in data) {
-      hash = update(hash, value);
-    }
-
-    hash = finish(hash, data.length);
-    return hash;
-  }
-
-  /**
-   * Utility function to compute the hash code of an array using the
-   * MurmurHash algorithm.
-   *
-   * @param <T> the array element type
-   * @param data the array data
-   * @param seed the seed for the MurmurHash algorithm
-   * @return the hash code of the data
-   */
-  static int hashCode<T>(List<T> data, int seed) {
-    int hash = initialize(seed);
     for (T value in data) {
       hash = update(hash, value);
     }

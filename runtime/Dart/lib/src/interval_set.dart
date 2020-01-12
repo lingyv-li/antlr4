@@ -7,10 +7,10 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 
-import 'vocabulary.dart';
 import 'lexer.dart';
 import 'token.dart';
 import 'util/murmur_hash.dart';
+import 'vocabulary.dart';
 
 /** An immutable inclusive interval a..b */
 class Interval {
@@ -166,12 +166,12 @@ class IntervalSet {
   static final IntervalSet EMPTY_SET = new IntervalSet([])..setReadonly(true);
 
   /** The list of sorted, disjoint intervals. */
-  List<Interval> intervals;
+  List<Interval> intervals = [];
 
-  bool readonly;
+  bool readonly = false;
 
-  IntervalSet([List<Interval> intervals = const []]) {
-    this.intervals = intervals;
+  IntervalSet([List<Interval> intervals]) {
+    this.intervals = intervals ?? [];
   }
 
   IntervalSet.ofSet(IntervalSet set) {
@@ -234,7 +234,7 @@ class IntervalSet {
     if (addition.b < addition.a) {
       return;
     }
-    for (int i = 0; i < intervals.length;) {
+    for (int i = 0; i < intervals.length; i++) {
       Interval r = intervals[i];
       if (addition == r) {
         return;

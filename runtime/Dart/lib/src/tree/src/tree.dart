@@ -234,19 +234,19 @@ class TraceListener implements ParseTreeListener {
 
   void enterEveryRule(ParserRuleContext ctx) {
     log("enter   " +
-        parser.getRuleNames()[ctx.ruleIndex] +
+        parser.ruleNames[ctx.ruleIndex] +
         ", LT(1)=${parser.inputStream.LT(1).text}");
   }
 
   void visitTerminal(TerminalNode node) {
     log("consume ${node.symbol} rule " +
-        parser.getRuleNames()[parser.getContext().ruleIndex]);
+        parser.ruleNames[parser.context.ruleIndex]);
   }
 
   void visitErrorNode(ErrorNode node) {}
 
   void exitEveryRule(ParserRuleContext ctx) {
-    log("exit    ${parser.getRuleNames()[ctx.ruleIndex]}" +
+    log("exit    ${parser.ruleNames[ctx.ruleIndex]}" +
         ", LT(1)=" +
         parser.inputStream.LT(1).text);
   }

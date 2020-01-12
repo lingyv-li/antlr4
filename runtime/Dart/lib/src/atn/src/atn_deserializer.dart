@@ -114,7 +114,7 @@ class ATNDeserializer {
   static final SUPPORTED_UUIDS = [
     BASE_SERIALIZED_UUID,
     ADDED_PRECEDENCE_TRANSITIONS,
-//    ADDED_LEXER_ACTIONS,
+    ADDED_LEXER_ACTIONS,
     ADDED_UNICODE_SMP
   ];
 
@@ -158,21 +158,17 @@ class ATNDeserializer {
     this.reset(data);
     this.checkVersion();
     this.checkUUID();
-    var atn = this.readATN();
+    final ATN atn = this.readATN();
     this.readStates(atn);
     this.readRules(atn);
     this.readModes(atn);
-    var sets = [];
+    var sets = List<IntervalSet>();
     // First, deserialize sets with 16-bit arguments <= U+FFFF.
-    this.readSets(atn, sets, () {
-      this.readInt();
-    });
+    this.readSets(atn, sets, () => this.readInt());
     // Next, if the ATN was serialized with the Unicode SMP feature,
     // deserialize sets with 32-bit arguments <= U+10FFFF.
     if (this.isFeatureSupported(ADDED_UNICODE_SMP, this.uuid)) {
-      this.readSets(atn, sets, () {
-        this.readInt32();
-      });
+      this.readSets(atn, sets, () => this.readInt32());
     }
     this.readEdges(atn, sets);
     this.readDecisions(atn);
@@ -355,7 +351,7 @@ class ATNDeserializer {
     }
   }
 
-  readEdges(atn, sets) {
+  readEdges(ATN atn, sets) {
     int nedges = readInt();
     for (int i = 0; i < nedges; i++) {
       int src = readInt();
@@ -370,7 +366,7 @@ class ATNDeserializer {
 //							   src+"->"+trg+
 //					   " "+Transition.serializationNames[ttype]+
 //					   " "+arg1+","+arg2+","+arg3);
-      ATNState srcState = atn.states.get(src);
+      ATNState srcState = atn.states[src];
       srcState.addTransition(trans);
     }
 
@@ -695,14 +691,14 @@ class ATNDeserializer {
   }
 
   readUUID() {
-    var bb = [];
+    final bb = List<int>(16);
     for (var i = 7; i >= 0; i--) {
       var int = this.readInt();
       /* jshint bitwise: false */
       bb[(2 * i) + 1] = int & 0xFF;
       bb[2 * i] = (int >> 8) & 0xFF;
     }
-    return Uuid().unparse(bb).toString();
+    return Uuid().unparse(bb).toString().toUpperCase();
   }
 
   Transition edgeFactory(ATN atn, TransitionType type, int src, int trg,
@@ -739,8 +735,9 @@ class ATNDeserializer {
         return new NotSetTransition(target, sets[arg1]);
       case TransitionType.WILDCARD:
         return new WildcardTransition(target);
+      case TransitionType.INVALID:
+        throw ArgumentError.value(type, "transition type", "not valid.");
     }
-    throw ArgumentError.value(type, "transition type", "not valid.");
   }
 
   ATNState stateFactory(StateType type, int ruleIndex) {

@@ -190,7 +190,7 @@ class LL1Analyzer {
         } else {
           look.addOne(HIT_PRED);
         }
-      } else if (t.isEpsilon()) {
+      } else if (t.isEpsilon) {
         _LOOK(t.target, stopState, ctx, look, lookBusy, calledRuleStack,
             seeThruPreds, addEOF);
       } else if (t is WildcardTransition) {

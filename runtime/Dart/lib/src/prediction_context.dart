@@ -679,7 +679,7 @@ abstract class PredictionContext {
 
           ATN atn = recognizer.getATN();
           ATNState s = atn.states[stateNumber];
-          String ruleName = recognizer.getRuleNames()[s.ruleIndex];
+          String ruleName = recognizer.ruleNames[s.ruleIndex];
           localBuffer.write(ruleName);
         } else if (p.getReturnState(index) != EMPTY_RETURN_STATE) {
           if (!p.isEmpty()) {
@@ -741,7 +741,7 @@ class SingletonPredictionContext extends PredictionContext {
   }
 
   bool operator ==(Object o) {
-    if (this == o) {
+    if (identical(this, o)) {
       return true;
     } else if (o is SingletonPredictionContext) {
       if (this.hashCode != o.hashCode) {

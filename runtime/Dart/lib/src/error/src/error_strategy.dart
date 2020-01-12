@@ -342,7 +342,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
    */
 
   void sync(Parser recognizer) {
-    ATNState s = recognizer.getInterpreter().atn.states[recognizer.state];
+    ATNState s = recognizer.interpreter.atn.states[recognizer.state];
 //		log("sync @ "+s.stateNumber+"="+s.getClass().getSimpleName(), level: Level.SEVERE.value);
     // If already recovering, don't try to sync
     if (inErrorRecoveryMode(recognizer)) {
@@ -365,7 +365,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
       if (nextTokensContext == null) {
         // It's possible the next token won't match; information tracked
         // by sync is restricted for performance.
-        nextTokensContext = recognizer.getContext();
+        nextTokensContext = recognizer.context;
         nextTokensState = recognizer.state;
       }
       return;
@@ -451,7 +451,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
    */
   void reportFailedPredicate(Parser recognizer, FailedPredicateException e) {
     String ruleName =
-        recognizer.getRuleNames()[recognizer.getContext().ruleIndex];
+        recognizer.ruleNames[recognizer.context.ruleIndex];
     String msg = "rule " + ruleName + " " + e.message;
     recognizer.notifyErrorListeners(msg, e.offendingToken, e);
   }
@@ -626,10 +626,10 @@ class DefaultErrorStrategy implements ErrorStrategy {
     // ATN state, then we know we're missing a token; error recovery
     // is free to conjure up and insert the missing token
     ATNState currentState =
-        recognizer.getInterpreter().atn.states[recognizer.state];
+        recognizer.interpreter.atn.states[recognizer.state];
     ATNState next = currentState.transition(0).target;
-    ATN atn = recognizer.getInterpreter().atn;
-    IntervalSet expectingAtLL2 = atn.nextTokens(next, recognizer.getContext());
+    ATN atn = recognizer.interpreter.atn;
+    IntervalSet expectingAtLL2 = atn.nextTokens(next, recognizer.context);
 //		System.out.println("LT(2) set="+expectingAtLL2.toString(recognizer.getTokenNames()));
     if (expectingAtLL2.contains(currentSymbolType)) {
       reportMissingToken(recognizer);
@@ -860,8 +860,8 @@ class DefaultErrorStrategy implements ErrorStrategy {
 	 *  at run-time upon error to avoid overhead during parsing.
 	 */
   IntervalSet getErrorRecoverySet(Parser recognizer) {
-    ATN atn = recognizer.getInterpreter().atn;
-    RuleContext ctx = recognizer.getContext();
+    ATN atn = recognizer.interpreter.atn;
+    RuleContext ctx = recognizer.context;
     IntervalSet recoverSet = new IntervalSet();
     while (ctx != null && ctx.invokingState >= 0) {
       // compute what follows who invoked us
@@ -925,7 +925,7 @@ class BailErrorStrategy extends DefaultErrorStrategy {
    */
 
   void recover(Parser recognizer, RecognitionException e) {
-    for (ParserRuleContext context = recognizer.getContext();
+    for (ParserRuleContext context = recognizer.context;
         context != null;
         context = context.getParent()) {
       context.exception = e;
@@ -940,7 +940,7 @@ class BailErrorStrategy extends DefaultErrorStrategy {
 
   Token recoverInline(Parser recognizer) {
     InputMismatchException e = new InputMismatchException(recognizer);
-    for (ParserRuleContext context = recognizer.getContext();
+    for (ParserRuleContext context = recognizer.context;
         context != null;
         context = context.getParent()) {
       context.exception = e;

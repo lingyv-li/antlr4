@@ -53,8 +53,8 @@ abstract class SemanticContext {
    * semantic context after precedence predicates are evaluated.</li>
    * </ul>
    */
-  SemanticContext evalPrecedence(
-      Recognizer parser, RuleContext parserCallStack) {
+  SemanticContext evalPrecedence(Recognizer parser,
+      RuleContext parserCallStack) {
     return this;
   }
 
@@ -101,7 +101,8 @@ class Predicate extends SemanticContext {
   final int predIndex;
   final bool isCtxDependent; // e.g., $i ref in pred
 
-  const Predicate([this.ruleIndex, this.predIndex, this.isCtxDependent]);
+  const Predicate(
+      [this.ruleIndex = 0, this.predIndex = 0, this.isCtxDependent = false]);
 
   bool eval(Recognizer parser, RuleContext parserCallStack) {
     RuleContext localctx = isCtxDependent ? parserCallStack : null;
@@ -118,11 +119,10 @@ class Predicate extends SemanticContext {
   }
 
   operator ==(Object obj) {
-    if (!(obj is Predicate)) return false;
-    Predicate p = obj;
-    return this.ruleIndex == p.ruleIndex &&
-        this.predIndex == p.predIndex &&
-        this.isCtxDependent == p.isCtxDependent;
+    return obj is Predicate &&
+        this.ruleIndex == obj.ruleIndex &&
+        this.predIndex == obj.predIndex &&
+        this.isCtxDependent == obj.isCtxDependent;
   }
 
   String toString() {
@@ -140,8 +140,8 @@ class PrecedencePredicate extends SemanticContext
     return parser.precpred(parserCallStack, precedence);
   }
 
-  SemanticContext evalPrecedence(
-      Recognizer parser, RuleContext parserCallStack) {
+  SemanticContext evalPrecedence(Recognizer parser,
+      RuleContext parserCallStack) {
     if (parser.precpred(parserCallStack, precedence)) {
       return SemanticContext.NONE;
     } else {
@@ -211,13 +211,13 @@ class AND extends Operator {
       operands.add(b);
 
     List<PrecedencePredicate> precedencePredicates =
-        SemanticContext.filterPrecedencePredicates(operands);
+    SemanticContext.filterPrecedencePredicates(operands);
 
     operands = SemanticContext.filterNonPrecedencePredicates(operands);
     if (!precedencePredicates.isEmpty) {
       // interested in the transition with the lowest precedence
       PrecedencePredicate reduced =
-          precedencePredicates.reduce((a, b) => a.compareTo(b) <= 0 ? a : b);
+      precedencePredicates.reduce((a, b) => a.compareTo(b) <= 0 ? a : b);
       operands.add(reduced);
     }
 
@@ -235,7 +235,7 @@ class AND extends Operator {
   }
 
   get hashCode {
-    return MurmurHash.hashCode(opnds, this.runtimeType.hashCode);
+    return MurmurHash.getHashCode(opnds, this.runtimeType.hashCode);
   }
 
   /**
@@ -253,13 +253,13 @@ class AND extends Operator {
     return true;
   }
 
-  SemanticContext evalPrecedence(
-      Recognizer parser, RuleContext parserCallStack) {
+  SemanticContext evalPrecedence(Recognizer parser,
+      RuleContext parserCallStack) {
     bool differs = false;
     List<SemanticContext> operands = [];
     for (SemanticContext context in opnds) {
       SemanticContext evaluated =
-          context.evalPrecedence(parser, parserCallStack);
+      context.evalPrecedence(parser, parserCallStack);
       differs |= (evaluated != context);
       if (evaluated == null) {
         // The AND context is false if any element is false
@@ -311,12 +311,12 @@ class OR extends Operator {
       operands.add(b);
 
     List<PrecedencePredicate> precedencePredicates =
-        SemanticContext.filterPrecedencePredicates(operands);
+    SemanticContext.filterPrecedencePredicates(operands);
     operands = SemanticContext.filterNonPrecedencePredicates(operands);
     if (!precedencePredicates.isEmpty) {
       // interested in the transition with the highest precedence
       PrecedencePredicate reduced =
-          precedencePredicates.reduce((a, b) => a.compareTo(b) >= 0 ? a : b);
+      precedencePredicates.reduce((a, b) => a.compareTo(b) >= 0 ? a : b);
       operands.add(reduced);
     }
 
@@ -334,7 +334,7 @@ class OR extends Operator {
   }
 
   get hashCode {
-    return MurmurHash.hashCode(opnds, this.runtimeType.hashCode);
+    return MurmurHash.getHashCode(opnds, this.runtimeType.hashCode);
   }
 
   /**
@@ -352,13 +352,13 @@ class OR extends Operator {
     return false;
   }
 
-  SemanticContext evalPrecedence(
-      Recognizer parser, RuleContext parserCallStack) {
+  SemanticContext evalPrecedence(Recognizer parser,
+      RuleContext parserCallStack) {
     bool differs = false;
     List<SemanticContext> operands = [];
     for (SemanticContext context in opnds) {
       SemanticContext evaluated =
-          context.evalPrecedence(parser, parserCallStack);
+      context.evalPrecedence(parser, parserCallStack);
       differs |= (evaluated != context);
       if (evaluated == SemanticContext.NONE) {
         // The OR context is true if any element is true

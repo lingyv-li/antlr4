@@ -136,8 +136,8 @@ abstract class ATNState {
 
   void addTransitionAt(int index, Transition e) {
     if (transitions.isEmpty) {
-      epsilonOnlyTransitions = e.isEpsilon();
-    } else if (epsilonOnlyTransitions != e.isEpsilon()) {
+      epsilonOnlyTransitions = e.isEpsilon;
+    } else if (epsilonOnlyTransitions != e.isEpsilon) {
       log("ATN state $stateNumber has both epsilon and non-epsilon transitions.\n",
           level: Level.SEVERE.value);
       epsilonOnlyTransitions = false;
@@ -150,7 +150,7 @@ abstract class ATNState {
 //					System.err.println("Repeated transition upon "+e.label()+" from "+stateNumber+"->"+t.target.stateNumber);
           alreadyPresent = true;
           break;
-        } else if (t.isEpsilon() && e.isEpsilon()) {
+        } else if (t.isEpsilon && e.isEpsilon) {
 //					System.err.println("Repeated epsilon transition from "+stateNumber+"->"+t.target.stateNumber);
           alreadyPresent = true;
           break;
@@ -197,8 +197,8 @@ class RuleStartState extends ATNState {
 }
 
 abstract class DecisionState extends ATNState {
-  int decision;
-  bool nonGreedy;
+  int decision = 0;
+  bool nonGreedy = false;
 }
 
 //  The start of a regular {@code (...)} block.
@@ -274,7 +274,7 @@ class StarLoopEntryState extends DecisionState {
    *
    * @see DFA#isPrecedenceDfa()
    */
-  bool isPrecedenceDecision;
+  bool isPrecedenceDecision = false;
 
   @override
   StateType get stateType => StateType.STAR_LOOP_ENTRY;

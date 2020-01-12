@@ -88,7 +88,7 @@ class ATNConfig {
    * {@link ATNConfigSet#add(ATNConfig, DoubleKeyMap)} method are
    * <em>completely</em> unaffected by the change.</p>
    */
-  int reachesIntoOuterContext;
+  int reachesIntoOuterContext = 0;
 
   SemanticContext semanticContext;
 
@@ -161,7 +161,7 @@ class ATNConfig {
   String toString([Recognizer recog, bool showAlt = true]) {
     StringBuffer buf = new StringBuffer();
     // if ( state.ruleIndex>=0 ) {
-    //  if ( recog!=null ) buf.write(recog.getRuleNames()[state.ruleIndex]+":");
+    //  if ( recog!=null ) buf.write(recog.ruleNames[state.ruleIndex]+":");
     //  else buf.write(state.ruleIndex+":");
     // }
     buf.write('(');

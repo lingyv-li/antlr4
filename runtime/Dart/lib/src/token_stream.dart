@@ -181,13 +181,12 @@ class BufferedTokenStream implements TokenStream {
    * {@link #tokens} is trivial with this field.</li>
    * <ul>
    */
-  bool fetchedEOF;
+  bool fetchedEOF  = false;
 
-  BufferedTokenStream(TokenSource tokenSource) {
+  BufferedTokenStream(this.tokenSource) {
     if (tokenSource == null) {
       throw new ArgumentError.notNull("tokenSource");
     }
-    this.tokenSource = tokenSource;
   }
 
   TokenSource getTokenSource() {
@@ -268,7 +267,7 @@ class BufferedTokenStream implements TokenStream {
     for (int i = 0; i < n; i++) {
       Token t = tokenSource.nextToken();
       if (t is WritableToken) {
-        t.setTokenIndex(tokens.length);
+        t.tokenIndex = tokens.length;
       }
       tokens.add(t);
       if (t.type == Token.EOF) {

@@ -22,7 +22,7 @@ class Trees {
    */
   static String toStringTree(Tree t, {Parser recog, List<String> ruleNames}) {
     if (ruleNames == null) {
-      ruleNames = recog?.getRuleNames();
+      ruleNames = recog?.ruleNames;
     }
     String s = escapeWhitespace(getNodeText(t, ruleNames: ruleNames), false);
     if (t.getChildCount() == 0) return s;
@@ -41,7 +41,7 @@ class Trees {
 
   static String getNodeText(Tree t, {Parser recog, List<String> ruleNames}) {
     if (ruleNames == null) {
-      ruleNames = recog?.getRuleNames();
+      ruleNames = recog?.ruleNames;
     }
     if (ruleNames != null) {
       if (t is RuleContext) {

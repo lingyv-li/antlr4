@@ -184,8 +184,7 @@ class BitSet {
 
     int element = (index / BitsPerElement).floor();
     if (element >= _data.length) {
-      final newList = []
-        ..length = max(_data.length * 2, element + 1)
+      final newList = Uint32List(max(_data.length * 2, element + 1))
         ..setRange(0, _data.length, _data);
       _data = newList;
     }

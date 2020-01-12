@@ -86,7 +86,7 @@ class ATN {
       return LL1Analyzer(this).LOOK(s, ctx);
     }
     if (s.nextTokenWithinRule != null) return s.nextTokenWithinRule;
-    s.nextTokenWithinRule = nextTokens(s, null);
+    s.nextTokenWithinRule = LL1Analyzer(this).LOOK(s, null);
     s.nextTokenWithinRule.setReadonly(true);
     return s.nextTokenWithinRule;
   }
@@ -158,7 +158,7 @@ class ATN {
    */
   IntervalSet getExpectedTokens(int stateNumber, RuleContext context) {
     if (stateNumber < 0 || stateNumber >= states.length) {
-      throw new ArgumentError("Invalid state number.");
+      throw new RangeError.index(stateNumber, states, "stateNumber");
     }
 
     RuleContext ctx = context;
