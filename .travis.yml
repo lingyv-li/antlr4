@@ -155,7 +155,7 @@ matrix:
     - os: linux
       language: dart
       dart:
-        - "2.7.0."
+        - "2.7.0"
       jdk: openjdk8
       env: TARGET=dart
       stage: main-test
