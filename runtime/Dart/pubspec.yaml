@@ -5,12 +5,8 @@ name: "antlr4"
 version: "4.7.2"
 license: "BSD-3-Clause"
 dependencies: 
-  charcode: "^1.1.1"
-  string_scanner: "^1.0.1"
   logging:
   collection:
   uuid:
-# dev_dependencies: 
-#   test: "^0.12.16"
 environment:
   sdk: ">=2.0.0 <3.0.0"

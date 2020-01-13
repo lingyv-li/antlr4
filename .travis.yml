@@ -18,127 +18,127 @@ stages:
 
 matrix:
   include:
-    - os: linux
-      dist: trusty
-      compiler: clang
-      jdk: openjdk8
-      env:
-        - TARGET=cpp
-        - CXX=g++-5
-        - GROUP=LEXER
-      stage: main-test
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-          packages:
-            - g++-5
-            - uuid-dev
-            - clang-3.7
-    - os: linux
-      dist: trusty
-      compiler: clang
-      jdk: openjdk8
-      env:
-        - TARGET=cpp
-        - CXX=g++-5
-        - GROUP=PARSER
-      stage: main-test
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-          packages:
-            - g++-5
-            - uuid-dev
-            - clang-3.7
-    - os: linux
-      dist: trusty
-      compiler: clang
-      jdk: openjdk8
-      env:
-        - TARGET=cpp
-        - CXX=g++-5
-        - GROUP=RECURSION
-      stage: main-test
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-          packages:
-            - g++-5
-            - uuid-dev
-            - clang-3.7
-    - os: osx
-      compiler: clang
-      osx_image: xcode10.2
-      env:
-        - TARGET=cpp
-        - GROUP=LEXER
-      stage: extended-test
-    - os: osx
-      compiler: clang
-      osx_image: xcode10.2
-      env:
-        - TARGET=cpp
-        - GROUP=PARSER
-      stage: extended-test
-    - os: osx
-      compiler: clang
-      osx_image: xcode10.2
-      env:
-        - TARGET=cpp
-        - GROUP=RECURSION
-      stage: extended-test
-    - os: osx
-      compiler: clang
-      osx_image: xcode10.2
-      env:
-        - TARGET=swift
-        - GROUP=LEXER
-      stage: main-test
-    - os: osx
-      compiler: clang
-      osx_image: xcode10.2
-      env:
-        - TARGET=swift
-        - GROUP=PARSER
-      stage: main-test
-    - os: osx
-      compiler: clang
-      osx_image: xcode10.2
-      env:
-        - TARGET=swift
-        - GROUP=RECURSION
-      stage: main-test
-    - os: linux
-      dist: xenial
-      compiler: clang
-      env:
-       - TARGET=swift
-       - GROUP=ALL
-      stage: extended-test
-    - os: osx
-      osx_image: xcode10.2
-      env:
-        - TARGET=dotnet
-        - GROUP=LEXER
-      stage: extended-test
-    - os: osx
-      osx_image: xcode10.2
-      env:
-        - TARGET=dotnet
-        - GROUP=PARSER
-      stage: extended-test
-    - os: osx
-      osx_image: xcode10.2
-      env:
-        - TARGET=dotnet
-        - GROUP=RECURSION
-      stage: extended-test
+#    - os: linux
+#      dist: trusty
+#      compiler: clang
+#      jdk: openjdk8
+#      env:
+#        - TARGET=cpp
+#        - CXX=g++-5
+#        - GROUP=LEXER
+#      stage: main-test
+#      addons:
+#        apt:
+#          sources:
+#            - ubuntu-toolchain-r-test
+#            - llvm-toolchain-precise-3.7
+#          packages:
+#            - g++-5
+#            - uuid-dev
+#            - clang-3.7
+#    - os: linux
+#      dist: trusty
+#      compiler: clang
+#      jdk: openjdk8
+#      env:
+#        - TARGET=cpp
+#        - CXX=g++-5
+#        - GROUP=PARSER
+#      stage: main-test
+#      addons:
+#        apt:
+#          sources:
+#            - ubuntu-toolchain-r-test
+#            - llvm-toolchain-precise-3.7
+#          packages:
+#            - g++-5
+#            - uuid-dev
+#            - clang-3.7
+#    - os: linux
+#      dist: trusty
+#      compiler: clang
+#      jdk: openjdk8
+#      env:
+#        - TARGET=cpp
+#        - CXX=g++-5
+#        - GROUP=RECURSION
+#      stage: main-test
+#      addons:
+#        apt:
+#          sources:
+#            - ubuntu-toolchain-r-test
+#            - llvm-toolchain-precise-3.7
+#          packages:
+#            - g++-5
+#            - uuid-dev
+#            - clang-3.7
+#    - os: osx
+#      compiler: clang
+#      osx_image: xcode10.2
+#      env:
+#        - TARGET=cpp
+#        - GROUP=LEXER
+#      stage: extended-test
+#    - os: osx
+#      compiler: clang
+#      osx_image: xcode10.2
+#      env:
+#        - TARGET=cpp
+#        - GROUP=PARSER
+#      stage: extended-test
+#    - os: osx
+#      compiler: clang
+#      osx_image: xcode10.2
+#      env:
+#        - TARGET=cpp
+#        - GROUP=RECURSION
+#      stage: extended-test
+#    - os: osx
+#      compiler: clang
+#      osx_image: xcode10.2
+#      env:
+#        - TARGET=swift
+#        - GROUP=LEXER
+#      stage: main-test
+#    - os: osx
+#      compiler: clang
+#      osx_image: xcode10.2
+#      env:
+#        - TARGET=swift
+#        - GROUP=PARSER
+#      stage: main-test
+#    - os: osx
+#      compiler: clang
+#      osx_image: xcode10.2
+#      env:
+#        - TARGET=swift
+#        - GROUP=RECURSION
+#      stage: main-test
+#    - os: linux
+#      dist: xenial
+#      compiler: clang
+#      env:
+#       - TARGET=swift
+#       - GROUP=ALL
+#      stage: extended-test
+#    - os: osx
+#      osx_image: xcode10.2
+#      env:
+#        - TARGET=dotnet
+#        - GROUP=LEXER
+#      stage: extended-test
+#    - os: osx
+#      osx_image: xcode10.2
+#      env:
+#        - TARGET=dotnet
+#        - GROUP=PARSER
+#      stage: extended-test
+#    - os: osx
+#      osx_image: xcode10.2
+#      env:
+#        - TARGET=dotnet
+#        - GROUP=RECURSION
+#      stage: extended-test
     - os: linux
       dist: trusty
       jdk: openjdk7
@@ -148,10 +148,10 @@ matrix:
       jdk: openjdk8
       env: TARGET=java
       stage: smoke-test
-    - os: linux
-      jdk: openjdk8
-      env: TARGET=csharp
-      stage: main-test
+#    - os: linux
+#      jdk: openjdk8
+#      env: TARGET=csharp
+#      stage: main-test
     - os: linux
       language: dart
       dart:
