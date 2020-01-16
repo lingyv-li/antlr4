@@ -60,7 +60,7 @@ class DFAState {
    *  This is set to {@link ATN#INVALID_ALT_NUMBER} when {@link #predicates}{@code !=null} or
    *  {@link #requiresFullContext}.
    */
-  int prediction;
+  int prediction = 0;
 
   LexerActionExecutor lexerActionExecutor;
 

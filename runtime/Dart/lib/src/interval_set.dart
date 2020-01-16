@@ -258,7 +258,7 @@ class IntervalSet {
       }
       if (addition.startsBeforeDisjoint(r)) {
         // insert before r
-        intervals.insert(i - 1, addition);
+        intervals.insert(i, addition);
         return;
       }
       // if disjoint and after r, a future iteration will handle it

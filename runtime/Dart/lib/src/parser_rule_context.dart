@@ -271,7 +271,6 @@ class ParserRuleContext extends RuleContext {
  * provide equivalent functionality.</p>
  */
 class InterpreterRuleContext extends ParserRuleContext {
-  /** This is the backing field for {@link #getRuleIndex}. */
   int ruleIndex = -1;
 
   /**
@@ -283,8 +282,6 @@ class InterpreterRuleContext extends ParserRuleContext {
    * @param ruleIndex The rule index for the current context.
    */
   InterpreterRuleContext(
-      ParserRuleContext parent, int invokingStateNumber, int ruleIndex)
-      : super(parent, invokingStateNumber) {
-    this.ruleIndex = ruleIndex;
-  }
+      ParserRuleContext parent, int invokingStateNumber, this.ruleIndex)
+      : super(parent, invokingStateNumber);
 }

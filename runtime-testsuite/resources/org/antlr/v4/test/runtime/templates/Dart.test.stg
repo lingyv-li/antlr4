@@ -80,7 +80,7 @@ GetExpectedTokenNames() ::= "this.expectedTokens.toString(this.tokenNames)"
 
 RuleInvocationStack() ::= "ruleInvocationStack"
 
-LL_EXACT_AMBIG_DETECTION() ::= <<_interp.predictionMode = PredictionMode.LL_EXACT_AMBIG_DETECTION;>>
+LL_EXACT_AMBIG_DETECTION() ::= <<interpreter.predictionMode = PredictionMode.LL_EXACT_AMBIG_DETECTION;>>
 
 ParserToken(parser, token) ::= <%<parser>.<token>%>
 

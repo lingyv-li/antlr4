@@ -230,22 +230,24 @@ class BitSet {
     if (set == null) throw new ArgumentError.notNull("set");
 
     int length = min(_data.length, set._data.length);
-    for (int i = 0; i < length; i++) _data[i] &= set._data[i];
+    for (int i = 0; i < length; i++)
+      _data[i] &= set._data[i];
 
-    for (int i = length; i < _data.length; i++) _data[i] = 0;
+    for (int i = length; i < _data.length; i++)
+      _data[i] = 0;
   }
 
   void or(BitSet set) {
     if (set == null) throw new ArgumentError.notNull("set");
 
     if (set._data.length > _data.length) {
-      final newList = []
-        ..length = set._data.length
+      final newList = Uint32List(set._data.length)
         ..setRange(0, _data.length, _data);
       _data = newList;
     }
 
-    for (int i = 0; i < set._data.length; i++) _data[i] |= set._data[i];
+    for (int i = 0; i < set._data.length; i++)
+      _data[i] |= set._data[i];
   }
 
   bool operator ==(obj) {

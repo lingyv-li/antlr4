@@ -46,6 +46,7 @@ ParserFile(file, parser, namedActions, contextSuperClass) ::= <<
 library <file.genPackage>;
 
 import 'package:antlr4/antlr4.dart';
+import 'dart:io';
 
 <if(file.genListener)>
 part '<file.grammarName>Listener.dart';
@@ -58,6 +59,7 @@ part '<file.grammarName>BaseVisitor.dart';
 part '<file.grammarName>Lexer.dart';
 <else>
 import 'package:antlr4/antlr4.dart';
+import 'dart:io';
 
 <if(file.genListener)>
 import '<file.grammarName>Listener.dart';
@@ -635,7 +637,7 @@ TokenPropertyRef_int(t) ::= "<ctx(t)>.<t.label> != null ? int.parse(<ctx(t)>.<t.
 
 RulePropertyRef_start(r) ::= "<ctx(r)>.<r.label>?.start"
 RulePropertyRef_stop(r)	 ::= "<ctx(r)>.<r.label>?.stop"
-RulePropertyRef_text(r)	 ::= "<ctx(r)>.<r.label> != null ? tokenStream.getTextRange(<ctx(r)>.<r.label>.start, <ctx(r)>.<r.label>.stop) : null"
+RulePropertyRef_text(r)	 ::= "(<ctx(r)>.<r.label> != null ? tokenStream.getTextRange(<ctx(r)>.<r.label>.start, <ctx(r)>.<r.label>.stop) : null)"
 RulePropertyRef_ctx(r)	 ::= "<ctx(r)>.<r.label>"
 RulePropertyRef_parser(r)	 ::= "this"
 
@@ -695,7 +697,6 @@ StructDecl(struct,ctorAttrs,attrs,getters,dispatchMethods,interfaces,extensionMe
 class <struct.name> extends <if(contextSuperClass)><contextSuperClass><else>ParserRuleContext<endif><if(interfaces)> implements <interfaces; separator=", "><endif> {
   <attrs:{a | <a>;}; separator="\n">
   <getters:{g | <g>}; separator="\n">
-  <if(ctorAttrs)><struct.name>(ParserRuleContext parent, int invokingState) : super(parent, invokingState);<endif>
   <struct.name>([ParserRuleContext parent, int invokingState<ctorAttrs:{a | , <a>}>]) : super(parent, invokingState) {
     <struct.ctorAttrs:{a | this.<a.name> = <a.name>;}; separator="\n">
   }

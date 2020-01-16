@@ -67,9 +67,11 @@ abstract class RuleContext extends RuleNode {
   /// What state invoked the rule associated with this context?
   /// The "return address" is the followState of invokingState
   /// If parent is null, this should be -1.
-  int invokingState = -1;
+  int invokingState;
 
-  RuleContext({this.parent, this.invokingState});
+  RuleContext({this.parent, this.invokingState}) {
+    invokingState = invokingState ?? -1;
+  }
 
   int depth() {
     var n = 0;

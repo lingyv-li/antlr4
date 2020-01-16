@@ -424,9 +424,8 @@ abstract class PredictionContext {
         if (mergeCache != null) mergeCache[Pair(a, b)] = a_;
         return a_;
       }
-      mergedParents =
-          List.from(mergedParents); // TODO expand size to k instead of copying
-      mergedReturnStates = List.from(mergedReturnStates);
+      mergedParents = List(k)..setRange(0, k, mergedParents);
+      mergedReturnStates = List(k)..setRange(0, k, mergedReturnStates);
     }
 
     PredictionContext M =
@@ -837,7 +836,7 @@ class ArrayPredictionContext extends PredictionContext {
 //	}
 
   bool operator ==(Object o) {
-    if (this == o) {
+    if (identical(this, o)) {
       return true;
     } else if (o is ArrayPredictionContext) {
       if (this.hashCode != o.hashCode) {

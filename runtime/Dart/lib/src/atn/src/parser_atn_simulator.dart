@@ -2652,9 +2652,9 @@ extension PredictionModeExtension on PredictionMode {
         alts = new BitSet();
         configToAlts[c] = alts;
       }
-      alts[c.alt];
+      alts.set(c.alt);
     }
-    return configToAlts.values;
+    return configToAlts.values.toList();
   }
 
   /**

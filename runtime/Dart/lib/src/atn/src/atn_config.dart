@@ -92,13 +92,8 @@ class ATNConfig {
 
   SemanticContext semanticContext;
 
-  ATNConfig(ATNState state, int alt, PredictionContext context,
-      [SemanticContext semanticContext = SemanticContext.NONE]) {
-    this.state = state;
-    this.alt = alt;
-    this.context = context;
-    this.semanticContext = semanticContext;
-  }
+  ATNConfig(this.state, this.alt, this.context,
+      [this.semanticContext = SemanticContext.NONE]);
 
   ATNConfig.dup(ATNConfig c,
       {this.state, this.alt, this.context, this.semanticContext}) {

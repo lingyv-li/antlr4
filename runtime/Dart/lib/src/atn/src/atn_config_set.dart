@@ -121,6 +121,7 @@ class ATNConfigSet extends Iterable<ATNConfig> {
     if (identical(existing, config)) {
       // we added this new one
       cachedHashCode = -1;
+      configLookup.add(config);
       configs.add(config); // track order here
       return true;
     }
