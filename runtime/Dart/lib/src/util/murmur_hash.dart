@@ -26,13 +26,7 @@ class MurmurHash {
     final int m = 5;
     final int n = 0xE6546B64;
 
-    int k;
-
-    if (value is int)
-      k = value;
-    else {
-      k = value != null ? value.hashCode : 0;
-    }
+    int k = value is int ? value : value?.hashCode ?? 0;
 
     k = k * c1;
     k = (k << r1) | (k >> (32 - r1));

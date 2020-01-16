@@ -114,9 +114,9 @@ class RangeTransition extends Transition {
 
 class RuleTransition extends Transition {
   /** Ptr to the rule definition object for this rule ref */
-  int ruleIndex; // no Rule object at runtime
+  final int ruleIndex; // no Rule object at runtime
 
-  int precedence;
+  final int precedence;
 
   /** What node to begin computations following ref to rule */
   ATNState followState;
@@ -140,9 +140,9 @@ abstract class AbstractPredicateTransition extends Transition {
 }
 
 class PredicateTransition extends Transition {
-  int ruleIndex;
-  int predIndex;
-  bool isCtxDependent; // e.g., $i ref in pred
+  final int ruleIndex;
+  final int predIndex;
+  final bool isCtxDependent; // e.g., $i ref in pred
 
   PredicateTransition(
       target, this.ruleIndex, this.predIndex, this.isCtxDependent)
@@ -154,9 +154,8 @@ class PredicateTransition extends Transition {
     return false;
   }
 
-  getPredicate() {
-    return new Predicate(this.ruleIndex, this.predIndex, this.isCtxDependent);
-  }
+  get predicate => new Predicate(this.ruleIndex, this.predIndex, this.isCtxDependent);
+
 
   toString() {
     return "pred_$ruleIndex:$predIndex";
@@ -169,7 +168,7 @@ class PredicateTransition extends Transition {
 /** TODO: make all transitions sets? no, should remove set edges */
 class AtomTransition extends Transition {
   /** The token type or character value; or, signifies special label. */
-  int atomLabel;
+  final int atomLabel;
 
   AtomTransition(ATNState target, this.atomLabel) : super(target);
 
@@ -178,7 +177,7 @@ class AtomTransition extends Transition {
   }
 
   bool matches(int symbol, int minVocabSymbol, int maxVocabSymbol) {
-    return label == symbol;
+    return atomLabel == symbol;
   }
 
   String toString() {
@@ -190,9 +189,9 @@ class AtomTransition extends Transition {
 }
 
 class ActionTransition extends Transition {
-  int ruleIndex;
-  int actionIndex;
-  bool isCtxDependent; // e.g., $i ref in pred
+  final int ruleIndex;
+  final int actionIndex;
+  final bool isCtxDependent; // e.g., $i ref in pred
 
   ActionTransition(target, this.ruleIndex,
       [this.actionIndex = -1, this.isCtxDependent = false])
@@ -264,7 +263,7 @@ class WildcardTransition extends Transition {
 }
 
 class PrecedencePredicateTransition extends AbstractPredicateTransition {
-  int precedence;
+  final int precedence;
 
   PrecedencePredicateTransition(target, this.precedence) : super(target);
 
@@ -272,7 +271,7 @@ class PrecedencePredicateTransition extends AbstractPredicateTransition {
 
   matches(symbol, minVocabSymbol, maxVocabSymbol) => false;
 
-  PrecedencePredicate getPredicate() {
+  PrecedencePredicate get predicate {
     return new PrecedencePredicate(precedence);
   }
 

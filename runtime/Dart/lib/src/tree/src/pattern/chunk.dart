@@ -27,12 +27,13 @@ abstract class Chunk {}
  */
 class TagChunk extends Chunk {
   /**
-   * This is the backing field for {@link #getTag}.
+   * The tag for the chunk.
    */
   final String tag;
 
   /**
-   * This is the backing field for {@link #getLabel}.
+   * The label assigned to this chunk, or {@code null} if no label is
+   * assigned to the chunk.
    */
   final String label;
 
@@ -55,26 +56,6 @@ class TagChunk extends Chunk {
   }
 
   /**
-   * Get the tag for this chunk.
-   *
-   * @return The tag for the chunk.
-   */
-  String getTag() {
-    return tag;
-  }
-
-  /**
-   * Get the label, if any, assigned to this chunk.
-   *
-   * @return The label assigned to this chunk, or {@code null} if no label is
-   * assigned to the chunk.
-   */
-
-  String getLabel() {
-    return label;
-  }
-
-  /**
    * This method returns a text representation of the tag chunk. Labeled tags
    * are returned in the form {@code label:tag}, and unlabeled tags are
    * returned as just the tag name.
@@ -94,7 +75,7 @@ class TagChunk extends Chunk {
  */
 class TextChunk extends Chunk {
   /**
-   * This is the backing field for {@link #getText}.
+   * The text of the chunk.
    */
 
   final String text;
@@ -109,16 +90,6 @@ class TextChunk extends Chunk {
     if (text == null) {
       throw new ArgumentError.notNull("text");
     }
-  }
-
-  /**
-   * Gets the raw text of this chunk.
-   *
-   * @return The text of the chunk.
-   */
-
-  String getText() {
-    return text;
   }
 
   /**

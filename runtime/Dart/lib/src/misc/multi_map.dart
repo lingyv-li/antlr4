@@ -16,7 +16,7 @@ class MultiMap<K, V> extends DelegatingMap<K, List<V>> {
     elementsForKey.add(value);
   }
 
-  List<Pair<K, V>> getPairs() {
+  List<Pair<K, V>> get pairs {
     List<Pair<K, V>> pairs = [];
     for (K key in keys) {
       for (V value in this[key]) {

@@ -248,7 +248,7 @@ class InputStream extends CharStream {
   var name = "<empty>";
   List<int> data;
   int _index = 0;
-  bool decodeToUnicodeCodePoints;
+  bool decodeToUnicodeCodePoints = false;
 
   InputStream(List<int> data) {
     this.data = data;

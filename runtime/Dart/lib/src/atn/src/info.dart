@@ -528,8 +528,8 @@ class ParseInfo {
    * @return An array of {@link DecisionInfo} instances, indexed by decision
    * number.
    */
-  List<DecisionInfo> getDecisionInfo() {
-    return atnSimulator.getDecisionInfo();
+  List<DecisionInfo> get decisionInfo {
+    return atnSimulator.decisionInfo;
   }
 
   /**
@@ -540,8 +540,8 @@ class ParseInfo {
    * @return A list of decision numbers which required one or more
    * full-context predictions during parsing.
    */
-  List<int> getLLDecisions() {
-    List<DecisionInfo> decisions = atnSimulator.getDecisionInfo();
+  List<int> get llDecisions {
+    List<DecisionInfo> decisions = atnSimulator.decisionInfo;
     List<int> LL = [];
     for (int i = 0; i < decisions.length; i++) {
       int fallBack = decisions[i].LL_Fallback;
@@ -555,8 +555,8 @@ class ParseInfo {
    * during parsing. This value is the sum of
    * {@link DecisionInfo#timeInPrediction} for all decisions.
    */
-  int getTotalTimeInPrediction() {
-    List<DecisionInfo> decisions = atnSimulator.getDecisionInfo();
+  int get totalTimeInPrediction {
+    List<DecisionInfo> decisions = atnSimulator.decisionInfo;
     int t = 0;
     for (int i = 0; i < decisions.length; i++) {
       t += decisions[i].timeInPrediction;
@@ -569,8 +569,8 @@ class ParseInfo {
    * made during parsing. This value is the sum of
    * {@link DecisionInfo#SLL_TotalLook} for all decisions.
    */
-  int getTotalSLLLookaheadOps() {
-    List<DecisionInfo> decisions = atnSimulator.getDecisionInfo();
+  int get totalSLLLookaheadOps {
+    List<DecisionInfo> decisions = atnSimulator.decisionInfo;
     int k = 0;
     for (int i = 0; i < decisions.length; i++) {
       k += decisions[i].SLL_TotalLook;
@@ -583,8 +583,8 @@ class ParseInfo {
    * made during parsing. This value is the sum of
    * {@link DecisionInfo#LL_TotalLook} for all decisions.
    */
-  int getTotalLLLookaheadOps() {
-    List<DecisionInfo> decisions = atnSimulator.getDecisionInfo();
+  int get totalLLLookaheadOps {
+    List<DecisionInfo> decisions = atnSimulator.decisionInfo;
     int k = 0;
     for (int i = 0; i < decisions.length; i++) {
       k += decisions[i].LL_TotalLook;
@@ -596,8 +596,8 @@ class ParseInfo {
    * Gets the total number of ATN lookahead operations for SLL prediction
    * across all decisions made during parsing.
    */
-  int getTotalSLLATNLookaheadOps() {
-    List<DecisionInfo> decisions = atnSimulator.getDecisionInfo();
+  int get totalSLLATNLookaheadOps {
+    List<DecisionInfo> decisions = atnSimulator.decisionInfo;
     int k = 0;
     for (int i = 0; i < decisions.length; i++) {
       k += decisions[i].SLL_ATNTransitions;
@@ -609,8 +609,8 @@ class ParseInfo {
    * Gets the total number of ATN lookahead operations for LL prediction
    * across all decisions made during parsing.
    */
-  int getTotalLLATNLookaheadOps() {
-    List<DecisionInfo> decisions = atnSimulator.getDecisionInfo();
+  int get totalLLATNLookaheadOps {
+    List<DecisionInfo> decisions = atnSimulator.decisionInfo;
     int k = 0;
     for (int i = 0; i < decisions.length; i++) {
       k += decisions[i].LL_ATNTransitions;
@@ -626,8 +626,8 @@ class ParseInfo {
    * This value is the sum of {@link #getTotalSLLATNLookaheadOps} and
    * {@link #getTotalLLATNLookaheadOps}.</p>
    */
-  int getTotalATNLookaheadOps() {
-    List<DecisionInfo> decisions = atnSimulator.getDecisionInfo();
+  int get totalATNLookaheadOps {
+    List<DecisionInfo> decisions = atnSimulator.decisionInfo;
     int k = 0;
     for (int i = 0; i < decisions.length; i++) {
       k += decisions[i].SLL_ATNTransitions;
@@ -640,7 +640,7 @@ class ParseInfo {
    * Gets the total number of DFA states stored in the DFA cache for all
    * decisions in the ATN.
    */
-  int getDFASize() {
+  int get dfaSize {
     int n = 0;
     List<DFA> decisionToDFA = atnSimulator.decisionToDFA;
     for (int i = 0; i < decisionToDFA.length; i++) {

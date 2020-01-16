@@ -72,13 +72,21 @@ class ParserInterpreter extends Parser {
    */
   InterpreterRuleContext overrideDecisionRoot = null;
 
+  /** Return the root of the parse, which can be useful if the parser
+   *  bails out. You still can access the top node. Note that,
+   *  because of the way left recursive rules add children, it's possible
+   *  that the root will not have any children if the start rule immediately
+   *  called and left recursive rule that fails.
+   *
+   * @since 4.5.1
+   */
   InterpreterRuleContext rootContext;
 
   ParserInterpreter(this.grammarFileName, this.vocabulary, this.ruleNames,
       this.atn, TokenStream input)
       : super(input) {
     // init decision DFA
-    int numberOfDecisions = atn.getNumberOfDecisions();
+    int numberOfDecisions = atn.numberOfDecisions;
     this.decisionToDFA = new List<DFA>(numberOfDecisions);
     for (int i = 0; i < numberOfDecisions; i++) {
       DecisionState decisionState = atn.getDecisionState(i);
@@ -100,14 +108,6 @@ class ParserInterpreter extends Parser {
     return atn;
   }
 
-  Vocabulary getVocabulary() {
-    return vocabulary;
-  }
-
-  String getGrammarFileName() {
-    return grammarFileName;
-  }
-
   /** Begin parsing at startRuleIndex */
   ParserRuleContext parse(int startRuleIndex) {
     RuleStartState startRuleStartState = atn.ruleToStartState[startRuleIndex];
@@ -122,7 +122,7 @@ class ParserInterpreter extends Parser {
     }
 
     while (true) {
-      ATNState p = getATNState();
+      ATNState p = atnState;
       switch (p.stateType) {
         case StateType.RULE_STOP:
           // pop; return from rule
@@ -148,7 +148,7 @@ class ParserInterpreter extends Parser {
           } on RecognitionException catch (e) {
             state = atn.ruleToStopState[p.ruleIndex].stateNumber;
             context.exception = e;
-            getErrorHandler().reportError(this, e);
+            errorHandler.reportError(this, e);
             recover(e);
           }
 
@@ -165,7 +165,7 @@ class ParserInterpreter extends Parser {
     super.enterRecursionRule(localctx, state, ruleIndex, precedence);
   }
 
-  ATNState getATNState() {
+  ATNState get atnState {
     return atn.states[state];
   }
 
@@ -260,8 +260,8 @@ class ParserInterpreter extends Parser {
    */
   int visitDecisionState(DecisionState p) {
     int predictedAlt = 1;
-    if (p.getNumberOfTransitions() > 1) {
-      getErrorHandler().sync(this);
+    if (p.numberOfTransitions > 1) {
+      errorHandler.sync(this);
       int decision = p.decision;
       if (decision == overrideDecision &&
           inputStream.index == overrideDecisionInputIndex &&
@@ -345,28 +345,23 @@ class ParserInterpreter extends Parser {
     overrideDecisionAlt = forcedAlt;
   }
 
-  InterpreterRuleContext getOverrideDecisionRoot() {
-    return overrideDecisionRoot;
-  }
-
   /** Rely on the error handler for this parser but, if no tokens are consumed
    *  to recover, add an error node. Otherwise, nothing is seen in the parse
    *  tree.
    */
   void recover(RecognitionException e) {
     int i = inputStream.index;
-    getErrorHandler().recover(this, e);
+    errorHandler.recover(this, e);
     if (inputStream.index == i) {
       // no input consumed, better add an error node
       if (e is InputMismatchException) {
         InputMismatchException ime = e;
         Token tok = e.offendingToken;
         int expectedTokenType = Token.INVALID_TYPE;
-        if (!ime.expectedTokens.isNil()) {
-          expectedTokenType =
-              ime.expectedTokens.getMinElement(); // get any element
+        if (!ime.expectedTokens.isNil) {
+          expectedTokenType = ime.expectedTokens.minElement; // get any element
         }
-        Token errToken = getTokenFactory().create(
+        Token errToken = tokenFactory.create(
             expectedTokenType,
             tok.text,
             new Pair(tok.tokenSource, tok.tokenSource.inputStream),
@@ -380,7 +375,7 @@ class ParserInterpreter extends Parser {
       } else {
         // NoViableAlt
         Token tok = e.offendingToken;
-        Token errToken = getTokenFactory().create(
+        Token errToken = tokenFactory.create(
             Token.INVALID_TYPE,
             tok.text,
             new Pair(tok.tokenSource, tok.tokenSource.inputStream),
@@ -396,18 +391,6 @@ class ParserInterpreter extends Parser {
   }
 
   Token recoverInline() {
-    return getErrorHandler().recoverInline(this);
-  }
-
-  /** Return the root of the parse, which can be useful if the parser
-   *  bails out. You still can access the top node. Note that,
-   *  because of the way left recursive rules add children, it's possible
-   *  that the root will not have any children if the start rule immediately
-   *  called and left recursive rule that fails.
-   *
-   * @since 4.5.1
-   */
-  InterpreterRuleContext getRootContext() {
-    return rootContext;
+    return errorHandler.recoverInline(this);
   }
 }

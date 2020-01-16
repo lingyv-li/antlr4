@@ -38,8 +38,8 @@ class LL1Analyzer {
       return null;
     }
 
-    List<IntervalSet> look = List(s.getNumberOfTransitions());
-    for (int alt = 0; alt < s.getNumberOfTransitions(); alt++) {
+    List<IntervalSet> look = List(s.numberOfTransitions);
+    for (int alt = 0; alt < s.numberOfTransitions; alt++) {
       look[alt] = new IntervalSet();
       Set<ATNConfig> lookBusy = Set();
       bool seeThruPreds = false; // fail to get lookahead upon pred
@@ -165,8 +165,7 @@ class LL1Analyzer {
       }
     }
 
-    int n = s.getNumberOfTransitions();
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < s.numberOfTransitions; i++) {
       Transition t = s.transition(i);
       if (t is RuleTransition) {
         if (calledRuleStack[t.target.ruleIndex]) {

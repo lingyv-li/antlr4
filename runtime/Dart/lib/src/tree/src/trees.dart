@@ -25,13 +25,13 @@ class Trees {
       ruleNames = recog?.ruleNames;
     }
     String s = escapeWhitespace(getNodeText(t, ruleNames: ruleNames), false);
-    if (t.getChildCount() == 0) return s;
+    if (t.childCount == 0) return s;
     StringBuffer buf = new StringBuffer();
     buf.write("(");
     s = escapeWhitespace(getNodeText(t, ruleNames: ruleNames), false);
     buf.write(s);
     buf.write(' ');
-    for (int i = 0; i < t.getChildCount(); i++) {
+    for (int i = 0; i < t.childCount; i++) {
       if (i > 0) buf.write(' ');
       buf.write(toStringTree(t.getChild(i), ruleNames: ruleNames));
     }
@@ -47,7 +47,7 @@ class Trees {
       if (t is RuleContext) {
         int ruleIndex = t.ruleContext.ruleIndex;
         String ruleName = ruleNames[ruleIndex];
-        int altNumber = t.getAltNumber();
+        int altNumber = t.altNumber;
         if (altNumber != ATN.INVALID_ALT_NUMBER) {
           return ruleName + ":$altNumber";
         }
@@ -63,17 +63,17 @@ class Trees {
       }
     }
     // no recog for rule names
-    Object payload = t.getPayload();
+    Object payload = t.payload;
     if (payload is Token) {
       return payload.text;
     }
-    return t.getPayload().toString();
+    return t.payload.toString();
   }
 
   /** Return ordered list of all children of this node */
   static List<Tree> getChildren(Tree t) {
     List<Tree> kids = [];
-    for (int i = 0; i < t.getChildCount(); i++) {
+    for (int i = 0; i < t.childCount; i++) {
       kids.add(t.getChild(i));
     }
     return kids;
@@ -85,12 +85,12 @@ class Trees {
    *  @since 4.5.1
    */
   static List<Tree> getAncestors(Tree t) {
-    if (t.getParent() == null) return [];
+    if (t.parent == null) return [];
     List<Tree> ancestors = [];
-    t = t.getParent();
+    t = t.parent;
     while (t != null) {
       ancestors.insert(0, t); // insert at start
-      t = t.getParent();
+      t = t.parent;
     }
     return ancestors;
   }
@@ -101,11 +101,11 @@ class Trees {
    *  @since 4.5.1
    */
   static bool isAncestorOf(Tree t, Tree u) {
-    if (t == null || u == null || t.getParent() == null) return false;
-    Tree p = u.getParent();
+    if (t == null || u == null || t.parent == null) return false;
+    Tree p = u.parent;
     while (p != null) {
       if (t == p) return true;
-      p = p.getParent();
+      p = p.parent;
     }
     return false;
   }
@@ -135,7 +135,7 @@ class Trees {
       if (ctx.ruleIndex == index) nodes.add(t);
     }
     // check children
-    for (int i = 0; i < t.getChildCount(); i++) {
+    for (int i = 0; i < t.childCount; i++) {
       _findAllNodes(t.getChild(i), index, findTokens, nodes);
     }
   }
@@ -148,7 +148,7 @@ class Trees {
     List<ParseTree> nodes = [];
     nodes.add(t);
 
-    int n = t.getChildCount();
+    int n = t.childCount;
     for (int i = 0; i < n; i++) {
       nodes.addAll(getDescendants(t.getChild(i)));
     }
@@ -170,7 +170,7 @@ class Trees {
       int startTokenIndex, // inclusive
       int stopTokenIndex) // inclusive
   {
-    int n = t.getChildCount();
+    int n = t.childCount;
     for (int i = 0; i < n; i++) {
       ParseTree child = t.getChild(i);
       ParserRuleContext r = getRootOfSubtreeEnclosingRegion(
@@ -180,8 +180,8 @@ class Trees {
     if (t is ParserRuleContext) {
       ParserRuleContext r = t;
       if (startTokenIndex >=
-              r.getStart().tokenIndex && // is range fully contained in t?
-          (r.getStop() == null || stopTokenIndex <= r.getStop().tokenIndex)) {
+              r.start.tokenIndex && // is range fully contained in t?
+          (r.stop == null || stopTokenIndex <= r.stop.tokenIndex)) {
         // note: r.getStop()==null likely implies that we bailed out of parser and there's nothing to the right
         return r;
       }
@@ -200,9 +200,9 @@ class Trees {
   static void stripChildrenOutOfRange(ParserRuleContext t,
       ParserRuleContext root, int startIndex, int stopIndex) {
     if (t == null) return;
-    for (int i = 0; i < t.getChildCount(); i++) {
+    for (int i = 0; i < t.childCount; i++) {
       ParseTree child = t.getChild(i);
-      Interval range = child.getSourceInterval();
+      Interval range = child.sourceInterval;
       if (child is ParserRuleContext &&
           (range.b < startIndex || range.a > stopIndex)) {
         if (isAncestorOf(child, root)) {
@@ -223,7 +223,7 @@ class Trees {
 
     if (t == null) return null;
 
-    int n = t.getChildCount();
+    int n = t.childCount;
     for (int i = 0; i < n; i++) {
       Tree u = findNodeSuchThat(t.getChild(i), pred);
       if (u != null) return u;

@@ -22,6 +22,10 @@ import 'lexer_action.dart';
  * @since 4.2
  */
 class LexerActionExecutor {
+  /**
+   * Gets the lexer actions to be executed by this executor.
+   * @return The lexer actions to be executed by this executor.
+   */
   final List<LexerAction> lexerActions;
 
   /**
@@ -118,14 +122,6 @@ class LexerActionExecutor {
     }
 
     return new LexerActionExecutor(updatedLexerActions);
-  }
-
-  /**
-   * Gets the lexer actions to be executed by this executor.
-   * @return The lexer actions to be executed by this executor.
-   */
-  List<LexerAction> getLexerActions() {
-    return lexerActions;
   }
 
   /**

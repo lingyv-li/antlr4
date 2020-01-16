@@ -53,8 +53,8 @@ class SimState {
 
 /** "dup" of ParserInterpreter */
 class LexerATNSimulator extends ATNSimulator {
-  static final bool debug = false;
-  static final bool dfa_debug = false;
+  static final bool debug = true;
+  static final bool dfa_debug = true;
 
   static final int MIN_DFA_EDGE = 0;
   static final int MAX_DFA_EDGE = 127; // forces unicode to stay in ATN
@@ -323,14 +323,14 @@ class LexerATNSimulator extends ATNSimulator {
             level: Level.FINE.value);
       }
 
-      int n = c.state.getNumberOfTransitions();
+      int n = c.state.numberOfTransitions;
       for (int ti = 0; ti < n; ti++) {
         // for each transition
         Transition trans = c.state.transition(ti);
         ATNState target = getReachableTarget(trans, t);
         if (target != null) {
           LexerActionExecutor lexerActionExecutor =
-              (c as LexerATNConfig).getLexerActionExecutor();
+              (c as LexerATNConfig).lexerActionExecutor;
           if (lexerActionExecutor != null) {
             lexerActionExecutor = lexerActionExecutor
                 .fixOffsetBeforeMatch(input.index - startIndex);
@@ -382,7 +382,7 @@ class LexerATNSimulator extends ATNSimulator {
   ATNConfigSet computeStartState(CharStream input, ATNState p) {
     PredictionContext initialContext = PredictionContext.EMPTY;
     ATNConfigSet configs = new OrderedATNConfigSet();
-    for (int i = 0; i < p.getNumberOfTransitions(); i++) {
+    for (int i = 0; i < p.numberOfTransitions; i++) {
       ATNState target = p.transition(i).target;
       LexerATNConfig c = new LexerATNConfig(target, i + 1, initialContext);
       closure(input, c, configs, false, false, false);
@@ -460,7 +460,7 @@ class LexerATNSimulator extends ATNSimulator {
     }
 
     ATNState p = config.state;
-    for (int i = 0; i < p.getNumberOfTransitions(); i++) {
+    for (int i = 0; i < p.numberOfTransitions; i++) {
       Transition t = p.transition(i);
       LexerATNConfig c = getEpsilonTarget(
           input, config, t, configs, speculative, treatEofAsEpsilon);
@@ -538,7 +538,7 @@ class LexerATNSimulator extends ATNSimulator {
           // additional modifications are needed before we can support
           // the split operation.
           LexerActionExecutor lexerActionExecutor = LexerActionExecutor.append(
-              config.getLexerActionExecutor(),
+              config.lexerActionExecutor,
               atn.lexerActions[(t as ActionTransition).actionIndex]);
           c = new LexerATNConfig.dup(config, t.target,
               lexerActionExecutor: lexerActionExecutor);
@@ -697,7 +697,7 @@ class LexerATNSimulator extends ATNSimulator {
       proposed.isAcceptState = true;
       proposed.lexerActionExecutor =
           (firstConfigWithRuleStopState as LexerATNConfig)
-              .getLexerActionExecutor();
+              .lexerActionExecutor;
       proposed.prediction =
           atn.ruleToTokenType[firstConfigWithRuleStopState.state.ruleIndex];
     }
@@ -725,22 +725,6 @@ class LexerATNSimulator extends ATNSimulator {
   String getText(CharStream input) {
     // index is first lookahead char, don't include.
     return input.getText(Interval.of(startIndex, input.index - 1));
-  }
-
-  int getLine() {
-    return line;
-  }
-
-  void setLine(int line) {
-    this.line = line;
-  }
-
-  int getCharPositionInLine() {
-    return charPositionInLine;
-  }
-
-  void setCharPositionInLine(int charPositionInLine) {
-    this.charPositionInLine = charPositionInLine;
   }
 
   void consume(CharStream input) {

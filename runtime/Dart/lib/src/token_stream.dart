@@ -50,7 +50,7 @@ abstract class TokenStream extends IntStream {
    * Gets the underlying {@link TokenSource} which provides tokens for this
    * stream.
    */
-  TokenSource getTokenSource();
+  TokenSource get tokenSource;
 
   /**
    * Return the text of all tokens within the specified {@code interval}. This
@@ -146,7 +146,7 @@ class BufferedTokenStream implements TokenStream {
   /**
    * The {@link TokenSource} from which tokens for this stream are fetched.
    */
-  TokenSource tokenSource;
+  TokenSource _tokenSource;
 
   /**
    * A collection of all tokens fetched from the token source. The list is
@@ -181,16 +181,12 @@ class BufferedTokenStream implements TokenStream {
    * {@link #tokens} is trivial with this field.</li>
    * <ul>
    */
-  bool fetchedEOF  = false;
+  bool fetchedEOF = false;
 
-  BufferedTokenStream(this.tokenSource) {
-    if (tokenSource == null) {
+  BufferedTokenStream(this._tokenSource) {
+    if (_tokenSource == null) {
       throw new ArgumentError.notNull("tokenSource");
     }
-  }
-
-  TokenSource getTokenSource() {
-    return tokenSource;
   }
 
   int get index => p;
@@ -353,9 +349,11 @@ class BufferedTokenStream implements TokenStream {
     p = adjustSeekIndex(0);
   }
 
+  TokenSource get tokenSource => this._tokenSource;
+
   /** Reset this token stream by setting its token source. */
-  void setTokenSource(TokenSource tokenSource) {
-    this.tokenSource = tokenSource;
+  void set tokenSource(TokenSource tokenSource) {
+    this._tokenSource = tokenSource;
     tokens.clear();
     p = -1;
     fetchedEOF = false;
@@ -457,15 +455,11 @@ class BufferedTokenStream implements TokenStream {
       throw new RangeError.index(tokenIndex, tokens);
     }
 
-    int nextOnChannel =
+    final int nextOnChannel =
         nextTokenOnChannel(tokenIndex + 1, Lexer.DEFAULT_TOKEN_CHANNEL);
-    int to;
-    int from = tokenIndex + 1;
     // if none onchannel to right, nextOnChannel=-1 so set to = last token
-    if (nextOnChannel == -1)
-      to = size - 1;
-    else
-      to = nextOnChannel;
+    final int to = nextOnChannel == -1 ? size - 1 : nextOnChannel;
+    final int from = tokenIndex + 1;
 
     return filterForChannel(from, to, channel);
   }
@@ -485,12 +479,12 @@ class BufferedTokenStream implements TokenStream {
       return null;
     }
 
-    int prevOnChannel =
+    final int prevOnChannel =
         previousTokenOnChannel(tokenIndex - 1, Lexer.DEFAULT_TOKEN_CHANNEL);
     if (prevOnChannel == tokenIndex - 1) return null;
     // if none onchannel to left, prevOnChannel=-1 then from=0
-    int from = prevOnChannel + 1;
-    int to = tokenIndex - 1;
+    final int from = prevOnChannel + 1;
+    final int to = tokenIndex - 1;
 
     return filterForChannel(from, to, channel);
   }
@@ -514,7 +508,7 @@ class BufferedTokenStream implements TokenStream {
   String getText([Interval interval = null]) {
     interval = interval ??
         Interval.of(0, size - 1); // Get the text of all tokens in this buffer.
-    int start = interval.a;
+    final int start = interval.a;
     int stop = interval.b;
     if (start < 0 || stop < 0) return "";
     fill();
@@ -530,7 +524,7 @@ class BufferedTokenStream implements TokenStream {
   }
 
   String getTextFromCtx(RuleContext ctx) {
-    return getText(ctx.getSourceInterval());
+    return getText(ctx.sourceInterval);
   }
 
   String getTextRange(Token start, Token stop) {
@@ -586,7 +580,7 @@ class CommonTokenStream extends BufferedTokenStream {
    * The default value is {@link Token#DEFAULT_CHANNEL}, which matches the
    * default channel assigned to tokens created by the lexer.</p>
    */
-  int channel = Token.DEFAULT_CHANNEL;
+  int channel;
 
   /**
    * Constructs a new {@link CommonTokenStream} using the specified token
@@ -598,7 +592,8 @@ class CommonTokenStream extends BufferedTokenStream {
    * @param tokenSource The token source.
    * @param channel The channel to use for filtering tokens.
    */
-  CommonTokenStream(TokenSource tokenSource, [this.channel])
+  CommonTokenStream(TokenSource tokenSource,
+      [this.channel = Token.DEFAULT_CHANNEL])
       : super(tokenSource);
 
   int adjustSeekIndex(int i) {
@@ -640,7 +635,7 @@ class CommonTokenStream extends BufferedTokenStream {
   }
 
   /** Count EOF just once. */
-  int getNumberOfOnChannelTokens() {
+  int get numberOfOnChannelTokens {
     int n = 0;
     fill();
     for (int i = 0; i < tokens.length; i++) {

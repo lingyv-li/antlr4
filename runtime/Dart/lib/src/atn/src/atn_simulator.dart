@@ -58,10 +58,6 @@ abstract class ATNSimulator {
         "This ATN simulator does not support clearing the DFA.");
   }
 
-  PredictionContextCache getSharedContextCache() {
-    return sharedContextCache;
-  }
-
   PredictionContext getCachedContext(PredictionContext context) {
     if (sharedContextCache == null) return context;
 

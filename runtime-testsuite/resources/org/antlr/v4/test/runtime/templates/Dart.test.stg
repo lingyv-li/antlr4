@@ -12,7 +12,7 @@ Assert(s) ::= <<assert(<s>);>>
 
 Cast(t,v) ::= "(<v> as <T>)"
 
-Append(a,b) ::= "<a> + <b>"
+Append(a,b) ::= "<a>.toString() + <b>.toString()"
 
 AppendStr(a,b) ::= <%<Append(a,b)>%>
 
@@ -50,7 +50,7 @@ Pass() ::= ""
 
 StringList() ::= "List\<String>"
 
-BuildParseTrees() ::= "setBuildParseTree(true);"
+BuildParseTrees() ::= "buildParseTree = true;"
 
 BailErrorStrategy() ::= <%setErrorHandler(new BailErrorStrategy());%>
 
@@ -66,11 +66,11 @@ TextEquals(a) ::= <%this.text == "<a>"%>
 
 PlusText(a) ::= <%"<a>" + this.text%>
 
-InputText() ::= "this.getTokenStream().getText()"
+InputText() ::= "this.tokenStream.text"
 
-LTEquals(i, v) ::= <%this.getTokenStream().LT(<i>).text == <v>%>
+LTEquals(i, v) ::= <%this.tokenStream.LT(<i>).text == <v>%>
 
-LANotEquals(i, v) ::= <%this.getTokenStream().LA(<i>)!=<v>%>
+LANotEquals(i, v) ::= <%this.tokenStream.LA(<i>)!=<v>%>
 
 TokenStartColumnEquals(i) ::= <%this.tokenStartCharPositionInLine==<i>%>
 
@@ -78,9 +78,9 @@ ImportListener(X) ::= ""
 
 GetExpectedTokenNames() ::= "this.expectedTokens.toString(this.tokenNames)"
 
-RuleInvocationStack() ::= "getRuleInvocationStack()"
+RuleInvocationStack() ::= "ruleInvocationStack"
 
-LL_EXACT_AMBIG_DETECTION() ::= <<_interp.setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);>>
+LL_EXACT_AMBIG_DETECTION() ::= <<_interp.predictionMode = PredictionMode.LL_EXACT_AMBIG_DETECTION;>>
 
 ParserToken(parser, token) ::= <%<parser>.<token>%>
 
@@ -225,7 +225,7 @@ class MyRuleNode extends ParserRuleContext {
   MyRuleNode(ParserRuleContext parent, int invokingStateNumber) {
     super(parent, invokingStateNumber);
   }
-  @override int getAltNumber() { return altNum; }
+  @override int get altNumber { return altNum; }
   @override void setAltNumber(int altNum) { this.altNum = altNum; }
 }
 }
@@ -235,7 +235,7 @@ TokenGetterListener(X) ::= <<
 @parser::members {
 class LeafListener extends TBaseListener {
   void exitA(AContext ctx) {
-    if (ctx.getChildCount()==2)
+    if (ctx.childCount==2)
       stdout.write("${ctx.INT(0).symbol.text} ${ctx.INT(1).symbol.text} ${ctx.INT()}");
     else
       print(ctx.ID().symbol);
@@ -248,7 +248,7 @@ RuleGetterListener(X) ::= <<
 @parser::members {
 class LeafListener extends TBaseListener {
   void exitA(AContext ctx) {
-    if (ctx.getChildCount()==2) {
+    if (ctx.childCount==2) {
       stdout.write("${ctx.b(0).start.text} ${ctx.b(1).start.text} ${ctx.b().get(0).start.text}");
     } else
       print(ctx.b(0).start.text);
@@ -262,7 +262,7 @@ LRListener(X) ::= <<
 @parser::members {
 class LeafListener extends TBaseListener {
   void exitE(EContext ctx) {
-    if (ctx.getChildCount()==3) {
+    if (ctx.childCount==3) {
       stdout.write("${ctx.e(0).start.text} ${ctx.e(1).start.text} ${ctx.e().get(0).start.text}\n");
     } else
       print(ctx.INT().symbol.text);

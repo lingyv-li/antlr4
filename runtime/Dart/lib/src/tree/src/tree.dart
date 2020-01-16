@@ -14,15 +14,15 @@ import '../../token.dart';
 /// The basic notion of a tree has a parent, a payload, and a list of children.
 ///  It is the most abstract interface for all the trees used by ANTLR.
 abstract class Tree {
-  Tree getParent();
+  Tree get parent;
 
-  dynamic getPayload();
+  dynamic get payload;
 
   Tree getChild(int i);
 
 //  Tree getChild(int i);
 
-  int getChildCount();
+  int get childCount;
 
   String toStringTree();
 }
@@ -42,12 +42,12 @@ abstract class SyntaxTree extends Tree {
   ///
   /// <p>As a weird special case, the source interval for rules matched after
   /// EOF is unspecified.</p>
-  Interval getSourceInterval();
+  Interval get sourceInterval;
 }
 
 abstract class ParseTree extends SyntaxTree {
   // the following methods narrow the return type; they are not additional methods
-  ParseTree getParent();
+  ParseTree get parent;
 
   ParseTree getChild(int i);
 
@@ -65,7 +65,7 @@ abstract class ParseTree extends SyntaxTree {
   ///  minimal change, which is to add this method.
   ///
   ///  @since 4.7
-  void setParent(RuleContext parent);
+  void set parent(RuleContext parent);
 
   /// The {@link ParseTreeVisitor} needs a double dispatch method. */
   T accept<T>(ParseTreeVisitor<T> visitor);
@@ -73,7 +73,7 @@ abstract class ParseTree extends SyntaxTree {
   /// Return the combined text of all leaf nodes. Does not get any
   ///  off-channel tokens (if any) so won't return whitespace and
   ///  comments if they are sent to parser on hidden channel.
-  String getText();
+  String get text;
 
   /// Specialize toStringTree so that it can print out more information
   /// 	based upon the parser.
@@ -118,7 +118,7 @@ abstract class ParseTreeVisitor<T> {
    */
   T visitChildren(RuleNode node) {
     T result = defaultResult();
-    var n = node.getChildCount();
+    var n = node.childCount;
     for (var i = 0; i < n; i++) {
       if (!shouldVisitNextChild(node, result)) {
         break;
@@ -271,7 +271,7 @@ class TrimToSizeListener implements ParseTreeListener {
 
 class TerminalNodeImpl extends TerminalNode {
   Token symbol;
-  ParseTree parentCtx;
+  ParseTree parent;
 
   TerminalNodeImpl(this.symbol);
 
@@ -279,24 +279,16 @@ class TerminalNodeImpl extends TerminalNode {
     return null;
   }
 
-  getParent() {
-    return this.parentCtx;
-  }
+  Token get payload => symbol;
 
-  void setParent(RuleContext parent) {
-    this.parentCtx = parent;
-  }
-
-  Token getPayload() => symbol;
-
-  Interval getSourceInterval() {
+  Interval get sourceInterval {
     if (symbol == null) return Interval.INVALID;
 
     int tokenIndex = symbol.tokenIndex;
     return new Interval(tokenIndex, tokenIndex);
   }
 
-  int getChildCount() {
+  int get childCount {
     return 0;
   }
 
@@ -304,7 +296,7 @@ class TerminalNodeImpl extends TerminalNode {
     return visitor.visitTerminal(this);
   }
 
-  String getText() {
+  String get text {
     return symbol.text;
   }
 
@@ -344,8 +336,7 @@ class ParseTreeWalker {
     }
     RuleNode r = t;
     enterRule(listener, r);
-    int n = r.getChildCount();
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < r.childCount; i++) {
       walk(listener, r.getChild(i));
     }
     exitRule(listener, r);

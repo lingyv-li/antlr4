@@ -29,7 +29,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
   CharStream _input;
 
   Pair<TokenSource, CharStream> _tokenFactorySourcePair;
-  TokenFactory _factory = CommonTokenFactory.DEFAULT;
+  TokenFactory tokenFactory = CommonTokenFactory.DEFAULT;
 
   // The goal of all lexer rules/methods is to create a token object.
   // this is an instance variable as multiple rules may collaborate to
@@ -113,8 +113,8 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
         _token = null;
         channel = Token.DEFAULT_CHANNEL;
         tokenStartCharIndex = _input.index;
-        tokenStartCharPositionInLine = interpreter.getCharPositionInLine();
-        tokenStartLine = interpreter.getLine();
+        tokenStartCharPositionInLine = interpreter.charPositionInLine;
+        tokenStartLine = interpreter.line;
         _text = null;
         do {
           type = Token.INVALID_TYPE;
@@ -179,17 +179,8 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
     return mode_;
   }
 
-  void setTokenFactory(TokenFactory factory) {
-    this._factory = factory;
-  }
-
-  TokenFactory getTokenFactory() {
-    return _factory;
-  }
-
   /** Set the char stream and reset the lexer */
-
-  void setInputStream(IntStream input) {
+  void set inputStream(IntStream input) {
     this._input = null;
     this._tokenFactorySourcePair =
         new Pair<TokenSource, CharStream>(this, _input);
@@ -224,13 +215,13 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
    *  custom Token objects or provide a new factory.
    */
   Token emit() {
-    Token t = _factory.create(
+    Token t = tokenFactory.create(
         type,
         _text,
         _tokenFactorySourcePair,
         channel,
         tokenStartCharIndex,
-        getCharIndex() - 1,
+        charIndex - 1,
         tokenStartLine,
         tokenStartCharPositionInLine);
     emitToken(t);
@@ -239,31 +230,30 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
 
   Token emitEOF() {
     int cpos = charPositionInLine;
-    int line = getLine();
-    Token eof = _factory.create(Token.EOF, null, _tokenFactorySourcePair,
+    Token eof = tokenFactory.create(Token.EOF, null, _tokenFactorySourcePair,
         Token.DEFAULT_CHANNEL, _input.index, _input.index - 1, line, cpos);
     emitToken(eof);
     return eof;
   }
 
-  int getLine() {
-    return interpreter.getLine();
-  }
-
   int get charPositionInLine {
-    return interpreter.getCharPositionInLine();
+    return interpreter.charPositionInLine;
   }
 
-  void setLine(int line) {
-    interpreter.setLine(line);
+  int get line {
+    return interpreter.line;
+  }
+
+  void set line(int line) {
+    interpreter.line = line;
   }
 
   void set charPositionInLine(int charPositionInLine) {
-    interpreter.setCharPositionInLine(charPositionInLine);
+    interpreter.charPositionInLine = charPositionInLine;
   }
 
   /** What is the index of the current character of lookahead? */
-  int getCharIndex() {
+  int get charIndex {
     return _input.index;
   }
 
@@ -300,7 +290,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
   /** Return a list of all Token objects in input char stream.
    *  Forces load of all tokens. Does not include EOF token.
    */
-  List<Token> getAllTokens() {
+  List<Token> get allTokens {
     List<Token> tokens = [];
     Token t = nextToken();
     while (t.type != Token.EOF) {
@@ -315,7 +305,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
         _input.getText(Interval.of(tokenStartCharIndex, _input.index));
     String msg = "token recognition error at: '" + getErrorDisplay(text) + "'";
 
-    ErrorListener listener = getErrorListenerDispatch();
+    ErrorListener listener = errorListenerDispatch;
     listener.syntaxError(
         this, null, tokenStartLine, tokenStartCharPositionInLine, msg, e);
   }

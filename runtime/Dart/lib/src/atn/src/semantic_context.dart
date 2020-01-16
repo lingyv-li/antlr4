@@ -102,7 +102,7 @@ class Predicate extends SemanticContext {
   final bool isCtxDependent; // e.g., $i ref in pred
 
   const Predicate(
-      [this.ruleIndex = 0, this.predIndex = 0, this.isCtxDependent = false]);
+      [this.ruleIndex = -1, this.predIndex = -1, this.isCtxDependent = false]);
 
   bool eval(Recognizer parser, RuleContext parserCallStack) {
     RuleContext localctx = isCtxDependent ? parserCallStack : null;
@@ -126,13 +126,13 @@ class Predicate extends SemanticContext {
   }
 
   String toString() {
-    return "{$ruleIndex in $predIndex}?";
+    return "{$ruleIndex:$predIndex}?";
   }
 }
 
 class PrecedencePredicate extends SemanticContext
     implements Comparable<PrecedencePredicate> {
-  int precedence;
+  final int precedence;
 
   PrecedencePredicate([this.precedence = 0]);
 
@@ -188,7 +188,7 @@ abstract class Operator extends SemanticContext {
    *
    * @since 4.3
    */
-  List<SemanticContext> getOperands();
+  List<SemanticContext> get operands;
 }
 
 /**
@@ -224,7 +224,7 @@ class AND extends Operator {
     opnds = operands.toList();
   }
 
-  List<SemanticContext> getOperands() {
+  List<SemanticContext> get operands {
     return opnds;
   }
 
@@ -323,7 +323,7 @@ class OR extends Operator {
     this.opnds = operands.toList();
   }
 
-  List<SemanticContext> getOperands() {
+  List<SemanticContext> get operands {
     return opnds;
   }
 

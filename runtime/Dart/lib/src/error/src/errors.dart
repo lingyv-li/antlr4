@@ -107,14 +107,6 @@ class LexerNoViableAltException extends RecognitionException {
       Lexer lexer, CharStream input, this.startIndex, this.deadEndConfigs)
       : super(lexer, input, null);
 
-  int getStartIndex() {
-    return startIndex;
-  }
-
-  ATNConfigSet getDeadEndConfigs() {
-    return deadEndConfigs;
-  }
-
   CharStream get inputStream {
     return super.inputStream;
   }
@@ -172,18 +164,10 @@ class NoViableAltException extends RecognitionException {
       : this._(
             recognizer,
             input ?? recognizer.inputStream,
-            startToken ?? recognizer.getCurrentToken(),
-            offendingToken ?? recognizer.getCurrentToken(),
+            startToken ?? recognizer.currentToken,
+            offendingToken ?? recognizer.currentToken,
             deadEndConfigs ?? null,
             ctx ?? recognizer.context);
-
-  Token getStartToken() {
-    return startToken;
-  }
-
-  ATNConfigSet getDeadEndConfigs() {
-    return deadEndConfigs;
-  }
 }
 
 /** This signifies any kind of mismatched input exceptions such as
@@ -192,8 +176,7 @@ class NoViableAltException extends RecognitionException {
 class InputMismatchException extends RecognitionException {
   InputMismatchException(Parser recognizer,
       [int state = -1, ParserRuleContext ctx])
-      : super(recognizer, recognizer.inputStream,
-            ctx ?? recognizer.context) {
+      : super(recognizer, recognizer.inputStream, ctx ?? recognizer.context) {
     this.offendingState = state;
     this.offendingToken = offendingToken;
   }
@@ -206,7 +189,7 @@ class InputMismatchException extends RecognitionException {
  */
 class FailedPredicateException extends RecognitionException {
   int ruleIndex;
-  int predicateIndex;
+  int predIndex;
   final String predicate;
 
   FailedPredicateException(Parser recognizer,
@@ -218,25 +201,9 @@ class FailedPredicateException extends RecognitionException {
     AbstractPredicateTransition trans = s.transition(0);
     if (trans is PredicateTransition) {
       this.ruleIndex = (trans as PredicateTransition).ruleIndex;
-      this.predicateIndex = (trans as PredicateTransition).predIndex;
-    } else {
-      this.ruleIndex = 0;
-      this.predicateIndex = 0;
+      this.predIndex = (trans as PredicateTransition).predIndex;
     }
-
-    this.offendingToken = recognizer.getCurrentToken();
-  }
-
-  int getRuleIndex() {
-    return ruleIndex;
-  }
-
-  int getPredIndex() {
-    return predicateIndex;
-  }
-
-  String getPredicate() {
-    return predicate;
+    this.offendingToken = recognizer.currentToken;
   }
 
   static String formatMessage(String predicate, String message) {

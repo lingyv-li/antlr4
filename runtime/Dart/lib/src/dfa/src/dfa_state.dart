@@ -70,7 +70,7 @@ class DFAState {
    * {@link ParserATNSimulator#execATN} invocations immediately jumped doing
    * full context prediction if this field is true.
    */
-  bool requiresFullContext;
+  bool requiresFullContext = false;
 
   /** During SLL parsing, this is a list of predicates associated with the
    *  ATN configurations of the DFA state. When we have predicates,
@@ -92,7 +92,7 @@ class DFAState {
   /** Get the set of all alts mentioned by all ATN configurations in this
    *  DFA state.
    */
-  Set<int> getAltSet() {
+  Set<int> get altSet {
     Set<int> alts = new Set<int>();
     if (configs != null) {
       for (ATNConfig c in configs) {

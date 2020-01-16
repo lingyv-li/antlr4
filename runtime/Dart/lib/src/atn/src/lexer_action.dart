@@ -98,24 +98,18 @@ abstract class LexerAction {
  * @since 4.2
  */
 class LexerChannelAction implements LexerAction {
-  int channel;
-
-  /**
-   * Constructs a new {@code channel} action with the specified channel value.
-   * @param channel The channel value to pass to {@link Lexer#setChannel}.
-   */
-  LexerChannelAction(int channel) {
-    this.channel = channel;
-  }
-
   /**
    * Gets the channel to use for the {@link Token} created by the lexer.
    *
    * @return The channel to use for the {@link Token} created by the lexer.
    */
-  int getChannel() {
-    return channel;
-  }
+  final int channel;
+
+  /**
+   * Constructs a new {@code channel} action with the specified channel value.
+   * @param channel The channel value to pass to {@link Lexer#setChannel}.
+   */
+  LexerChannelAction(this.channel);
 
   @override
   LexerActionType get actionType => LexerActionType.CHANNEL;
@@ -546,6 +540,10 @@ class LexerSkipAction implements LexerAction {
  * @since 4.2
  */
 class LexerTypeAction implements LexerAction {
+  /**
+   * Gets the type to assign to a token created by the lexer.
+   * @return The type to assign to a token created by the lexer.
+   */
   final int type;
 
   /**
@@ -553,14 +551,6 @@ class LexerTypeAction implements LexerAction {
    * @param type The type to assign to the token using {@link Lexer#setType}.
    */
   LexerTypeAction(this.type);
-
-  /**
-   * Gets the type to assign to a token created by the lexer.
-   * @return The type to assign to a token created by the lexer.
-   */
-  int getType() {
-    return type;
-  }
 
   /**
    * {@inheritDoc}

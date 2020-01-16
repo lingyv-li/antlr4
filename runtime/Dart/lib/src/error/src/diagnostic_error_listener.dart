@@ -50,7 +50,7 @@ class DiagnosticErrorListener extends BaseErrorListener {
     final decision = getDecisionDescription(recognizer, dfa);
     final conflictingAlts = getConflictingAlts(ambigAlts, configs);
     final text =
-        recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
+        recognizer.tokenStream.getText(Interval.of(startIndex, stopIndex));
     final message =
         "reportAmbiguity d=$decision: ambigAlts=$conflictingAlts, input='$text'";
     recognizer.notifyErrorListeners(message);
@@ -60,7 +60,7 @@ class DiagnosticErrorListener extends BaseErrorListener {
       int stopIndex, BitSet conflictingAlts, ATNConfigSet configs) {
     final decision = getDecisionDescription(recognizer, dfa);
     final text =
-        recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
+        recognizer.tokenStream.getText(Interval.of(startIndex, stopIndex));
     final message = "reportAttemptingFullContext d=$decision, input='$text'";
     recognizer.notifyErrorListeners(message);
   }
@@ -69,7 +69,7 @@ class DiagnosticErrorListener extends BaseErrorListener {
       int stopIndex, int prediction, ATNConfigSet configs) {
     String decision = getDecisionDescription(recognizer, dfa);
     String text =
-        recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
+        recognizer.tokenStream.getText(Interval.of(startIndex, stopIndex));
     String message = "reportContextSensitivity d=$decision, input='$text'";
     recognizer.notifyErrorListeners(message);
   }

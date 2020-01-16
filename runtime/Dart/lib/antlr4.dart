@@ -12,3 +12,4 @@ export 'src/parser.dart';
 export 'src/parser_rule_context.dart';
 export 'src/vocabulary.dart';
 export 'src/runtime_meta_data.dart';
+export 'src/token.dart';

@@ -33,8 +33,6 @@ import 'tree/tree.dart';
  *  satisfy the superclass interface.
  */
 class ParserRuleContext extends RuleContext {
-  var ruleIndex = -1;
-
   /**
    * If we are debugging or building a parse tree for a visitor,
    *  we need to track all of the tokens and rule invocations associated
@@ -43,6 +41,12 @@ class ParserRuleContext extends RuleContext {
    *  how we parse this rule.
    */
   List<ParseTree> children;
+
+  /**
+   * Get the initial/final token in this context.
+   * Note that the range from start to stop is inclusive, so for rules that do not consume anything
+   * (for example, zero length or error productions) this token may exceed stop.
+   */
   Token start, stop;
 
   /// The exception that forced this rule to return. If the rule successfully
@@ -50,7 +54,7 @@ class ParserRuleContext extends RuleContext {
   RecognitionException exception = null;
 
   ParserRuleContext([RuleContext parent, int invokingStateNumber])
-      : super(parentCtx: parent, invokingState: invokingStateNumber);
+      : super(parent: parent, invokingState: invokingStateNumber);
 
   /** COPY a ctx (I'm deliberately not using copy constructor) to avoid
    *  confusion with creating node with parent. Does not copy children
@@ -65,7 +69,7 @@ class ParserRuleContext extends RuleContext {
    *  the YContext as well else they are lost!
    */
   void copyFrom(ParserRuleContext ctx) {
-    this.parentCtx = ctx.parentCtx;
+    this.parent = ctx.parent;
     this.invokingState = ctx.invokingState;
 
     this.start = ctx.start;
@@ -108,7 +112,7 @@ class ParserRuleContext extends RuleContext {
 
   /** Add a token leaf node child and force its parent to be this node. */
   TerminalNode addChild(TerminalNode t) {
-    t.setParent(this);
+    t.parent = this;
     return addAnyChild(t);
   }
 
@@ -117,7 +121,7 @@ class ParserRuleContext extends RuleContext {
    * @since 4.7
    */
   ErrorNode addErrorNode(ErrorNode errorNode) {
-    errorNode.setParent(this);
+    errorNode.parent=this;
     return addAnyChild(errorNode);
   }
 
@@ -132,8 +136,8 @@ class ParserRuleContext extends RuleContext {
   }
 
   // Override to make type more specific
-  ParserRuleContext getParent() {
-    return super.getParent();
+  ParserRuleContext get parent {
+    return super.parent;
   }
 
   @override
@@ -232,11 +236,9 @@ class ParserRuleContext extends RuleContext {
     return contexts;
   }
 
-  int getChildCount() {
-    return children != null ? children.length : 0;
-  }
+  int get childCount => children?.length ?? 0;
 
-  Interval getSourceInterval() {
+  Interval get sourceInterval {
     if (start == null) {
       return Interval.INVALID;
     }
@@ -244,24 +246,6 @@ class ParserRuleContext extends RuleContext {
       return Interval(start.tokenIndex, start.tokenIndex - 1); // empty
     }
     return Interval(start.tokenIndex, stop.tokenIndex);
-  }
-
-  /**
-   * Get the initial token in this context.
-   * Note that the range from start to stop is inclusive, so for rules that do not consume anything
-   * (for example, zero length or error productions) this token may exceed stop.
-   */
-  Token getStart() {
-    return start;
-  }
-
-  /**
-   * Get the final token in this context.
-   * Note that the range from start to stop is inclusive, so for rules that do not consume anything
-   * (for example, zero length or error productions) this token may precede start.
-   */
-  Token getStop() {
-    return stop;
   }
 
   /** Used for rule context info debugging during parse-time, not so much for ATN debugging */
@@ -302,9 +286,5 @@ class InterpreterRuleContext extends ParserRuleContext {
       ParserRuleContext parent, int invokingStateNumber, int ruleIndex)
       : super(parent, invokingStateNumber) {
     this.ruleIndex = ruleIndex;
-  }
-
-  int getRuleIndex() {
-    return ruleIndex;
   }
 }

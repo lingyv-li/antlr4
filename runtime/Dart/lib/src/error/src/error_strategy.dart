@@ -436,7 +436,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
     String msg = "mismatched input " +
         getTokenErrorDisplay(e.offendingToken) +
         " expecting " +
-        e.expectedTokens.toString(vocabulary: recognizer.getVocabulary());
+        e.expectedTokens.toString(vocabulary: recognizer.vocabulary);
     recognizer.notifyErrorListeners(msg, e.offendingToken, e);
   }
 
@@ -481,13 +481,13 @@ class DefaultErrorStrategy implements ErrorStrategy {
 
     beginErrorCondition(recognizer);
 
-    Token t = recognizer.getCurrentToken();
+    Token t = recognizer.currentToken;
     String tokenName = getTokenErrorDisplay(t);
     IntervalSet expecting = getExpectedTokens(recognizer);
     String msg = "extraneous input " +
         tokenName +
         " expecting " +
-        expecting.toString(vocabulary: recognizer.getVocabulary());
+        expecting.toString(vocabulary: recognizer.vocabulary);
     recognizer.notifyErrorListeners(msg, t, null);
   }
 
@@ -515,10 +515,10 @@ class DefaultErrorStrategy implements ErrorStrategy {
 
     beginErrorCondition(recognizer);
 
-    Token t = recognizer.getCurrentToken();
+    Token t = recognizer.currentToken;
     IntervalSet expecting = getExpectedTokens(recognizer);
     String msg = "missing " +
-        expecting.toString(vocabulary: recognizer.getVocabulary()) +
+        expecting.toString(vocabulary: recognizer.vocabulary) +
         " at " +
         getTokenErrorDisplay(t);
 
@@ -670,7 +670,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
 			*/
       recognizer.consume(); // simply delete extra token
       // we want to return the token we're actually matching
-      Token matchedSymbol = recognizer.getCurrentToken();
+      Token matchedSymbol = recognizer.currentToken;
       reportMatch(recognizer); // we know current token is correct
       return matchedSymbol;
     }
@@ -697,25 +697,25 @@ class DefaultErrorStrategy implements ErrorStrategy {
    *  override this method to create the appropriate tokens.
    */
   Token getMissingSymbol(Parser recognizer) {
-    Token currentSymbol = recognizer.getCurrentToken();
+    Token currentSymbol = recognizer.currentToken;
     IntervalSet expecting = getExpectedTokens(recognizer);
     int expectedTokenType = Token.INVALID_TYPE;
-    if (!expecting.isNil()) {
-      expectedTokenType = expecting.getMinElement(); // get any element
+    if (!expecting.isNil) {
+      expectedTokenType = expecting.minElement; // get any element
     }
     String tokenText;
     if (expectedTokenType == Token.EOF)
       tokenText = "<missing EOF>";
     else
       tokenText = "<missing " +
-          recognizer.getVocabulary().getDisplayName(expectedTokenType) +
+          recognizer.vocabulary.getDisplayName(expectedTokenType) +
           ">";
     Token current = currentSymbol;
     Token lookback = recognizer.inputStream.LT(-1);
     if (current.type == Token.EOF && lookback != null) {
       current = lookback;
     }
-    return recognizer.getTokenFactory().create(
+    return recognizer.tokenFactory.create(
         expectedTokenType,
         tokenText,
         Pair(current.tokenSource, current.tokenSource.inputStream),
@@ -869,7 +869,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
       RuleTransition rt = invokingState.transition(0);
       IntervalSet follow = atn.nextTokens(rt.followState);
       recoverSet.addAll(follow);
-      ctx = ctx.getParent();
+      ctx = ctx.parent;
     }
     recoverSet.remove(Token.EPSILON);
 //		System.out.println("recover set "+recoverSet.toString(recognizer.getTokenNames()));
@@ -927,7 +927,7 @@ class BailErrorStrategy extends DefaultErrorStrategy {
   void recover(Parser recognizer, RecognitionException e) {
     for (ParserRuleContext context = recognizer.context;
         context != null;
-        context = context.getParent()) {
+        context = context.parent) {
       context.exception = e;
     }
 
@@ -942,7 +942,7 @@ class BailErrorStrategy extends DefaultErrorStrategy {
     InputMismatchException e = new InputMismatchException(recognizer);
     for (ParserRuleContext context = recognizer.context;
         context != null;
-        context = context.getParent()) {
+        context = context.parent) {
       context.exception = e;
     }
 

@@ -17,22 +17,37 @@ import 'Chunk.dart';
  */
 class ParseTreeMatch {
   /**
-   * This is the backing field for {@link #getTree()}.
+   * Get the parse tree we are trying to match to a pattern.
+   *
+   * @return The {@link ParseTree} we are trying to match to a pattern.
    */
   final ParseTree tree;
 
   /**
-   * This is the backing field for {@link #getPattern()}.
+   * Get the tree pattern we are matching against.
+   *
+   * @return The tree pattern we are matching against.
    */
   final ParseTreePattern pattern;
 
+
   /**
-   * This is the backing field for {@link #getLabels()}.
+   * Return a mapping from label &rarr; [list of nodes].
+   *
+   * <p>The map includes special entries corresponding to the names of rules and
+   * tokens referenced in tags in the original pattern. For additional
+   * information, see the description of {@link #getAll(String)}.</p>
+   *
+   * @return A mapping from labels to parse tree nodes. If the parse tree
+   * pattern did not contain any rule or token tags, this map will be empty.
    */
   final MultiMap<String, ParseTree> labels;
 
   /**
-   * This is the backing field for {@link #getMismatchedNode()}.
+   * Get the node at which we first detected a mismatch.
+   *
+   * @return the node at which we first detected a mismatch, or {@code null}
+   * if the match was successful.
    */
   final ParseTree mismatchedNode;
 
@@ -125,66 +140,18 @@ class ParseTreeMatch {
   }
 
   /**
-   * Return a mapping from label &rarr; [list of nodes].
-   *
-   * <p>The map includes special entries corresponding to the names of rules and
-   * tokens referenced in tags in the original pattern. For additional
-   * information, see the description of {@link #getAll(String)}.</p>
-   *
-   * @return A mapping from labels to parse tree nodes. If the parse tree
-   * pattern did not contain any rule or token tags, this map will be empty.
-   */
-
-  MultiMap<String, ParseTree> getLabels() {
-    return labels;
-  }
-
-  /**
-   * Get the node at which we first detected a mismatch.
-   *
-   * @return the node at which we first detected a mismatch, or {@code null}
-   * if the match was successful.
-   */
-
-  ParseTree getMismatchedNode() {
-    return mismatchedNode;
-  }
-
-  /**
    * Gets a value indicating whether the match operation succeeded.
    *
    * @return {@code true} if the match operation succeeded; otherwise,
    * {@code false}.
    */
-  bool succeeded() {
-    return mismatchedNode == null;
-  }
-
-  /**
-   * Get the tree pattern we are matching against.
-   *
-   * @return The tree pattern we are matching against.
-   */
-
-  ParseTreePattern getPattern() {
-    return pattern;
-  }
-
-  /**
-   * Get the parse tree we are trying to match to a pattern.
-   *
-   * @return The {@link ParseTree} we are trying to match to a pattern.
-   */
-
-  ParseTree getTree() {
-    return tree;
-  }
+  bool get succeeded => mismatchedNode == null;
 
   /**
    * {@inheritDoc}
    */
   String toString() {
-    return "Match ${succeeded() ? "succeeded" : "failed"}; found ${getLabels().length} labels";
+    return "Match ${succeeded ? "succeeded" : "failed"}; found ${labels.length} labels";
   }
 }
 
@@ -194,26 +161,37 @@ class ParseTreeMatch {
  */
 class ParseTreePattern {
   /**
-   * This is the backing field for {@link #getPatternRuleIndex()}.
+   * Get the parser rule which serves as the outermost rule for the tree
+   * pattern.
+   *
+   * @return The parser rule which serves as the outermost rule for the tree
+   * pattern.
    */
   final int patternRuleIndex;
 
   /**
-   * This is the backing field for {@link #getPattern()}.
+   * Get the tree pattern in concrete syntax form.
+   *
+   * @return The tree pattern in concrete syntax form.
    */
-
   final String pattern;
 
-  /**
-   * This is the backing field for {@link #getPatternTree()}.
-   */
 
+  /**
+   * Get the tree pattern as a {@link ParseTree}. The rule and token tags from
+   * the pattern are present in the parse tree as terminal nodes with a symbol
+   * of type {@link RuleTagToken} or {@link TokenTagToken}.
+   *
+   * @return The tree pattern as a {@link ParseTree}.
+   */
   final ParseTree patternTree;
 
   /**
-   * This is the backing field for {@link #getMatcher()}.
+   * Get the {@link ParseTreePatternMatcher} which created this tree pattern.
+   *
+   * @return The {@link ParseTreePatternMatcher} which created this tree
+   * pattern.
    */
-
   final ParseTreePatternMatcher matcher;
 
   /**
@@ -250,51 +228,7 @@ class ParseTreePattern {
    * pattern; otherwise, {@code false}.
    */
   bool matches(ParseTree tree) {
-    return matcher.match(tree, pattern: this).succeeded();
-  }
-
-  /**
-   * Get the {@link ParseTreePatternMatcher} which created this tree pattern.
-   *
-   * @return The {@link ParseTreePatternMatcher} which created this tree
-   * pattern.
-   */
-
-  ParseTreePatternMatcher getMatcher() {
-    return matcher;
-  }
-
-  /**
-   * Get the tree pattern in concrete syntax form.
-   *
-   * @return The tree pattern in concrete syntax form.
-   */
-
-  String getPattern() {
-    return pattern;
-  }
-
-  /**
-   * Get the parser rule which serves as the outermost rule for the tree
-   * pattern.
-   *
-   * @return The parser rule which serves as the outermost rule for the tree
-   * pattern.
-   */
-  int getPatternRuleIndex() {
-    return patternRuleIndex;
-  }
-
-  /**
-   * Get the tree pattern as a {@link ParseTree}. The rule and token tags from
-   * the pattern are present in the parse tree as terminal nodes with a symbol
-   * of type {@link RuleTagToken} or {@link TokenTagToken}.
-   *
-   * @return The tree pattern as a {@link ParseTree}.
-   */
-
-  ParseTree getPatternTree() {
-    return patternTree;
+    return matcher.match(tree, pattern: this).succeeded;
   }
 }
 
@@ -357,12 +291,14 @@ class ParseTreePattern {
  */
 class ParseTreePatternMatcher {
   /**
-   * This is the backing field for {@link #getLexer()}.
+   * Used to convert the tree pattern string into a series of tokens. The
+   * input stream is reset.
    */
   final Lexer lexer;
 
   /**
-   * This is the backing field for {@link #getParser()}.
+   * Used to collect to the grammar file name, token names, rule names for
+   * used to parse the pattern into a parse tree.
    */
   final Parser parser;
 
@@ -414,7 +350,7 @@ class ParseTreePatternMatcher {
 
     MultiMap<String, ParseTree> labels = new MultiMap<String, ParseTree>();
     ParseTree mismatchedNode =
-        matchImpl(tree, pattern.getPatternTree(), labels);
+        matchImpl(tree, pattern.patternTree, labels);
     return mismatchedNode == null;
   }
 
@@ -433,7 +369,7 @@ class ParseTreePatternMatcher {
 
     MultiMap<String, ParseTree> labels = new MultiMap<String, ParseTree>();
     ParseTree mismatchedNode =
-        matchImpl(tree, pattern.getPatternTree(), labels);
+        matchImpl(tree, pattern.patternTree, labels);
     return new ParseTreeMatch(tree, pattern, labels, mismatchedNode);
   }
 
@@ -448,14 +384,14 @@ class ParseTreePatternMatcher {
 
     ParserInterpreter parserInterp = new ParserInterpreter(
         parser.grammarFileName,
-        parser.getVocabulary(),
+        parser.vocabulary,
         parser.ruleNames,
-        parser.getATNWithBypassAlts(),
+        parser.ATNWithBypassAlts,
         tokens);
 
     ParseTree tree = null;
     try {
-      parserInterp.setErrorHandler(new BailErrorStrategy());
+      parserInterp.errorHandler = new BailErrorStrategy();
       tree = parserInterp.parse(patternRuleIndex);
 //			System.out.println("pattern tree = "+tree.toStringTree(parserInterp));
     } on ParseCancellationException catch (e) {
@@ -472,24 +408,6 @@ class ParseTreePatternMatcher {
     }
 
     return new ParseTreePattern(this, pattern, patternRuleIndex, tree);
-  }
-
-  /**
-   * Used to convert the tree pattern string into a series of tokens. The
-   * input stream is reset.
-   */
-
-  Lexer getLexer() {
-    return lexer;
-  }
-
-  /**
-   * Used to collect to the grammar file name, token names, rule names for
-   * used to parse the pattern into a parse tree.
-   */
-
-  Parser getParser() {
-    return parser;
   }
 
   // ---- SUPPORT CODE ----
@@ -529,7 +447,7 @@ class ParseTreePatternMatcher {
           if (tokenTagToken.label != null) {
             labels.put(tokenTagToken.label, tree);
           }
-        } else if (t1.getText() == t2.getText()) {
+        } else if (t1.text == t2.text) {
           // x and x
         } else {
           // x and y
@@ -569,7 +487,7 @@ class ParseTreePatternMatcher {
       }
 
       // (expr ...) and (expr ...)
-      if (r1.getChildCount() != r2.getChildCount()) {
+      if (r1.childCount != r2.childCount) {
         if (mismatchedNode == null) {
           mismatchedNode = r1;
         }
@@ -577,7 +495,7 @@ class ParseTreePatternMatcher {
         return mismatchedNode;
       }
 
-      int n = r1.getChildCount();
+      int n = r1.childCount;
       for (int i = 0; i < n; i++) {
         ParseTree childMatch =
             matchImpl(r1.getChild(i), patternTree.getChild(i), labels);
@@ -597,7 +515,7 @@ class ParseTreePatternMatcher {
   RuleTagToken getRuleTagToken(ParseTree t) {
     if (t is RuleNode) {
       RuleNode r = t;
-      if (r.getChildCount() == 1 && r.getChild(0) is TerminalNode) {
+      if (r.childCount == 1 && r.getChild(0) is TerminalNode) {
         TerminalNode c = r.getChild(0);
         if (c.symbol is RuleTagToken) {
 //					System.out.println("rule tag subtree "+t.toStringTree(parser));
@@ -618,38 +536,38 @@ class ParseTreePatternMatcher {
       if (chunk is TagChunk) {
         TagChunk tagChunk = chunk;
         // add special rule token or conjure up new token from name
-        if (isUpperCase(tagChunk.getTag()[0])) {
-          int ttype = parser.getTokenType(tagChunk.getTag());
+        if (isUpperCase(tagChunk.tag[0])) {
+          int ttype = parser.getTokenType(tagChunk.tag);
           if (ttype == Token.INVALID_TYPE) {
             throw new ArgumentError("Unknown token " +
-                tagChunk.getTag() +
+                tagChunk.tag +
                 " in pattern: " +
                 pattern);
           }
           TokenTagToken t =
-              new TokenTagToken(tagChunk.getTag(), ttype, tagChunk.getLabel());
+              new TokenTagToken(tagChunk.tag, ttype, tagChunk.label);
           tokens.add(t);
-        } else if (isLowerCase(tagChunk.getTag()[0])) {
-          int ruleIndex = parser.getRuleIndex(tagChunk.getTag());
+        } else if (isLowerCase(tagChunk.tag[0])) {
+          int ruleIndex = parser.getRuleIndex(tagChunk.tag);
           if (ruleIndex == -1) {
             throw new ArgumentError("Unknown rule " +
-                tagChunk.getTag() +
+                tagChunk.tag +
                 " in pattern: " +
                 pattern);
           }
           int ruleImaginaryTokenType =
-              parser.getATNWithBypassAlts().ruleToTokenType[ruleIndex];
+              parser.ATNWithBypassAlts.ruleToTokenType[ruleIndex];
           tokens.add(new RuleTagToken(
-              tagChunk.getTag(), ruleImaginaryTokenType, tagChunk.getLabel()));
+              tagChunk.tag, ruleImaginaryTokenType, tagChunk.label));
         } else {
           throw new ArgumentError(
-              "invalid tag: " + tagChunk.getTag() + " in pattern: " + pattern);
+              "invalid tag: " + tagChunk.tag + " in pattern: " + pattern);
         }
       } else {
         TextChunk textChunk = chunk;
         InputStream inputStream =
-            new InputStream.fromString(textChunk.getText());
-        lexer.setInputStream(inputStream);
+            new InputStream.fromString(textChunk.text);
+        lexer.inputStream = inputStream;
         Token t = lexer.nextToken();
         while (t.type != Token.EOF) {
           tokens.add(t);
@@ -747,8 +665,8 @@ class ParseTreePatternMatcher {
       Chunk c = chunks[i];
       if (c is TextChunk) {
         TextChunk tc = c;
-        String unescaped = tc.getText().replaceAll(escape, "");
-        if (unescaped.length < tc.getText().length) {
+        String unescaped = tc.text.replaceAll(escape, "");
+        if (unescaped.length < tc.text.length) {
           chunks[i] = new TextChunk(unescaped);
         }
       }

@@ -30,26 +30,26 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
    * @return A {@link Vocabulary} instance providing information about the
    * vocabulary used by the grammar.
    */
-  Vocabulary getVocabulary();
+  Vocabulary get vocabulary;
 
   /**
    * Get a map from token names to token types.
    *
    * <p>Used for XPath and tree pattern compilation.</p>
    */
-  Map<String, int> getTokenTypeMap() {
-    Vocabulary vocabulary = getVocabulary();
+  Map<String, int> get tokenTypeMap {
+    Vocabulary _vocabulary = vocabulary;
 
-    Map<String, int> result = tokenTypeMapCache[vocabulary];
+    Map<String, int> result = tokenTypeMapCache[_vocabulary];
     if (result == null) {
       result = {};
       for (int i = 0; i <= getATN().maxTokenType; i++) {
-        String literalName = vocabulary.getLiteralName(i);
+        String literalName = _vocabulary.getLiteralName(i);
         if (literalName != null) {
           result[literalName] = i;
         }
 
-        String symbolicName = vocabulary.getSymbolicName(i);
+        String symbolicName = _vocabulary.getSymbolicName(i);
         if (symbolicName != null) {
           result[symbolicName] = i;
         }
@@ -57,7 +57,7 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
 
       result["EOF"] = Token.EOF;
       result = Map.unmodifiable(result);
-      tokenTypeMapCache[vocabulary] = result;
+      tokenTypeMapCache[_vocabulary] = result;
     }
 
     return result;
@@ -68,7 +68,7 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
    *
    * <p>Used for XPath and tree pattern compilation.</p>
    */
-  Map<String, int> getRuleIndexMap() {
+  Map<String, int> get ruleIndexMap {
     final _ruleNames = ruleNames;
     if (_ruleNames == null) {
       throw UnsupportedError(
@@ -85,7 +85,7 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
   }
 
   int getTokenType(String tokenName) {
-    final ttype = getTokenTypeMap()[tokenName];
+    final ttype = tokenTypeMap[tokenName];
     if (ttype != null) return ttype;
     return Token.INVALID_TYPE;
   }
@@ -118,7 +118,7 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
    *
    * @since 4.3
    */
-  ParseInfo getParseInfo() {
+  ParseInfo get parseInfo {
     return null;
   }
 
@@ -148,12 +148,12 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
     _listeners.clear();
   }
 
-  List<ErrorListener> getErrorListeners() {
+  List<ErrorListener> get errorListeners {
     return _listeners;
   }
 
-  ErrorListener getErrorListenerDispatch() {
-    return new ProxyErrorListener(getErrorListeners());
+  ErrorListener get errorListenerDispatch {
+    return new ProxyErrorListener(errorListeners);
   }
 
   // subclass needs to override these if there are sempreds or actions
@@ -187,9 +187,9 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
 
   IntStream get inputStream;
 
-  void setInputStream(IntStream input);
+  void set inputStream(IntStream input);
 
-  TokenFactory getTokenFactory();
+  TokenFactory get tokenFactory;
 
-  void setTokenFactory(TokenFactory input);
+  void set tokenFactory(TokenFactory input);
 }

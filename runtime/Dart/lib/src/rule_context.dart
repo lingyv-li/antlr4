@@ -9,7 +9,6 @@ import 'parser.dart';
 import 'parser_rule_context.dart';
 import 'recognizer.dart';
 import 'tree/tree.dart';
-import 'tree/tree.dart';
 
 /** A rule context is a record of a single rule invocation.
  *
@@ -63,20 +62,20 @@ import 'tree/tree.dart';
  */
 abstract class RuleContext extends RuleNode {
   /// What context invoked this rule?
-  RuleContext parentCtx = null;
+  RuleContext parent = null;
 
   /// What state invoked the rule associated with this context?
   /// The "return address" is the followState of invokingState
   /// If parent is null, this should be -1.
   int invokingState = -1;
 
-  RuleContext({this.parentCtx, this.invokingState});
+  RuleContext({this.parent, this.invokingState});
 
   int depth() {
     var n = 0;
     var p = this;
     while (p != null) {
-      p = p.parentCtx;
+      p = p.parent;
       n++;
     }
     return n;
@@ -84,20 +83,14 @@ abstract class RuleContext extends RuleNode {
 
   /// A context is empty if there is no invoking state; meaning nobody call
   /// current context.
-  isEmpty() => invokingState == -1;
+  get isEmpty => invokingState == -1;
 
   /// satisfy the ParseTree / SyntaxTree interface
-  getSourceInterval() => Interval.INVALID;
+  get sourceInterval => Interval.INVALID;
 
   get ruleContext => this;
 
-  RuleContext getParent() => parentCtx;
-
-  setParent(RuleContext parent) {
-    this.parentCtx = parent;
-  }
-
-  getPayload() => this;
+  get payload => this;
 
   /**
    * Return the combined text of all child nodes. This method only considers
@@ -107,14 +100,14 @@ abstract class RuleContext extends RuleNode {
    *  added to the parse trees, they will not appear in the output of this
    *  method.
    */
-  String getText() {
-    if (getChildCount() == 0) {
+  String get text {
+    if (childCount == 0) {
       return "";
     }
 
     final builder = new StringBuffer();
-    for (int i = 0; i < getChildCount(); i++) {
-      builder.write(getChild(i).getText());
+    for (int i = 0; i < childCount; i++) {
+      builder.write(getChild(i).text);
     }
 
     return builder.toString();
@@ -128,20 +121,20 @@ abstract class RuleContext extends RuleNode {
   /// a subclass of ParserRuleContext with backing field and set
   /// option contextSuperClass.
   /// to set it.
-  getAltNumber() => ATN.INVALID_ALT_NUMBER;
+  get altNumber => ATN.INVALID_ALT_NUMBER;
 
   /// Set the outer alternative number for this context node. Default
   /// implementation does nothing to avoid backing field overhead for
   /// trees that don't need it.  Create
   /// a subclass of ParserRuleContext with backing field and set
   /// option contextSuperClass.
-  setAltNumber(int altNumber) {}
+  set altNumber(int altNumber) {}
 
   ParseTree getChild(int i) {
     return null;
   }
 
-  getChildCount() => 0;
+  get childCount => 0;
 
   T accept<T>(ParseTreeVisitor<T> visitor) {
     return visitor.visitChildren(this);
@@ -173,12 +166,12 @@ abstract class RuleContext extends RuleNode {
         buf.write(ruleName);
       }
 
-      if (p.getParent() != null &&
-          (ruleNames != null || !p.getParent().isEmpty())) {
+      if (p.parent != null &&
+          (ruleNames != null || !p.parent.isEmpty())) {
         buf.write(" ");
       }
 
-      p = p.getParent();
+      p = p.parent;
     }
 
     buf.write("]");

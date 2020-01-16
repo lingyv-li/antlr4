@@ -122,11 +122,7 @@ abstract class ATNState {
     return stateNumber.toString();
   }
 
-  List<Transition> getTransitions() {
-    return transitions;
-  }
-
-  int getNumberOfTransitions() {
+  int get numberOfTransitions {
     return transitions.length;
   }
 
@@ -253,7 +249,7 @@ class BlockEndState extends ATNState {
 }
 
 class StarLoopbackState extends ATNState {
-  StarLoopEntryState getLoopEntryState() {
+  StarLoopEntryState get loopEntryState {
     return transition(0).target;
   }
 

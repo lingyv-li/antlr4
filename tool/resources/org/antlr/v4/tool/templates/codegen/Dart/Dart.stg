@@ -216,7 +216,7 @@ class <parser.name> extends <superClass; null="Parser"> {
   static const int EOF = IntStream.EOF;
 
   static final List\<DFA> _decisionToDFA = List.generate(
-      _ATN.getNumberOfDecisions(), (i) => new DFA(_ATN.getDecisionState(i), i));
+      _ATN.numberOfDecisions, (i) => new DFA(_ATN.getDecisionState(i), i));
   static final PredictionContextCache _sharedContextCache = new PredictionContextCache();
   <if(parser.tokens)>
   static const int <parser.tokens:{k | <k> = <parser.tokens.(k)>}; separator=", ", wrap, anchor>;
@@ -257,21 +257,15 @@ case <f.ruleIndex>:
 >>
 
 vocabulary(literalNames, symbolicNames) ::= <<
-static List\<String> makeLiteralNames() {
-  return [
+static final List\<String> _LITERAL_NAMES = [
     <literalNames:{t | <t>}; null="null", separator=", ", wrap, anchor>
   ];
-}
-static final List\<String> _LITERAL_NAMES = makeLiteralNames();
-static List\<String> makeSymbolicNames() {
-  return [
+static final List\<String> _SYMBOLIC_NAMES = [
     <symbolicNames:{t | <t>}; null="null", separator=", ", wrap, anchor>
   ];
-}
-static final List\<String> _SYMBOLIC_NAMES = makeSymbolicNames();
 static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
-Vocabulary getVocabulary() {
+Vocabulary get vocabulary {
   return VOCABULARY;
 }
 >>
@@ -344,8 +338,8 @@ RuleFunction(currentRule,args,code,locals,ruleCtx,altLabelCtxs,namedActions,fina
     <namedActions.after>
   } <if(exceptions)> <exceptions; separator="\n"><else>on RecognitionException catch (re) {
     _localctx.exception = re;
-    getErrorHandler().reportError(this, re);
-    getErrorHandler().recover(this, re);
+    errorHandler.reportError(this, re);
+    errorHandler.recover(this, re);
   } <endif> finally {
     <finallyAction>
     exitRule();
@@ -376,8 +370,8 @@ LeftRecursiveRuleFunction(currentRule,args,code,locals,ruleCtx,altLabelCtxs,
     <namedActions.after>
   } on RecognitionException catch (re) {
     _localctx.exception = re;
-    getErrorHandler().reportError(this, re);
-    getErrorHandler().recover(this, re);
+    errorHandler.reportError(this, re);
+    errorHandler.recover(this, re);
   } finally {
     <finallyAction>
     unrollRecursionContexts(_parentctx);
@@ -402,10 +396,10 @@ CodeBlockForAlt(currentAltCodeBlock, locals, preamble, ops) ::= <<
 
 LL1AltBlock(choice, preamble, alts, error) ::= <<
 state = <choice.stateNumber>;
-getErrorHandler().sync(this);
-<if(choice.label)><labelref(choice.label)> = getTokenStream().LT(1);<endif>
+errorHandler.sync(this);
+<if(choice.label)><labelref(choice.label)> = tokenStream.LT(1);<endif>
 <preamble; separator="\n">
-switch (getTokenStream().LA(1)) {
+switch (tokenStream.LA(1)) {
 <choice.altLook,alts:{look,alt| <cases(ttypes=look)>
   <alt>
   break;}; separator="\n">
@@ -416,8 +410,8 @@ default:
 
 LL1OptionalBlock(choice, alts, error) ::= <<
 state = <choice.stateNumber>;
-getErrorHandler().sync(this);
-switch (getTokenStream().LA(1)) {
+errorHandler.sync(this);
+switch (tokenStream.LA(1)) {
 <choice.altLook,alts:{look,alt| <cases(ttypes=look)>
   <alt>
   break;}; separator="\n">
@@ -428,7 +422,7 @@ default:
 
 LL1OptionalBlockSingleAlt(choice, expr, alts, preamble, error, followExpr) ::= <<
 state = <choice.stateNumber>;
-getErrorHandler().sync(this);
+errorHandler.sync(this);
 <preamble; separator="\n">
 if (<expr>) {
   <alts; separator="\n">
@@ -438,24 +432,24 @@ if (<expr>) {
 
 LL1StarBlockSingleAlt(choice, loopExpr, alts, preamble, iteration) ::= <<
 state = <choice.stateNumber>;
-getErrorHandler().sync(this);
+errorHandler.sync(this);
 <preamble; separator="\n">
 while (<loopExpr>) {
   <alts; separator="\n">
   state = <choice.loopBackStateNumber>;
-  getErrorHandler().sync(this);
+  errorHandler.sync(this);
   <iteration>
 }
 >>
 
 LL1PlusBlockSingleAlt(choice, loopExpr, alts, preamble, iteration) ::= <<
 state = <choice.blockStartStateNumber>; <! alt block decision !>
-getErrorHandler().sync(this);
+errorHandler.sync(this);
 <preamble; separator="\n">
 do {
   <alts; separator="\n">
   state = <choice.stateNumber>; <! loopback/exit decision !>
-  getErrorHandler().sync(this);
+  errorHandler.sync(this);
   <iteration>
 } while (<loopExpr>);
 >>
@@ -464,10 +458,10 @@ do {
 
 AltBlock(choice, preamble, alts, error) ::= <<
 state = <choice.stateNumber>;
-getErrorHandler().sync(this);
-<if(choice.label)><labelref(choice.label)> = getTokenStream().LT(1);<endif>
+errorHandler.sync(this);
+<if(choice.label)><labelref(choice.label)> = tokenStream.LT(1);<endif>
 <preamble; separator="\n">
-switch (interpreter.adaptivePredict(getTokenStream(), <choice.decision>, context)) {
+switch (interpreter.adaptivePredict(tokenStream, <choice.decision>, context)) {
 <alts:{alt |
 case <i>:
   <alt>
@@ -477,8 +471,8 @@ case <i>:
 
 OptionalBlock(choice, alts, error) ::= <<
 state = <choice.stateNumber>;
-getErrorHandler().sync(this);
-switch (interpreter.adaptivePredict(getTokenStream(), <choice.decision>, context)) {
+errorHandler.sync(this);
+switch (interpreter.adaptivePredict(tokenStream, <choice.decision>, context)) {
 <alts:{alt |
 case <i><if(!choice.ast.greedy)>+1<endif>:
   <alt>
@@ -488,22 +482,22 @@ case <i><if(!choice.ast.greedy)>+1<endif>:
 
 StarBlock(choice, alts, sync, iteration) ::= <<
 state = <choice.stateNumber>;
-getErrorHandler().sync(this);
-_alt = interpreter.adaptivePredict(getTokenStream(), <choice.decision>, context);
+errorHandler.sync(this);
+_alt = interpreter.adaptivePredict(tokenStream, <choice.decision>, context);
 while (_alt != <choice.exitAlt> && _alt != ATN.INVALID_ALT_NUMBER) {
   if (_alt == 1<if(!choice.ast.greedy)> + 1<endif>) {
     <iteration>
     <alts> <! should only be one !>
   }
   state = <choice.loopBackStateNumber>;
-  getErrorHandler().sync(this);
-  _alt = interpreter.adaptivePredict(getTokenStream(), <choice.decision>, context);
+  errorHandler.sync(this);
+  _alt = interpreter.adaptivePredict(tokenStream, <choice.decision>, context);
 }
 >>
 
 PlusBlock(choice, alts, error) ::= <<
 state = <choice.blockStartStateNumber>; <! alt block decision !>
-getErrorHandler().sync(this);
+errorHandler.sync(this);
 _alt = 1<if(!choice.ast.greedy)>+1<endif>;
 do {
   switch (_alt) {
@@ -515,8 +509,8 @@ case <i><if(!choice.ast.greedy)> + 1<endif>:
     <error>
   }
   state = <choice.loopBackStateNumber>; <! loopback/exit decision !>
-  getErrorHandler().sync(this);
-  _alt = interpreter.adaptivePredict(getTokenStream(), <choice.decision>, context);
+  errorHandler.sync(this);
+  _alt = interpreter.adaptivePredict(tokenStream, <choice.decision>, context);
 } while (_alt != <choice.exitAlt> && _alt != ATN.INVALID_ALT_NUMBER);
 >>
 
@@ -572,13 +566,13 @@ MatchNotSet(m, expr, capture) ::= "<CommonSetStuff(m, expr, capture, true)>"
 
 CommonSetStuff(m, expr, capture, invert) ::= <<
 state = <m.stateNumber>;
-<if(m.labels)><m.labels:{l | <labelref(l)> = }>getTokenStream().LT(1);<endif>
+<if(m.labels)><m.labels:{l | <labelref(l)> = }>tokenStream.LT(1);<endif>
 <capture>
 if (<if(invert)><m.varName> \<= 0 || <else>!<endif>(<expr>)) {
-  <if(m.labels)><m.labels:{l | <labelref(l)> = }><endif>getErrorHandler().recoverInline(this);
+  <if(m.labels)><m.labels:{l | <labelref(l)> = }><endif>errorHandler.recoverInline(this);
 } else {
-  if ( getTokenStream().LA(1)==IntStream.EOF ) matchedEOF = true;
-  getErrorHandler().reportMatch(this);
+  if ( tokenStream.LA(1)==IntStream.EOF ) matchedEOF = true;
+  errorHandler.reportMatch(this);
   consume();
 }
 >>
@@ -641,13 +635,13 @@ TokenPropertyRef_int(t) ::= "<ctx(t)>.<t.label> != null ? int.parse(<ctx(t)>.<t.
 
 RulePropertyRef_start(r) ::= "<ctx(r)>.<r.label>?.start"
 RulePropertyRef_stop(r)	 ::= "<ctx(r)>.<r.label>?.stop"
-RulePropertyRef_text(r)	 ::= "<ctx(r)>.<r.label> != null ? getTokenStream().getTextRange(<ctx(r)>.<r.label>.start, <ctx(r)>.<r.label>.stop) : null"
+RulePropertyRef_text(r)	 ::= "<ctx(r)>.<r.label> != null ? tokenStream.getTextRange(<ctx(r)>.<r.label>.start, <ctx(r)>.<r.label>.stop) : null"
 RulePropertyRef_ctx(r)	 ::= "<ctx(r)>.<r.label>"
 RulePropertyRef_parser(r)	 ::= "this"
 
 ThisRulePropertyRef_start(r) ::= "_localctx.start"
 ThisRulePropertyRef_stop(r)	 ::= "_localctx.stop"
-ThisRulePropertyRef_text(r)	 ::= "getTokenStream().getTextRange(_localctx.start, getTokenStream().LT(-1))"
+ThisRulePropertyRef_text(r)	 ::= "tokenStream.getTextRange(_localctx.start, tokenStream.LT(-1))"
 ThisRulePropertyRef_ctx(r)	 ::= "_localctx"
 ThisRulePropertyRef_parser(r)	 ::= "this"
 
@@ -693,8 +687,8 @@ ImplicitRuleLabel(ruleName)	  ::= "<ruleName>"
 ImplicitSetLabel(id)		  ::= "_tset<id>"
 ListLabelName(label)		  ::= "<label>"
 
-CaptureNextToken(d) ::= "<d.varName> = getTokenStream().LT(1);"
-CaptureNextTokenType(d) ::= "<d.varName> = getTokenStream().LA(1);"
+CaptureNextToken(d) ::= "<d.varName> = tokenStream.LT(1);"
+CaptureNextTokenType(d) ::= "<d.varName> = tokenStream.LA(1);"
 
 StructDecl(struct,ctorAttrs,attrs,getters,dispatchMethods,interfaces,extensionMembers)
   ::= <<
@@ -750,7 +744,7 @@ ctx(actionChunk) ::= "_localctx"
 // used for left-recursive rules
 recRuleAltPredicate(ruleName,opPrec)  ::= "precpred(context, <opPrec>)"
 recRuleSetReturnAction(src,name)	  ::= "$<name> = $<src>.<name>;"
-recRuleSetStopToken()                 ::= "context.stop = getTokenStream().LT(-1);"
+recRuleSetStopToken()                 ::= "context.stop = tokenStream.LT(-1);"
 
 recRuleAltStartAction(ruleName, ctxName, label, isListLabel) ::= <<
 _localctx = new <ctxName>Context(_parentctx, _parentState);
@@ -807,7 +801,7 @@ class <lexer.name> extends <superClass; null="Lexer"> {
   static final _versionCheck = () { RuntimeMetaData.checkVersion("<lexerFile.ANTLRVersion>", RuntimeMetaData.VERSION); }();
 
   static final List\<DFA> _decisionToDFA = List.generate(
-        _ATN.getNumberOfDecisions(), (i) => new DFA(_ATN.getDecisionState(i), i));
+        _ATN.numberOfDecisions, (i) => new DFA(_ATN.getDecisionState(i), i));
   static final PredictionContextCache _sharedContextCache = new PredictionContextCache();
   <if(lexer.tokens)>
   static const int

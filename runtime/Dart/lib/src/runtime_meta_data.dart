@@ -82,7 +82,7 @@ class RuntimeMetaData {
    * @return The currently executing version of the ANTLR 4 library
    */
 
-  static String getRuntimeVersion() {
+  static String get runtimeVersion {
     return VERSION;
   }
 

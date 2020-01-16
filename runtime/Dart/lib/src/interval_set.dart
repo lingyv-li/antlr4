@@ -28,10 +28,7 @@ class Interval {
   static int hits = 0;
   static int outOfRange = 0;
 
-  Interval(int a, int b) {
-    this.a = a;
-    this.b = b;
-  }
+  Interval(this.a, this.b);
 
   /** Interval objects are used readonly so share all with the
    *  same single value a==b up to some max size.  Use an array as a perfect hash.
@@ -314,7 +311,7 @@ class IntervalSet {
 
   /** {@inheritDoc} */
   IntervalSet complement(IntervalSet vocabulary) {
-    if (vocabulary == null || vocabulary.isNil()) {
+    if (vocabulary == null || vocabulary.isNil) {
       return null; // nothing in common with null set
     }
     IntervalSet vocabularyIS;
@@ -329,7 +326,7 @@ class IntervalSet {
   }
 
   IntervalSet operator -(IntervalSet a) {
-    if (a == null || a.isNil()) {
+    if (a == null || a.isNil) {
       return new IntervalSet.ofSet(this);
     }
 
@@ -348,12 +345,12 @@ class IntervalSet {
    * {@code null}, it is treated as though it was an empty set.
    */
   static IntervalSet subtract(IntervalSet left, IntervalSet right) {
-    if (left == null || left.isNil()) {
+    if (left == null || left.isNil) {
       return new IntervalSet();
     }
 
     IntervalSet result = new IntervalSet.ofSet(left);
-    if (right == null || right.isNil()) {
+    if (right == null || right.isNil) {
       // right set has no elements; just return the copy of the current set
       return result;
     }
@@ -513,7 +510,7 @@ class IntervalSet {
 
   /** {@inheritDoc} */
 
-  bool isNil() {
+  bool get isNil {
     return intervals == null || intervals.isEmpty;
   }
 
@@ -523,8 +520,8 @@ class IntervalSet {
    * @return the maximum value contained in the set.
    * @throws RuntimeException if set is empty
    */
-  int getMaxElement() {
-    if (isNil()) {
+  int get maxElement {
+    if (isNil) {
       throw new StateError("set is empty");
     }
     return intervals.last.b;
@@ -536,17 +533,12 @@ class IntervalSet {
    * @return the minimum value contained in the set.
    * @throws RuntimeException if set is empty
    */
-  int getMinElement() {
-    if (isNil()) {
+  int get minElement {
+    if (isNil) {
       throw new StateError("set is empty");
     }
 
     return intervals.first.a;
-  }
-
-  /** Return a list of Interval objects. */
-  List<Interval> getIntervals() {
-    return intervals;
   }
 
   int get hashCode {

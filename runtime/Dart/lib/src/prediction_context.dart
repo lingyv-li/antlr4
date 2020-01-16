@@ -52,11 +52,9 @@ abstract class PredictionContext {
    *  }
    * </pre>
    */
-  int cachedHashCode;
+  final int cachedHashCode;
 
-  PredictionContext(int cachedHashCode) {
-    this.cachedHashCode = cachedHashCode;
-  }
+  PredictionContext(this.cachedHashCode);
 
   /** Convert a {@link RuleContext} tree to a {@link PredictionContext} graph.
    *  Return {@link #EMPTY} if {@code outerContext} is empty or null.
@@ -66,13 +64,13 @@ abstract class PredictionContext {
 
     // if we are in RuleContext of start rule, s, then PredictionContext
     // is EMPTY. Nobody called us. (if we are empty, return empty)
-    if (outerContext.getParent() == null || outerContext == RuleContext.EMPTY) {
+    if (outerContext.parent == null || outerContext == RuleContext.EMPTY) {
       return PredictionContext.EMPTY;
     }
 
     // If we have a parent, convert it to a PredictionContext graph
     PredictionContext parent = EMPTY;
-    parent = PredictionContext.fromRuleContext(atn, outerContext.getParent());
+    parent = PredictionContext.fromRuleContext(atn, outerContext.parent);
 
     ATNState state = atn.states[outerContext.invokingState];
     RuleTransition transition = state.transition(0);

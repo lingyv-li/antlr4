@@ -35,10 +35,7 @@ class ProfilingATNSimulator extends ParserATNSimulator {
   int conflictingAltResolvedBySLL;
 
   ProfilingATNSimulator(Parser parser)
-      : super(
-            parser,
-            parser.interpreter.atn,
-            parser.interpreter.decisionToDFA,
+      : super(parser, parser.interpreter.atn, parser.interpreter.decisionToDFA,
             parser.interpreter.sharedContextCache) {
     numDecisions = atn.decisionToState.length;
     decisions = List<DecisionInfo>(numDecisions);
@@ -173,7 +170,7 @@ class ProfilingATNSimulator extends ParserATNSimulator {
     if (conflictingAlts != null) {
       conflictingAltResolvedBySLL = conflictingAlts.nextset(0);
     } else {
-      conflictingAltResolvedBySLL = configs.getAlts().nextset(0);
+      conflictingAltResolvedBySLL = configs.alts.nextset(0);
     }
     decisions[currentDecision].LL_Fallback++;
     super.reportAttemptingFullContext(
@@ -193,12 +190,8 @@ class ProfilingATNSimulator extends ParserATNSimulator {
 
   void reportAmbiguity(DFA dfa, DFAState D, int startIndex, int stopIndex,
       bool exact, BitSet ambigAlts, ATNConfigSet configs) {
-    int prediction;
-    if (ambigAlts != null) {
-      prediction = ambigAlts.nextset(0);
-    } else {
-      prediction = configs.getAlts().nextset(0);
-    }
+    final int prediction =
+        ambigAlts != null ? ambigAlts.nextset(0) : configs.alts.nextset(0);
     if (configs.fullCtx && prediction != conflictingAltResolvedBySLL) {
       // Even though this is an ambiguity we are reporting, we can
       // still detect some context sensitivities.  Both SLL and LL
@@ -223,11 +216,7 @@ class ProfilingATNSimulator extends ParserATNSimulator {
 
   // ---------------------------------------------------------------------
 
-  List<DecisionInfo> getDecisionInfo() {
+  List<DecisionInfo> get decisionInfo {
     return decisions;
-  }
-
-  DFAState getCurrentState() {
-    return currentState;
   }
 }

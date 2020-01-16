@@ -15,6 +15,7 @@ import '../../util/bit_set.dart';
 import '../../util/utils.dart';
 import 'atn.dart';
 import 'atn_config.dart';
+import 'atn_state.dart';
 import 'semantic_context.dart';
 
 class ATNConfigSet extends Iterable<ATNConfig> {
@@ -113,7 +114,7 @@ class ATNConfigSet extends Iterable<ATNConfig> {
     if (config.semanticContext != SemanticContext.NONE) {
       hasSemanticContext = true;
     }
-    if (config.getOuterContextDepth() > 0) {
+    if (config.outerContextDepth > 0) {
       dipsIntoOuterContext = true;
     }
     final existing = configLookup.lookup(config) ?? config;
@@ -143,12 +144,12 @@ class ATNConfigSet extends Iterable<ATNConfig> {
   }
 
   /** Return a List holding list of configs */
-  List<ATNConfig> getElements() {
+  List<ATNConfig> get elements {
     return configs;
   }
 
-  getStates() {
-    var states = new Set();
+  Set<ATNState> get states {
+    var states = new Set<ATNState>();
     for (var i = 0; i < this.configs.length; i++) {
       states.add(this.configs[i].state);
     }
@@ -163,15 +164,15 @@ class ATNConfigSet extends Iterable<ATNConfig> {
    *
    * @since 4.3
    */
-  BitSet getAlts() {
-    BitSet alts = new BitSet(); // TODO what is the initial length?
+  BitSet get alts {
+    BitSet alts = new BitSet();
     for (ATNConfig config in configs) {
       alts.set(config.alt);
     }
     return alts;
   }
 
-  List<SemanticContext> getPredicates() {
+  List<SemanticContext> get predicates {
     List<SemanticContext> preds = [];
     for (ATNConfig c in configs) {
       if (c.semanticContext != SemanticContext.NONE) {
@@ -264,7 +265,7 @@ class ATNConfigSet extends Iterable<ATNConfig> {
 
   String toString() {
     final buf = new StringBuffer();
-    buf.write(arrayToString(getElements()));
+    buf.write(arrayToString(elements));
     if (hasSemanticContext)
       buf.write(",hasSemanticContext=$hasSemanticContext");
     if (uniqueAlt != ATN.INVALID_ALT_NUMBER) buf.write(",uniqueAlt=$uniqueAlt");

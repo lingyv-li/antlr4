@@ -12,7 +12,7 @@ class DFA {
 
   DFAState s0;
 
-  int decision;
+  final int decision;
 
   /** From which ATN state did we create this DFA? */
 

@@ -36,7 +36,7 @@ abstract class TokenSource {
    * @return The line number for the current position in the input stream, or
    * 0 if the current token source does not track line numbers.
    */
-  int getLine();
+  int get line;
 
   /**
    * Get the index into the current line for the current position in the input
@@ -70,7 +70,7 @@ abstract class TokenSource {
    *
    * @param factory The {@link TokenFactory} to use for creating tokens.
    */
-  void setTokenFactory(TokenFactory factory);
+  void set tokenFactory(TokenFactory factory);
 
   /**
    * Gets the {@link TokenFactory} this token source is currently using for
@@ -78,7 +78,7 @@ abstract class TokenSource {
    *
    * @return The {@link TokenFactory} currently used by this token source.
    */
-  TokenFactory getTokenFactory();
+  TokenFactory get tokenFactory;
 }
 
 /**
@@ -95,13 +95,7 @@ class ListTokenSource implements TokenSource {
    */
   final List<Token> tokens;
 
-  /**
-   * The name of the input source. If this value is {@code null}, a call to
-   * {@link #getSourceName} should return the source name used to create the
-   * the next token in {@link #tokens} (or the previous token if the end of
-   * the input has been reached).
-   */
-  final String sourceName;
+  final String _sourceName;
 
   /**
    * The index into {@link #tokens} of token to return by the next call to
@@ -119,7 +113,7 @@ class ListTokenSource implements TokenSource {
    * This is the backing field for {@link #getTokenFactory} and
    * {@link setTokenFactory}.
    */
-  TokenFactory _factory = CommonTokenFactory.DEFAULT;
+  TokenFactory tokenFactory = CommonTokenFactory.DEFAULT;
 
   /**
    * Constructs a new {@link ListTokenSource} instance from the specified
@@ -143,7 +137,7 @@ class ListTokenSource implements TokenSource {
    *
    * @exception NullPointerException if {@code tokens} is {@code null}
    */
-  ListTokenSource(this.tokens, [this.sourceName = null]) {
+  ListTokenSource(this.tokens, [this._sourceName = null]) {
     if (tokens == null) {
       throw new ArgumentError.notNull("tokens");
     }
@@ -197,8 +191,8 @@ class ListTokenSource implements TokenSource {
         }
 
         int stop = max(-1, start - 1);
-        eofToken = _factory.create(Token.EOF, "EOF", Pair(this, inputStream),
-            Token.DEFAULT_CHANNEL, start, stop, getLine(), charPositionInLine);
+        eofToken = tokenFactory.create(Token.EOF, "EOF", Pair(this, inputStream),
+            Token.DEFAULT_CHANNEL, start, stop, line, charPositionInLine);
       }
 
       return eofToken;
@@ -217,7 +211,7 @@ class ListTokenSource implements TokenSource {
    * {@inheritDoc}
    */
 
-  int getLine() {
+  int get line {
     if (i < tokens.length) {
       return tokens[i].line;
     } else if (eofToken != null) {
@@ -264,35 +258,10 @@ class ListTokenSource implements TokenSource {
   }
 
   /**
-   * {@inheritDoc}
+   * The name of the input source. If this value is {@code null}, a call to
+   * {@link #getSourceName} should return the source name used to create the
+   * the next token in {@link #tokens} (or the previous token if the end of
+   * the input has been reached).
    */
-
-  String getSourceName() {
-    if (sourceName != null) {
-      return sourceName;
-    }
-
-    CharStream _inputStream = inputStream;
-    if (_inputStream != null) {
-      return _inputStream.sourceName;
-    }
-
-    return "List";
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-
-  void setTokenFactory(TokenFactory factory) {
-    this._factory = factory;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-
-  TokenFactory getTokenFactory() {
-    return _factory;
-  }
+  String get sourceName =>_sourceName ?? inputStream?.sourceName ?? "List";
 }

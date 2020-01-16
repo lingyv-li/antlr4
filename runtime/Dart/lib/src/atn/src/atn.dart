@@ -40,12 +40,12 @@ class ATN {
   /**
    * The type of the ATN.
    */
-  ATNType grammarType;
+  final ATNType grammarType;
 
   /**
    * The maximum value for any symbol recognized by a transition in the ATN.
    */
-  int maxTokenType;
+  final int maxTokenType;
 
   /**
    * For lexer ATNs, this maps the rule index to the resulting token type.
@@ -65,10 +65,7 @@ class ATN {
   List<TokensStartState> modeToStartState = [];
 
   /** Used for runtime deserialization of ATNs from strings */
-  ATN(ATNType grammarType, int maxTokenType) {
-    this.grammarType = grammarType;
-    this.maxTokenType = maxTokenType;
-  }
+  ATN(this.grammarType, this.maxTokenType);
 
   /**
    * TODO merge doc comment
@@ -118,7 +115,7 @@ class ATN {
     return null;
   }
 
-  int getNumberOfDecisions() {
+  int get numberOfDecisions {
     return decisionToState.length;
   }
 
@@ -179,7 +176,7 @@ class ATN {
       following = nextTokens(rt.followState);
       expected.addAll(following);
       expected.remove(Token.EPSILON);
-      ctx = ctx.getParent();
+      ctx = ctx.parent;
     }
 
     if (following.contains(Token.EPSILON)) {

@@ -115,7 +115,7 @@ class ATNConfig {
    * as it existed prior to the introduction of the
    * {@link #isPrecedenceFilterSuppressed} method.
    */
-  int getOuterContextDepth() {
+  int get outerContextDepth {
     return reachesIntoOuterContext & ~SUPPRESS_PRECEDENCE_FILTER;
   }
 
@@ -179,9 +179,9 @@ class ATNConfig {
       buf.write(",");
       buf.write(semanticContext);
     }
-    if (getOuterContextDepth() > 0) {
+    if (outerContextDepth > 0) {
       buf.write(",up=");
-      buf.write(getOuterContextDepth());
+      buf.write(outerContextDepth);
     }
     buf.write(')');
     return buf.toString();
@@ -190,14 +190,15 @@ class ATNConfig {
 
 class LexerATNConfig extends ATNConfig {
   /**
-   * This is the backing field for {@link #getLexerActionExecutor}.
+   * Gets the {@link LexerActionExecutor} capable of executing the embedded
+   * action(s) for the current configuration.
    */
   LexerActionExecutor lexerActionExecutor;
 
-  bool passedThroughNonGreedyDecision;
+  bool passedThroughNonGreedyDecision = false;
 
   LexerATNConfig(ATNState state, int alt, PredictionContext context,
-      [this.lexerActionExecutor = null])
+      [this.lexerActionExecutor])
       : super(state, alt, context, SemanticContext.NONE) {
     this.passedThroughNonGreedyDecision = false;
   }
@@ -205,15 +206,8 @@ class LexerATNConfig extends ATNConfig {
   LexerATNConfig.dup(LexerATNConfig c, ATNState state,
       {this.lexerActionExecutor, PredictionContext context})
       : super.dup(c, state: state, context: context) {
+    this.lexerActionExecutor = lexerActionExecutor ?? c.lexerActionExecutor;
     this.passedThroughNonGreedyDecision = checkNonGreedyDecision(c, state);
-  }
-
-  /**
-   * Gets the {@link LexerActionExecutor} capable of executing the embedded
-   * action(s) for the current configuration.
-   */
-  LexerActionExecutor getLexerActionExecutor() {
-    return lexerActionExecutor;
   }
 
   bool hasPassedThroughNonGreedyDecision() {

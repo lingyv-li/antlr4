@@ -124,39 +124,20 @@ class CommonToken extends WritableToken {
   static const Pair<TokenSource, CharStream> EMPTY_SOURCE =
       const Pair<TokenSource, CharStream>(null, null);
 
-  /**
-   * This is the backing field for {@link #getType} and {@link #setType}.
-   */
   int type;
 
-  /**
-   * This is the backing field for {@link #getLine} and {@link #setLine}.
-   */
   int line;
 
-  /**
-   * This is the backing field for {@link #getCharPositionInLine} and
-   * {@link #setCharPositionInLine}.
-   */
   int charPositionInLine = -1; // set to invalid position
 
-  /**
-   * This is the backing field for {@link #getChannel} and
-   * {@link #setChannel}.
-   */
   int channel = Token.DEFAULT_CHANNEL;
 
   /**
-   * This is the backing field for {@link #getTokenSource} and
-   * {@link #getInputStream}.
-   *
-   * <p>
    * These properties share a field to reduce the memory footprint of
    * {@link CommonToken}. Tokens created by a {@link CommonTokenFactory} from
    * the same source and input stream share a reference to the same
    * {@link Pair} containing these values.</p>
    */
-
   Pair<TokenSource, CharStream> source;
 
   /**
@@ -167,22 +148,10 @@ class CommonToken extends WritableToken {
    */
   String _text;
 
-  /**
-   * This is the backing field for {@link #getTokenIndex} and
-   * {@link #setTokenIndex}.
-   */
   int tokenIndex = -1;
 
-  /**
-   * This is the backing field for {@link #getStartIndex} and
-   * {@link #setStartIndex}.
-   */
   int startIndex;
 
-  /**
-   * This is the backing field for {@link #getStopIndex} and
-   * {@link #setStopIndex}.
-   */
   int stopIndex;
 
   /**
@@ -200,7 +169,7 @@ class CommonToken extends WritableToken {
       text}) {
     this._text = text;
     if (source.a != null) {
-      this.line = source.a.getLine();
+      this.line = source.a.line;
       this.charPositionInLine = source.a.charPositionInLine;
     }
   }

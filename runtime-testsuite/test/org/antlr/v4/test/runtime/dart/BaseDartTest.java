@@ -802,7 +802,7 @@ public class BaseDartTest implements RuntimeTestSupport {
 			"  <lexerName> lex = new <lexerName>(input);\n"+
 			"  CommonTokenStream tokens = new CommonTokenStream(lex);\n"+
 			"  <createParser>\n"+
-			"  parser.setBuildParseTree(true);\n"+
+			"  parser.buildParseTree = true;\n"+
 			"  <profile>\n"+
 			"  ParserRuleContext tree = parser.<parserStartRuleName>();\n"+
 			"  <if(profile)>print('[${profiler.getDecisionInfo().join(', ')}]');<endif>\n"+
@@ -818,8 +818,8 @@ public class BaseDartTest implements RuntimeTestSupport {
 			"\n"+
 			"  @override\n"+
 			"  void enterEveryRule(ParserRuleContext ctx) {\n"+
-			"    for (int i = 0; i \\< ctx.getChildCount(); i++) {\n"+
-			"      ParseTree parent = ctx.getChild(i).getParent();\n"+
+			"    for (int i = 0; i \\< ctx.childCount; i++) {\n"+
+			"      ParseTree parent = ctx.getChild(i).parent;\n"+
 			"      if (!(parent is RuleNode) || (parent as RuleNode).ruleContext != ctx) {\n"+
 			"        throw new StateError(\"Invalid parse tree shape detected.\");\n"+
 			"      }\n"+

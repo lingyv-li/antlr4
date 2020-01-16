@@ -35,10 +35,6 @@ class ATNDeserializationOptions {
     }
   }
 
-  static ATNDeserializationOptions getDefaultOptions() {
-    return defaultOptions;
-  }
-
   bool isReadOnly() {
     return readOnly;
   }
@@ -372,7 +368,7 @@ class ATNDeserializer {
 
     // edges for rule stop states can be derived, so they aren't serialized
     for (ATNState state in atn.states) {
-      for (int i = 0; i < state.getNumberOfTransitions(); i++) {
+      for (int i = 0; i < state.numberOfTransitions; i++) {
         Transition t = state.transition(i);
         if (t is RuleTransition) {
           final ruleTransition = t;
@@ -409,7 +405,7 @@ class ATNDeserializer {
 
       if (state is PlusLoopbackState) {
         PlusLoopbackState loopbackState = state;
-        for (int i = 0; i < loopbackState.getNumberOfTransitions(); i++) {
+        for (int i = 0; i < loopbackState.numberOfTransitions; i++) {
           ATNState target = loopbackState.transition(i).target;
           if (target is PlusBlockStartState) {
             target.loopBackState = loopbackState;
@@ -417,7 +413,7 @@ class ATNDeserializer {
         }
       } else if (state is StarLoopbackState) {
         StarLoopbackState loopbackState = state;
-        for (int i = 0; i < loopbackState.getNumberOfTransitions(); i++) {
+        for (int i = 0; i < loopbackState.numberOfTransitions; i++) {
           ATNState target = loopbackState.transition(i).target;
           if (target is StarLoopEntryState) {
             target.loopBackState = loopbackState;
@@ -463,7 +459,7 @@ class ATNDeserializer {
         // form, which is the index of a LexerCustomAction
         List<LexerAction> legacyLexerActions = [];
         for (ATNState state in atn.states) {
-          for (int i = 0; i < state.getNumberOfTransitions(); i++) {
+          for (int i = 0; i < state.numberOfTransitions; i++) {
             Transition transition = state.transition(i);
             if (transition is ActionTransition) {
               int ruleIndex = transition.ruleIndex;
@@ -522,7 +518,7 @@ class ATNDeserializer {
         }
 
         ATNState maybeLoopEndState =
-            state.transition(state.getNumberOfTransitions() - 1).target;
+            state.transition(state.numberOfTransitions - 1).target;
         if (!(maybeLoopEndState is LoopEndState)) {
           continue;
         }
@@ -559,9 +555,9 @@ class ATNDeserializer {
     }
 
     // all transitions leaving the rule start state need to leave blockStart instead
-    while (atn.ruleToStartState[idx].getNumberOfTransitions() > 0) {
+    while (atn.ruleToStartState[idx].numberOfTransitions > 0) {
       Transition transition = atn.ruleToStartState[idx].removeTransition(
-          atn.ruleToStartState[idx].getNumberOfTransitions() - 1);
+          atn.ruleToStartState[idx].numberOfTransitions - 1);
       bypassStart.addTransition(transition);
     }
 
@@ -592,7 +588,7 @@ class ATNDeserializer {
 			 */
         if (atn.ruleToStartState[state.ruleIndex].isLeftRecursiveRule) {
           ATNState maybeLoopEndState =
-              state.transition(state.getNumberOfTransitions() - 1).target;
+              state.transition(state.numberOfTransitions - 1).target;
           if (maybeLoopEndState is LoopEndState) {
             if (maybeLoopEndState.epsilonOnlyTransitions &&
                 maybeLoopEndState.transition(0).target is RuleStopState) {
@@ -612,7 +608,7 @@ class ATNDeserializer {
       }
 
       checkCondition(state.onlyHasEpsilonTransitions() ||
-          state.getNumberOfTransitions() <= 1);
+          state.numberOfTransitions <= 1);
 
       if (state is PlusBlockStartState) {
         checkCondition(state.loopBackState != null);
@@ -621,7 +617,7 @@ class ATNDeserializer {
       if (state is StarLoopEntryState) {
         StarLoopEntryState starLoopEntryState = state;
         checkCondition(starLoopEntryState.loopBackState != null);
-        checkCondition(starLoopEntryState.getNumberOfTransitions() == 2);
+        checkCondition(starLoopEntryState.numberOfTransitions == 2);
 
         if (starLoopEntryState.transition(0).target is StarBlockStartState) {
           checkCondition(
@@ -637,7 +633,7 @@ class ATNDeserializer {
       }
 
       if (state is StarLoopbackState) {
-        checkCondition(state.getNumberOfTransitions() == 1);
+        checkCondition(state.numberOfTransitions == 1);
         checkCondition(state.transition(0).target is StarLoopEntryState);
       }
 
@@ -659,11 +655,11 @@ class ATNDeserializer {
 
       if (state is DecisionState) {
         DecisionState decisionState = state;
-        checkCondition(decisionState.getNumberOfTransitions() <= 1 ||
+        checkCondition(decisionState.numberOfTransitions <= 1 ||
             decisionState.decision >= 0);
       } else {
         checkCondition(
-            state.getNumberOfTransitions() <= 1 || state is RuleStopState);
+            state.numberOfTransitions <= 1 || state is RuleStopState);
       }
     }
   }
