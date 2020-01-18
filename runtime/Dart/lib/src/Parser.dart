@@ -730,6 +730,8 @@ abstract class Parser extends Recognizer<ParserATNSimulator> {
     return _ctx;
   }
 
+  List<String> get ruleInvocationStack => getRuleInvocationStack();
+
   /** Return List&lt;String&gt; of the rule names in your parser instance
    *  leading up to a call to the current rule.  You could override if
    *  you want more details such as the file/line info of where

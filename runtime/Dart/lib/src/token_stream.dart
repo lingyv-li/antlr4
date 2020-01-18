@@ -83,6 +83,8 @@ abstract class TokenStream extends IntStream {
    */
   String getText([Interval interval]);
 
+  String get text;
+
   /**
    * Return the text of all tokens in the source interval of the specified
    * context. This method behaves like the following code, including potential
@@ -504,6 +506,8 @@ class BufferedTokenStream implements TokenStream {
   }
 
   String get sourceName => tokenSource.sourceName;
+
+  String get text => getText();
 
   String getText([Interval interval = null]) {
     interval = interval ??

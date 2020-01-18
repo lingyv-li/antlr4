@@ -3,9 +3,7 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-import 'dart:developer';
-
-import 'package:logging/logging.dart';
+import 'dart:io';
 
 import '../../atn/atn.dart';
 import '../../dfa/dfa.dart';
@@ -199,7 +197,7 @@ class ConsoleErrorListener extends BaseErrorListener {
    * </pre>
    */
   syntaxError(recognizer, offendingSymbol, line, column, msg, e) {
-    log("line $line:$column $msg", level: Level.SEVERE.value);
+    stderr.writeln("line $line:$column $msg");
   }
 }
 

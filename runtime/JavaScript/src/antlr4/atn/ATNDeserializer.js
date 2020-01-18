@@ -588,13 +588,13 @@ ATNDeserializer.prototype.readUUID = function() {
 		bb[2*i] = (int >> 8) & 0xFF;
 	}
     return byteToHex[bb[0]] + byteToHex[bb[1]] +
-    byteToHex[bb[2]] + byteToHex[bb[3]] + '-' +
-    byteToHex[bb[4]] + byteToHex[bb[5]] + '-' +
-    byteToHex[bb[6]] + byteToHex[bb[7]] + '-' +
-    byteToHex[bb[8]] + byteToHex[bb[9]] + '-' +
-    byteToHex[bb[10]] + byteToHex[bb[11]] +
-    byteToHex[bb[12]] + byteToHex[bb[13]] +
-    byteToHex[bb[14]] + byteToHex[bb[15]];
+        byteToHex[bb[2]] + byteToHex[bb[3]] + '-' +
+        byteToHex[bb[4]] + byteToHex[bb[5]] + '-' +
+        byteToHex[bb[6]] + byteToHex[bb[7]] + '-' +
+        byteToHex[bb[8]] + byteToHex[bb[9]] + '-' +
+        byteToHex[bb[10]] + byteToHex[bb[11]] +
+        byteToHex[bb[12]] + byteToHex[bb[13]] +
+        byteToHex[bb[14]] + byteToHex[bb[15]];
 };
 
 ATNDeserializer.prototype.edgeFactory = function(atn, type, src, trg, arg1, arg2, arg3, sets) {

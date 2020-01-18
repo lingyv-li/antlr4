@@ -3,10 +3,6 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-// This is the earliest supported serialized UUID.
-// stick to serialized version for now, we don't need a UUID instance
-import 'package:uuid/uuid.dart';
-
 import '../../interval_set.dart';
 import '../../misc/pair.dart';
 import '../../token.dart';
@@ -686,6 +682,8 @@ class ATNDeserializer {
     return (low & 0x00000000FFFFFFFF) | (high << 32);
   }
 
+  static final byteToHex  = List.generate(256, (i) => i.toRadixString(16).padLeft(2, '0').toUpperCase());
+
   readUUID() {
     final bb = List<int>(16);
     for (var i = 7; i >= 0; i--) {
@@ -694,7 +692,14 @@ class ATNDeserializer {
       bb[(2 * i) + 1] = int & 0xFF;
       bb[2 * i] = (int >> 8) & 0xFF;
     }
-    return Uuid().unparse(bb).toString().toUpperCase();
+    return byteToHex[bb[0]] + byteToHex[bb[1]] +
+        byteToHex[bb[2]] + byteToHex[bb[3]] + '-' +
+        byteToHex[bb[4]] + byteToHex[bb[5]] + '-' +
+        byteToHex[bb[6]] + byteToHex[bb[7]] + '-' +
+        byteToHex[bb[8]] + byteToHex[bb[9]] + '-' +
+        byteToHex[bb[10]] + byteToHex[bb[11]] +
+        byteToHex[bb[12]] + byteToHex[bb[13]] +
+        byteToHex[bb[14]] + byteToHex[bb[15]];;
   }
 
   Transition edgeFactory(ATN atn, TransitionType type, int src, int trg,

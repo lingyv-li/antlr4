@@ -219,20 +219,26 @@ walker.walk(new LeafListener(), <s>);
 >>
 
 TreeNodeWithAltNumField(X) ::= <<
-@parser::members {
+@parser::definitions {
 class MyRuleNode extends ParserRuleContext {
   int altNum;
-  MyRuleNode(ParserRuleContext parent, int invokingStateNumber) {
-    super(parent, invokingStateNumber);
+
+  MyRuleNode(ParserRuleContext parent, int invokingStateNumber)
+      : super(parent, invokingStateNumber);
+
+  @override int get altNumber {
+    return altNum;
   }
-  @override int get altNumber { return altNum; }
-  @override void setAltNumber(int altNum) { this.altNum = altNum; }
+
+  @override void set altNumber(int altNum) {
+    this.altNum = altNum;
+  }
 }
 }
 >>
 
 TokenGetterListener(X) ::= <<
-@parser::members {
+@parser::definitions {
 class LeafListener extends TBaseListener {
   void exitA(AContext ctx) {
     if (ctx.childCount==2)
@@ -245,7 +251,7 @@ class LeafListener extends TBaseListener {
 >>
 
 RuleGetterListener(X) ::= <<
-@parser::members {
+@parser::definitions {
 class LeafListener extends TBaseListener {
   void exitA(AContext ctx) {
     if (ctx.childCount==2) {
@@ -259,7 +265,7 @@ class LeafListener extends TBaseListener {
 
 
 LRListener(X) ::= <<
-@parser::members {
+@parser::definitions {
 class LeafListener extends TBaseListener {
   void exitE(EContext ctx) {
     if (ctx.childCount==3) {
@@ -272,7 +278,7 @@ class LeafListener extends TBaseListener {
 >>
 
 LRWithLabelsListener(X) ::= <<
-@parser::members {
+@parser::definitions {
 class LeafListener extends TBaseListener {
   void exitCall(CallContext ctx) {
     stdout.write("${ctx.e().start.text} ${ctx.eList()}");

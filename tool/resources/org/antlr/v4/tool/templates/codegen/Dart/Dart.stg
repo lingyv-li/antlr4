@@ -61,11 +61,14 @@ part '<file.grammarName>Lexer.dart';
 import 'package:antlr4/antlr4.dart';
 import 'dart:io';
 
+klajfew
 <if(file.genListener)>
 import '<file.grammarName>Listener.dart';
+import '<file.grammarName>BaseListener.dart';
 <endif>
 <if(file.genVisitor)>
 import '<file.grammarName>Visitor.dart';
+import '<file.grammarName>BaseVisitor.dart';
 <endif>
 <endif>
 
@@ -211,7 +214,7 @@ Parser(parser, funcs, atn, sempredFuncs, superClass) ::= <<
 >>
 
 Parser_(parser, funcs, atn, sempredFuncs, ctor, superClass) ::= <<
-
+<if(namedActions.definitions)><namedActions.definitions><endif>
 const int <parser.rules:{r | RULE_<r.name> = <r.index>}; separator=", ", wrap, anchor>;
 class <parser.name> extends <superClass; null="Parser"> {
   static final _versionCheck = () { RuntimeMetaData.checkVersion("<file.ANTLRVersion>", RuntimeMetaData.VERSION); }();

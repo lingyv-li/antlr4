@@ -40,6 +40,7 @@ import java.net.URLClassLoader;
 import java.util.*;
 
 import static junit.framework.TestCase.*;
+import static org.antlr.v4.test.runtime.BaseRuntimeTest.readFile;
 import static org.antlr.v4.test.runtime.BaseRuntimeTest.writeFile;
 import static org.junit.Assert.assertArrayEquals;
 
@@ -118,6 +119,8 @@ public class BaseDartTest implements RuntimeTestSupport {
 	 * Errors found while running antlr
 	 */
 	protected StringBuilder antlrToolErrors;
+
+	private static String cacheDartPackages;
 
 	@Override
 	public void testSetUp() throws Exception {
@@ -524,16 +527,22 @@ public class BaseDartTest implements RuntimeTestSupport {
 				"dependencies:\n" +
 				"  antlr4:\n" +
 				"    path: "+ runtime +"\n");
-		try {
-			Process process = Runtime.getRuntime().exec(new String[]{"pub", "get"}, null, new File(tmpdir));
-			StreamVacuum stderrVacuum = new StreamVacuum(process.getErrorStream());
-			stderrVacuum.start();
-			process.waitFor();
-			stderrVacuum.join();
-			System.out.println(stderrVacuum.toString());
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-			return false;
+		if (cacheDartPackages ==null) {
+			System.out.println("Not skipping" + tmpdir);
+			try {
+				Process process = Runtime.getRuntime().exec(new String[]{"pub", "get"}, null, new File(tmpdir));
+				StreamVacuum stderrVacuum = new StreamVacuum(process.getErrorStream());
+				stderrVacuum.start();
+				process.waitFor();
+				stderrVacuum.join();
+				System.out.println(stderrVacuum.toString());
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+				return false;
+			}
+			cacheDartPackages = readFile(tmpdir, ".packages");
+		} else {
+			writeFile(tmpdir, ".packages", cacheDartPackages);
 		}
 		return true; // allIsWell: no compile
 	}

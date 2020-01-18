@@ -312,7 +312,8 @@ class OR extends Operator {
 
     Iterable<PrecedencePredicate> precedencePredicates =
     SemanticContext.filterPrecedencePredicates(operands);
-    operands = SemanticContext.filterNonPrecedencePredicates(operands);
+
+    operands = SemanticContext.filterNonPrecedencePredicates(operands).toSet();
     if (!precedencePredicates.isEmpty) {
       // interested in the transition with the highest precedence
       PrecedencePredicate reduced =

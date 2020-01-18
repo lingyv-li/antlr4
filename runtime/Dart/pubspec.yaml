@@ -7,6 +7,5 @@ license: "BSD-3-Clause"
 dependencies: 
   logging:
   collection:
-  uuid:
 environment:
   sdk: ">=2.0.0 <3.0.0"

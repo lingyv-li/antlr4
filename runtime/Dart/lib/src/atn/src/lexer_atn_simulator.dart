@@ -729,7 +729,7 @@ class LexerATNSimulator extends ATNSimulator {
 
   void consume(CharStream input) {
     int curChar = input.LA(1);
-    if (curChar == '\n') {
+    if (curChar == 10) { // Is new line
       line++;
       charPositionInLine = 0;
     } else {

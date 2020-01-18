@@ -406,7 +406,7 @@ class IntervalSet {
           continue;
         } else {
 // remove the current interval (thus no need to increment resultI)
-          result.intervals.remove(resultI);
+          result.intervals.removeAt(resultI);
           continue;
         }
       }
@@ -716,7 +716,7 @@ class IntervalSet {
       }
 // if whole interval x..x, rm
       if (el == a && el == b) {
-        intervals.remove(i);
+        intervals.removeAt(i);
         break;
       }
 // if on left edge x..b, adjust left
