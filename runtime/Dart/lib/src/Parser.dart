@@ -237,7 +237,7 @@ abstract class Parser extends Recognizer<ParserATNSimulator> {
     return parseListeners.contains(TrimToSizeListener.INSTANCE);
   }
 
-  List<ParseTreeListener> get parseListeners => _parseListeners ?? [];
+  List<ParseTreeListener> get parseListeners => _parseListeners;
 
   /**
    * Registers {@code listener} to receive events during the parsing process.
@@ -413,7 +413,7 @@ abstract class Parser extends Recognizer<ParserATNSimulator> {
     setTokenStream(input);
   }
 
-  TokenStream get tokenStream =>  _input;
+  TokenStream get tokenStream => _input;
 
   /** Set the token stream and reset the parser. */
   void setTokenStream(TokenStream input) {

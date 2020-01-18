@@ -18,7 +18,7 @@ abstract class Tree {
 
   dynamic get payload;
 
-  Tree getChild(int i);
+  Tree getChild<T>(int i);
 
 //  Tree getChild(int i);
 
@@ -49,7 +49,7 @@ abstract class ParseTree extends SyntaxTree {
   // the following methods narrow the return type; they are not additional methods
   ParseTree get parent;
 
-  ParseTree getChild(int i);
+  ParseTree getChild<T>(int i);
 
   /// Set the parent for this node.
   ///
@@ -275,7 +275,7 @@ class TerminalNodeImpl extends TerminalNode {
 
   TerminalNodeImpl(this.symbol);
 
-  getChild(i) {
+  getChild<T>(i) {
     return null;
   }
 

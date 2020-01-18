@@ -141,17 +141,17 @@ class ParserRuleContext extends RuleContext {
   }
 
   @override
-  ParseTree getChild(int i, {Type ctxType}) {
+  ParseTree getChild<T>(int i) {
     if (children == null || i < 0 || i >= children.length) {
       return null;
     }
 
-    if (ctxType == null) {
+    if (T == null) {
       return children[i];
     }
     int j = -1; // what element have we found with ctxType?
     for (ParseTree o in children) {
-      if (ctxType == o.runtimeType) {
+      if (o is T) {
         j++;
         if (j == i) {
           return o;
@@ -209,18 +209,18 @@ class ParserRuleContext extends RuleContext {
     return tokens;
   }
 
-  T getRuleContext<T extends ParserRuleContext>(Type ctxType, int i) {
-    return getChild(i, ctxType: ctxType);
+  T getRuleContext<T extends ParserRuleContext>(int i) {
+    return getChild<T>(i);
   }
 
-  List<T> getRuleContexts<T extends ParserRuleContext>(Type ctxType) {
+  List<T> getRuleContexts<T extends ParserRuleContext>() {
     if (children == null) {
       return [];
     }
 
     List<T> contexts = null;
     for (ParseTree o in children) {
-      if (o.runtimeType == ctxType) {
+      if (o is T) {
         if (contexts == null) {
           contexts = [];
         }

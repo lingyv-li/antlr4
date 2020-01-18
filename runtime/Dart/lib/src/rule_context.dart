@@ -132,7 +132,7 @@ abstract class RuleContext extends RuleNode {
   /// option contextSuperClass.
   set altNumber(int altNumber) {}
 
-  ParseTree getChild(int i) {
+  ParseTree getChild<T>(int i) {
     return null;
   }
 

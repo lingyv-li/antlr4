@@ -139,7 +139,7 @@ abstract class AbstractPredicateTransition extends Transition {
   AbstractPredicateTransition(ATNState target) : super(target);
 }
 
-class PredicateTransition extends Transition {
+class PredicateTransition extends AbstractPredicateTransition {
   final int ruleIndex;
   final int predIndex;
   final bool isCtxDependent; // e.g., $i ref in pred

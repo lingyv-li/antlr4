@@ -87,7 +87,7 @@ abstract class SemanticContext {
 
   static Iterable<PrecedencePredicate> filterPrecedencePredicates(
       Iterable<SemanticContext> collection) {
-    return collection.where((e) => e is PrecedencePredicate);
+    return collection.where((e) => e is PrecedencePredicate).map((e)=> e as PrecedencePredicate);
   }
 
   static Iterable<SemanticContext> filterNonPrecedencePredicates(
@@ -210,10 +210,10 @@ class AND extends Operator {
     else
       operands.add(b);
 
-    List<PrecedencePredicate> precedencePredicates =
+    Iterable<PrecedencePredicate> precedencePredicates =
     SemanticContext.filterPrecedencePredicates(operands);
 
-    operands = SemanticContext.filterNonPrecedencePredicates(operands);
+    operands = SemanticContext.filterNonPrecedencePredicates(operands).toSet();
     if (!precedencePredicates.isEmpty) {
       // interested in the transition with the lowest precedence
       PrecedencePredicate reduced =
@@ -310,7 +310,7 @@ class OR extends Operator {
     else
       operands.add(b);
 
-    List<PrecedencePredicate> precedencePredicates =
+    Iterable<PrecedencePredicate> precedencePredicates =
     SemanticContext.filterPrecedencePredicates(operands);
     operands = SemanticContext.filterNonPrecedencePredicates(operands);
     if (!precedencePredicates.isEmpty) {

@@ -10,7 +10,7 @@ Not(v) ::= "!<v>"
 
 Assert(s) ::= <<assert(<s>);>>
 
-Cast(t,v) ::= "(<v> as <T>)"
+Cast(t,v) ::= "(<v> as <t>)"
 
 Append(a,b) ::= "<a>.toString() + <b>.toString()"
 
@@ -263,7 +263,7 @@ LRListener(X) ::= <<
 class LeafListener extends TBaseListener {
   void exitE(EContext ctx) {
     if (ctx.childCount==3) {
-      stdout.write("${ctx.e(0).start.text} ${ctx.e(1).start.text} ${ctx.e().get(0).start.text}\n");
+      stdout.write("${ctx.getE(0).start.text} ${ctx.getE(1).start.text} ${ctx.getE().get(0).start.text}\n");
     } else
       print(ctx.INT().symbol.text);
   }

@@ -148,7 +148,7 @@ class BitSet {
     if (value == 0) return -1;
 
     const int debruijn64 = 0x03f79d71b4cb0a89;
-    return index64[((value ^ (value - 1)) * debruijn64) >> 58];
+    return index64[(((value ^ (value - 1)) * debruijn64) >> 58) % 64];
   }
 
   BitSet clone() {
