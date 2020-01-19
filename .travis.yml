@@ -144,10 +144,10 @@ matrix:
       jdk: openjdk7
       env: TARGET=java
       stage: extended-test
-    - os: linux
-      jdk: openjdk8
-      env: TARGET=java
-      stage: smoke-test
+#    - os: linux
+#      jdk: openjdk8
+#      env: TARGET=java
+#      stage: smoke-test
 #    - os: linux
 #      jdk: openjdk8
 #      env: TARGET=csharp

@@ -6,5 +6,3 @@ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328
 sudo apt-get update -qq
 
 sudo apt-get install maven
-
-mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
