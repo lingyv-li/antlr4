@@ -159,13 +159,13 @@ matrix:
       jdk: openjdk8
       env: TARGET=dart
       stage: main-test
-    - os: linux
-      language: php
-      php:
-        - 7.2
-      jdk: openjdk8
-      env: TARGET=php
-      stage: main-test
+#    - os: linux
+#      language: php
+#      php:
+#        - 7.2
+#      jdk: openjdk8
+#      env: TARGET=php
+#      stage: main-test
     - os: linux
       jdk: openjdk8
       dist: trusty
@@ -187,10 +187,10 @@ matrix:
         - TARGET=dotnet
         - GROUP=RECURSION
       stage: extended-test
-    - os: linux
-      jdk: openjdk8
-      env: TARGET=python2
-      stage: main-test
+#    - os: linux
+#      jdk: openjdk8
+#      env: TARGET=python2
+#      stage: main-test
     - os: linux
       jdk: openjdk8
       env: TARGET=python3
@@ -201,16 +201,16 @@ matrix:
           packages:
             - python3.6
       stage: main-test
-    - os: linux
-      dist: trusty
-      jdk: openjdk8
-      env: TARGET=javascript
-      stage: main-test
-    - os: linux
-      dist: trusty
-      jdk: openjdk8
-      env: TARGET=go
-      stage: main-test
+#    - os: linux
+#      dist: trusty
+#      jdk: openjdk8
+#      env: TARGET=javascript
+#      stage: main-test
+#    - os: linux
+#      dist: trusty
+#      jdk: openjdk8
+#      env: TARGET=go
+#      stage: main-test
 
 before_install:
   - f="./.travis/before-install-$TRAVIS_OS_NAME-$TARGET.sh"; ! [ -x "$f" ] || "$f"
