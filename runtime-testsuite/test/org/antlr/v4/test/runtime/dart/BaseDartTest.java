@@ -613,7 +613,7 @@ public class BaseDartTest implements RuntimeTestSupport {
 			return phpPath;
 		}
 
-		String[] roots = {"/usr/local/bin/", "/opt/local/bin", "/usr/bin/", "/usr/lib/dart/bin"};
+		String[] roots = {"/usr/local/bin/", "/opt/local/bin/", "/usr/bin/", "/usr/lib/dart/bin/"};
 
 		for (String root : roots) {
 			if (new File(root + tool).exists()) {
