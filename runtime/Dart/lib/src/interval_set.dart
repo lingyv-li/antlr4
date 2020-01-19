@@ -567,15 +567,12 @@ class IntervalSet {
   }
 
   String toString({bool elemAreChar = false, Vocabulary vocabulary}) {
-    StringBuffer buf = new StringBuffer();
     if (this.intervals == null || this.intervals.isEmpty) {
       return "{}";
     }
-    if (this.length > 1) {
-      buf.write("{");
-    }
 
-    for (var I in this.intervals) {
+    final elemStr = this.intervals.map((I) {
+      StringBuffer buf = new StringBuffer();
       int a = I.a;
       int b = I.b;
       if (a == b) {
@@ -598,25 +595,26 @@ class IntervalSet {
             if (i > a) buf.write(", ");
             buf.write(elementName(vocabulary, i));
           }
-        }
-        if (elemAreChar) {
-          buf.write("'");
-          buf.writeCharCode(a);
-          buf.write("'..'");
-          buf.writeCharCode(b);
-          buf.write("'");
         } else {
-          buf.write(a);
-          buf.write("..");
-          buf.write(b);
+          if (elemAreChar) {
+            buf.write("'");
+            buf.writeCharCode(a);
+            buf.write("'..'");
+            buf.writeCharCode(b);
+            buf.write("'");
+          } else {
+            buf.write(a);
+            buf.write("..");
+            buf.write(b);
+          }
         }
       }
-      buf.write(", "); // TODO Not write for the last element
-    }
+      return buf;
+    }).join(", ");
     if (this.length > 1) {
-      buf.write("}");
+      return "{$elemStr}";
     }
-    return buf.toString();
+    return elemStr;
   }
 
   String elementName(Vocabulary vocabulary, int a) {

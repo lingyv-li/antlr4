@@ -783,7 +783,7 @@ class ParserATNSimulator extends ATNSimulator {
       if (debug) log("testing " + getTokenName(t) + " at " + c.toString());
 
       if (c.state is RuleStopState) {
-        assert(c.context.isEmpty());
+        assert(c.context.isEmpty);
         if (fullCtx || t == IntStream.EOF) {
           if (skippedStopStates == null) {
             skippedStopStates = [];
@@ -1450,7 +1450,7 @@ class ParserATNSimulator extends ATNSimulator {
     if (config.state is RuleStopState) {
       // We hit rule end. If we have context info, use it
       // run thru all possible stack tops in ctx
-      if (!config.context.isEmpty()) {
+      if (!config.context.isEmpty) {
         for (int i = 0; i < config.context.length; i++) {
           if (config.context.getReturnState(i) ==
               PredictionContext.EMPTY_RETURN_STATE) {
@@ -1675,7 +1675,7 @@ class ParserATNSimulator extends ATNSimulator {
     if (p.stateType != StateType.STAR_LOOP_ENTRY ||
         !(p as StarLoopEntryState)
             .isPrecedenceDecision || // Are we the special loop entry/exit state?
-        config.context.isEmpty() || // If SLL wildcard
+        config.context.isEmpty || // If SLL wildcard
         config.context.hasEmptyPath()) {
       return false;
     }

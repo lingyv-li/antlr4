@@ -61,7 +61,6 @@ part '<file.grammarName>Lexer.dart';
 import 'package:antlr4/antlr4.dart';
 import 'dart:io';
 
-klajfew
 <if(file.genListener)>
 import '<file.grammarName>Listener.dart';
 import '<file.grammarName>BaseListener.dart';
@@ -218,13 +217,13 @@ Parser_(parser, funcs, atn, sempredFuncs, ctor, superClass) ::= <<
 const int <parser.rules:{r | RULE_<r.name> = <r.index>}; separator=", ", wrap, anchor>;
 class <parser.name> extends <superClass; null="Parser"> {
   static final _versionCheck = () { RuntimeMetaData.checkVersion("<file.ANTLRVersion>", RuntimeMetaData.VERSION); }();
-  static const int EOF = IntStream.EOF;
+  static const int TOKEN_EOF = IntStream.EOF;
 
   static final List\<DFA> _decisionToDFA = List.generate(
       _ATN.numberOfDecisions, (i) => new DFA(_ATN.getDecisionState(i), i));
   static final PredictionContextCache _sharedContextCache = new PredictionContextCache();
   <if(parser.tokens)>
-  static const int <parser.tokens:{k | <k> = <parser.tokens.(k)>}; separator=", ", wrap, anchor>;
+  static const int <parser.tokens:{k | TOKEN_<k> = <parser.tokens.(k)>}; separator=", ", wrap, anchor>;
   <endif>
   final List\<String> ruleNames = [
     <parser.ruleNames:{r | "<r>"}; separator=", ", wrap, anchor>
@@ -232,7 +231,7 @@ class <parser.name> extends <superClass; null="Parser"> {
 
   <vocabulary(parser.literalNames, parser.symbolicNames)>
 
-  String get grammarFileName => "<parser.grammarFileName; format="dart-escape">";
+  String get grammarFileName => "<parser.grammarFileName>";
 
   String get serializedATN => _serializedATN;
 
@@ -534,7 +533,7 @@ testShiftInRange(shiftAmount) ::= <<
 
 // produces smaller bytecode only when bits.ttypes contains more than two items
 bitsetBitfieldComparison(s, bits) ::= <%
-(<testShiftInRange({<offsetShift(s.varName, bits.shift)>})> && ((BigInt.one \<\< <offsetShift(s.varName, bits.shift)>) & (<bits.ttypes:{ttype | (BigInt.one \<\< <offsetShift(ttype, bits.shift)>)}; separator=" | ">)) != BigInt.zero)
+(<testShiftInRange({<offsetShift(s.varName, bits.shift)>})> && ((BigInt.one \<\< <offsetShift(s.varName, bits.shift)>) & (<bits.ttypes:{ttype | (BigInt.one \<\< TOKEN_<offsetShift(ttype, bits.shift)>)}; separator=" | ">)) != BigInt.zero)
 %>
 
 isZero ::= [
@@ -548,21 +547,21 @@ offsetShift(shiftAmount, offset) ::= <%
 
 // produces more efficient bytecode when bits.ttypes contains at most two items
 bitsetInlineComparison(s, bits) ::= <%
-<bits.ttypes:{ttype | <s.varName> == <ttype>}; separator=" || ">
+<bits.ttypes:{ttype | <s.varName> == TOKEN_<ttype>}; separator=" || ">
 %>
 
 cases(ttypes) ::= <<
-<ttypes:{t | case <t>:}; separator="\n">
+<ttypes:{t | case TOKEN_<t>:}; separator="\n">
 >>
 
-InvokeRule(r, argExprsChunks) ::= <<
+InvokeRule(r, argExprsChunks) ::=<<
 state = <r.stateNumber>;
 <if(r.labels)><r.labels:{l | <labelref(l)> = }><endif><r.name>(<if(r.ast.options.p)><r.ast.options.p><if(argExprsChunks)>,<endif><endif><argExprsChunks>);
 >>
 
 MatchToken(m) ::= <<
 state = <m.stateNumber>;
-<if(m.labels)><m.labels:{l | <labelref(l)> = }><endif>match(<m.name>);
+<if(m.labels)><m.labels:{l | <labelref(l)> = }><endif>match(TOKEN_<m.name>);
 >>
 
 MatchSet(m, expr, capture) ::= "<CommonSetStuff(m, expr, capture, false)>"
@@ -663,13 +662,13 @@ RuleContextDecl(r) ::= "<r.ctxName> <r.name>"
 RuleContextListDecl(rdecl) ::= "List\<<rdecl.ctxName>> <rdecl.name> = new List\<<rdecl.ctxName>>()"
 
 ContextTokenGetterDecl(t) ::= <<
-TerminalNode <t.name>() => getToken(<parser.name>.<t.name>, 0);
+TerminalNode <t.name>() => getToken(<parser.name>.TOKEN_<t.name>, 0);
 >>
 ContextTokenListGetterDecl(t)  ::= <<
-List\<TerminalNode> <t.name>s() => getTokens(<parser.name>.<t.name>);
+List\<TerminalNode> <t.name>s() => getTokens(<parser.name>.TOKEN_<t.name>);
 >>
 ContextTokenListIndexedGetterDecl(t)  ::= <<
-TerminalNode <t.name>(int i) => getToken(<parser.name>.<t.name>, i);
+TerminalNode <t.name>(int i) => getToken(<parser.name>.TOKEN_<t.name>, i);
 >>
 ContextRuleGetterDecl(r) ::= <<
 <r.ctxName> <r.name>() => getRuleContext\<<r.ctxName>\>(0);
@@ -809,7 +808,7 @@ class <lexer.name> extends <superClass; null="Lexer"> {
   static final PredictionContextCache _sharedContextCache = new PredictionContextCache();
   <if(lexer.tokens)>
   static const int
-    <lexer.tokens:{k | <k> = <lexer.tokens.(k)>}; separator=", ", wrap, anchor>;
+    <lexer.tokens:{k | TOKEN_<k> = <lexer.tokens.(k)>}; separator=", ", wrap, anchor>;
   <endif>
   <if(lexer.channels)>
   static const int

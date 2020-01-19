@@ -130,7 +130,7 @@ class LL1Analyzer {
       if (ctx == null) {
         look.addOne(Token.EPSILON);
         return;
-      } else if (ctx.isEmpty() && addEOF) {
+      } else if (ctx.isEmpty && addEOF) {
         look.addOne(Token.EOF);
         return;
       }
@@ -140,7 +140,7 @@ class LL1Analyzer {
       if (ctx == null) {
         look.addOne(Token.EPSILON);
         return;
-      } else if (ctx.isEmpty() && addEOF) {
+      } else if (ctx.isEmpty && addEOF) {
         look.addOne(Token.EOF);
         return;
       }

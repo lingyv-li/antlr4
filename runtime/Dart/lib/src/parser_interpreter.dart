@@ -126,7 +126,7 @@ class ParserInterpreter extends Parser {
       switch (p.stateType) {
         case StateType.RULE_STOP:
           // pop; return from rule
-          if (context.isEmpty()) {
+          if (context.isEmpty) {
             if (startRuleStartState.isLeftRecursiveRule) {
               ParserRuleContext result = context;
               Pair<ParserRuleContext, int> parentContext =

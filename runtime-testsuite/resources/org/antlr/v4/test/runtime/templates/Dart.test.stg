@@ -52,7 +52,7 @@ StringList() ::= "List\<String>"
 
 BuildParseTrees() ::= "buildParseTree = true;"
 
-BailErrorStrategy() ::= <%setErrorHandler(new BailErrorStrategy());%>
+BailErrorStrategy() ::= <%errorHandler = new BailErrorStrategy();%>
 
 ToStringTree(s) ::= <%<s>.toStringTree(parser: this)%>
 
@@ -76,13 +76,13 @@ TokenStartColumnEquals(i) ::= <%this.tokenStartCharPositionInLine==<i>%>
 
 ImportListener(X) ::= ""
 
-GetExpectedTokenNames() ::= "this.expectedTokens.toString(this.tokenNames)"
+GetExpectedTokenNames() ::= "this.expectedTokens.toString(vocabulary: this.vocabulary)"
 
 RuleInvocationStack() ::= "ruleInvocationStack"
 
 LL_EXACT_AMBIG_DETECTION() ::= <<interpreter.predictionMode = PredictionMode.LL_EXACT_AMBIG_DETECTION;>>
 
-ParserToken(parser, token) ::= <%<parser>.<token>%>
+ParserToken(parser, token) ::= <%<parser>.TOKEN_<token>%>
 
 Production(p) ::= <%<p>%>
 
@@ -128,11 +128,11 @@ Token nextToken() {
 @override
 Token emit() {
   switch (type) {
-    case TOKENS:
+    case TOKEN_TOKENS:
       handleAcceptPositionForKeyword("tokens");
       break;
 
-    case LABEL:
+    case TOKEN_LABEL:
       handleAcceptPositionForIdentifier();
       break;
 
@@ -204,7 +204,7 @@ static bool isDigit(String char) {
 >>
 
 BasicListener(X) ::= <<
-@parser::members {
+@parser::definitions {
 class LeafListener extends TBaseListener {
   void visitTerminal(TerminalNode node) {
     print(node.symbol.text);
@@ -242,7 +242,7 @@ TokenGetterListener(X) ::= <<
 class LeafListener extends TBaseListener {
   void exitA(AContext ctx) {
     if (ctx.childCount==2)
-      stdout.write("${ctx.INT(0).symbol.text} ${ctx.INT(1).symbol.text} ${ctx.INT()}");
+      stdout.write("${ctx.INT(0).symbol.text} ${ctx.INT(1).symbol.text} ${ctx.INTs()}");
     else
       print(ctx.ID().symbol);
   }
@@ -255,7 +255,7 @@ RuleGetterListener(X) ::= <<
 class LeafListener extends TBaseListener {
   void exitA(AContext ctx) {
     if (ctx.childCount==2) {
-      stdout.write("${ctx.b(0).start.text} ${ctx.b(1).start.text} ${ctx.b().get(0).start.text}");
+      stdout.write("${ctx.b(0).start.text} ${ctx.b(1).start.text} ${ctx.bs()[0].start.text}");
     } else
       print(ctx.b(0).start.text);
   }
@@ -269,7 +269,7 @@ LRListener(X) ::= <<
 class LeafListener extends TBaseListener {
   void exitE(EContext ctx) {
     if (ctx.childCount==3) {
-      stdout.write("${ctx.getE(0).start.text} ${ctx.getE(1).start.text} ${ctx.getE().get(0).start.text}\n");
+      stdout.write("${ctx.e(0).start.text} ${ctx.e(1).start.text} ${ctx.es()[0].start.text}\n");
     } else
       print(ctx.INT().symbol.text);
   }
@@ -293,8 +293,8 @@ class LeafListener extends TBaseListener {
 DeclareContextListGettersFunction() ::= <<
 void foo() {
   SContext s = null;
-  List\<AContext> a = s.a();
-  List\<BContext> b = s.b();
+  List\<AContext> a = s.as();
+  List\<BContext> b = s.bs();
 }
 >>
 
@@ -305,7 +305,7 @@ Declare_foo() ::= <<
 Invoke_foo() ::= "foo();"
 
 Declare_pred() ::= <<bool pred(bool v) {
-  print("eval="+v);
+  print("eval=\$v");
   return v;
 }
 >>

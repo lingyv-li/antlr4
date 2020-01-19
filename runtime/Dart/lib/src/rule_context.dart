@@ -85,14 +85,14 @@ abstract class RuleContext extends RuleNode {
 
   /// A context is empty if there is no invoking state; meaning nobody call
   /// current context.
-  get isEmpty => invokingState == -1;
+  bool get isEmpty => invokingState == -1;
 
   /// satisfy the ParseTree / SyntaxTree interface
-  get sourceInterval => Interval.INVALID;
+  Interval get sourceInterval => Interval.INVALID;
 
-  get ruleContext => this;
+  RuleContext get ruleContext => this;
 
-  get payload => this;
+  RuleContext get payload => this;
 
   /**
    * Return the combined text of all child nodes. This method only considers
@@ -123,7 +123,7 @@ abstract class RuleContext extends RuleNode {
   /// a subclass of ParserRuleContext with backing field and set
   /// option contextSuperClass.
   /// to set it.
-  get altNumber => ATN.INVALID_ALT_NUMBER;
+  int get altNumber => ATN.INVALID_ALT_NUMBER;
 
   /// Set the outer alternative number for this context node. Default
   /// implementation does nothing to avoid backing field overhead for
@@ -136,7 +136,7 @@ abstract class RuleContext extends RuleNode {
     return null;
   }
 
-  get childCount => 0;
+  int get childCount => 0;
 
   T accept<T>(ParseTreeVisitor<T> visitor) {
     return visitor.visitChildren(this);
@@ -145,19 +145,19 @@ abstract class RuleContext extends RuleNode {
   /// Print out a whole tree, not just a node, in LISP format
   /// (root child1 .. childN). Print just a node if this is a leaf.
   ///
-  toStringTree({List<String> ruleNames, Parser parser}) {
+  String toStringTree({List<String> ruleNames, Parser parser}) {
     return Trees.toStringTree(this, ruleNames: ruleNames, recog: parser);
   }
 
   String toString(
       {List<String> ruleNames, Recognizer recog, RuleContext stop}) {
-    ruleNames = ruleNames ?? recog.ruleNames;
+    ruleNames = ruleNames ?? recog?.ruleNames;
     final buf = new StringBuffer();
     var p = this;
     buf.write("[");
     while (p != null && p != stop) {
       if (ruleNames == null) {
-        if (!p.isEmpty()) {
+        if (!p.isEmpty) {
           buf.write(p.invokingState);
         }
       } else {
@@ -169,7 +169,7 @@ abstract class RuleContext extends RuleNode {
       }
 
       if (p.parent != null &&
-          (ruleNames != null || !p.parent.isEmpty())) {
+          (ruleNames != null || !p.parent.isEmpty)) {
         buf.write(" ");
       }
 

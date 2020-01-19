@@ -220,13 +220,13 @@ class ATNConfigSet extends Iterable<ATNConfig> {
   int get hashCode {
     if (readOnly) {
       if (cachedHashCode == -1) {
-        cachedHashCode = configs.hashCode;
+        cachedHashCode = ListEquality().hash(configs);
       }
 
       return cachedHashCode;
     }
 
-    return configs.hashCode;
+    return ListEquality().hash(configs);
   }
 
   int get length {

@@ -10,6 +10,7 @@ import org.antlr.v4.Tool;
 import org.antlr.v4.codegen.CodeGenerator;
 import org.antlr.v4.codegen.Target;
 import org.antlr.v4.codegen.UnicodeEscapes;
+import org.antlr.v4.tool.Grammar;
 import org.antlr.v4.tool.ast.GrammarAST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.StringRenderer;
@@ -54,6 +55,11 @@ public class DartTarget extends Target {
 	}
 
 	@Override
+	public String getTargetStringLiteralFromANTLRStringLiteral(CodeGenerator generator, String literal, boolean addQuotes) {
+		return super.getTargetStringLiteralFromANTLRStringLiteral(generator, literal, addQuotes).replace("$", "\\$");
+	}
+
+	@Override
 	public String getVersion() {
 		return Tool.VERSION; // Java and tool versions move in lock step
 	}
@@ -87,19 +93,9 @@ public class DartTarget extends Target {
 	@Override
 	protected STGroup loadTemplates() {
 		STGroup result = super.loadTemplates();
-		result.registerRenderer(String.class, new DartStringRenderer(), true);
-		return result;
-	}
+		result.registerRenderer(String.class, new StringRenderer(), true);
 
-	protected static class DartStringRenderer extends StringRenderer {
-		@Override
-		public String toString(Object o, String formatString, Locale locale) {
-			if ("dart-escape".equals(formatString)) {
-				// 5C is the hex code for the \ itself
-				return ((String) o).replace("\\u", "\\u005Cu");
-			}
-			return super.toString(o, formatString, locale);
-		}
+		return result;
 	}
 
 	@Override

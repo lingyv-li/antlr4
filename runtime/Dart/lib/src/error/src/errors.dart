@@ -177,8 +177,10 @@ class InputMismatchException extends RecognitionException {
   InputMismatchException(Parser recognizer,
       [int state = -1, ParserRuleContext ctx])
       : super(recognizer, recognizer.inputStream, ctx ?? recognizer.context) {
-    this.offendingState = state;
-    this.offendingToken = offendingToken;
+    if (state != -1 && ctx != null) {
+      this.offendingState = state;
+    }
+    this.offendingToken = recognizer.currentToken;
   }
 }
 

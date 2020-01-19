@@ -4,6 +4,7 @@
  */
 
 import 'dart:developer';
+import 'dart:io';
 
 import 'atn/atn.dart';
 import 'dfa/dfa.dart';
@@ -771,9 +772,9 @@ abstract class Parser extends Recognizer<ParserATNSimulator> {
     for (int d = 0; d < interpreter.decisionToDFA.length; d++) {
       DFA dfa = interpreter.decisionToDFA[d];
       if (!dfa.states.isEmpty) {
-        if (seenOne) log("");
-        log("Decision ${dfa.decision}:");
-        log(dfa.toString(vocabulary));
+        if (seenOne) print("");
+        print("Decision ${dfa.decision}:");
+        stdout.write(dfa.toString(vocabulary));
         seenOne = true;
       }
     }

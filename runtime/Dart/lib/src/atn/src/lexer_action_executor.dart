@@ -168,7 +168,7 @@ class LexerActionExecutor {
   }
 
   bool operator ==(Object obj) {
-    if (obj == this) {
+    if (identical(obj, this)) {
       return true;
     } else if (!(obj is LexerActionExecutor)) {
       return false;

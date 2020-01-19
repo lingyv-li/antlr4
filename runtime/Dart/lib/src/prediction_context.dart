@@ -85,7 +85,7 @@ abstract class PredictionContext {
   int getReturnState(int index);
 
   /** This means only the {@link #EMPTY} (wildcard? not sure) context is in set. */
-  bool isEmpty() {
+  bool get isEmpty {
     return this == EMPTY;
   }
 
@@ -536,7 +536,7 @@ abstract class PredictionContext {
       PredictionContext context,
       PredictionContextCache contextCache,
       Map<PredictionContext, PredictionContext> visited) {
-    if (context.isEmpty()) {
+    if (context.isEmpty) {
       return context;
     }
 
@@ -604,7 +604,7 @@ abstract class PredictionContext {
 //		workList.add(context);
 //		visited.put(context, context);
 //		List<PredictionContext> nodes = new ArrayList<PredictionContext>();
-//		while (!workList.isEmpty()) {
+//		while (!workList.isEmpty) {
 //			PredictionContext current = workList.pop();
 //			nodes.add(current);
 //			for (int i = 0; i < current.length; i++) {
@@ -651,7 +651,7 @@ abstract class PredictionContext {
       int stateNumber = currentState;
       StringBuffer localBuffer = new StringBuffer();
       localBuffer.write("[");
-      while (!p.isEmpty() && p != stop) {
+      while (!p.isEmpty && p != stop) {
         int index = 0;
         if (p.length > 0) {
           int bits = 1;
@@ -679,7 +679,7 @@ abstract class PredictionContext {
           String ruleName = recognizer.ruleNames[s.ruleIndex];
           localBuffer.write(ruleName);
         } else if (p.getReturnState(index) != EMPTY_RETURN_STATE) {
-          if (!p.isEmpty()) {
+          if (!p.isEmpty) {
             if (localBuffer.length > 1) {
               // first char is '[', if more than that this isn't the first rule
               localBuffer.write(' ');
@@ -767,7 +767,7 @@ class SingletonPredictionContext extends PredictionContext {
 class EmptyPredictionContext extends SingletonPredictionContext {
   EmptyPredictionContext() : super(null, PredictionContext.EMPTY_RETURN_STATE);
 
-  bool isEmpty() {
+  bool get isEmpty {
     return true;
   }
 
@@ -813,7 +813,7 @@ class ArrayPredictionContext extends PredictionContext {
     this.returnStates = returnStates;
   }
 
-  bool isEmpty() {
+  bool get isEmpty {
     // since EMPTY_RETURN_STATE can only appear in the last position, we
     // don't need to verify that size==1
     return returnStates[0] == PredictionContext.EMPTY_RETURN_STATE;
@@ -851,7 +851,7 @@ class ArrayPredictionContext extends PredictionContext {
   }
 
   String toString() {
-    if (isEmpty()) return "[]";
+    if (isEmpty) return "[]";
     StringBuffer buf = new StringBuffer();
     buf.write("[");
     for (int i = 0; i < returnStates.length; i++) {

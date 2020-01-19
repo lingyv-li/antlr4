@@ -423,7 +423,7 @@ class LexerATNSimulator extends ATNSimulator {
       }
 
       if (config.context == null || config.context.hasEmptyPath()) {
-        if (config.context == null || config.context.isEmpty()) {
+        if (config.context == null || config.context.isEmpty) {
           configs.add(config);
           return true;
         } else {
@@ -433,7 +433,7 @@ class LexerATNSimulator extends ATNSimulator {
         }
       }
 
-      if (config.context != null && !config.context.isEmpty()) {
+      if (config.context != null && !config.context.isEmpty) {
         for (int i = 0; i < config.context.length; i++) {
           if (config.context.getReturnState(i) !=
               PredictionContext.EMPTY_RETURN_STATE) {
@@ -530,7 +530,7 @@ class LexerATNSimulator extends ATNSimulator {
           // TODO: if the entry rule is invoked recursively, some
           // actions may be executed during the recursive call. The
           // problem can appear when hasEmptyPath() is true but
-          // isEmpty() is false. In this case, the config needs to be
+          // isEmpty is false. In this case, the config needs to be
           // split into two contexts - one with just the empty path
           // and another with everything but the empty path.
           // Unfortunately, the current algorithm does not allow
