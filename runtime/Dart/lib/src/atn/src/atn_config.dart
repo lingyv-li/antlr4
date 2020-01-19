@@ -83,7 +83,7 @@ class ATNConfig {
    * highest bit which would not cause the value to become negative is used to
    * store this field. This choice minimizes the risk that code which only
    * compares this value to 0 would be affected by the new purpose of the
-   * flag. It also ensures the performance of the existing {@link ATNConfig}
+   * flag. It also ensures the performance of the existing [ATNConfig]
    * constructors as well as certain operations like
    * {@link ATNConfigSet#add(ATNConfig, DoubleKeyMap)} method are
    * <em>completely</em> unaffected by the change.</p>
@@ -185,7 +185,7 @@ class ATNConfig {
 
 class LexerATNConfig extends ATNConfig {
   /**
-   * Gets the {@link LexerActionExecutor} capable of executing the embedded
+   * Gets the [LexerActionExecutor] capable of executing the embedded
    * action(s) for the current configuration.
    */
   LexerActionExecutor lexerActionExecutor;

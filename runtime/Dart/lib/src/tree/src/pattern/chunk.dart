@@ -6,7 +6,7 @@
  * chunks in preparation for creating a token stream by
  * {@link ParseTreePatternMatcher#tokenize(String)}. From there, we get a parse
  * tree from with {@link ParseTreePatternMatcher#compile(String, int)}. These
- * chunks are converted to {@link RuleTagToken}, {@link TokenTagToken}, or the
+ * chunks are converted to [RuleTagToken], [TokenTagToken], or the
  * regular tokens of the text surrounding the tags.</p>
  */
 abstract class Chunk {}
@@ -16,10 +16,10 @@ abstract class Chunk {}
  * following forms.
  *
  * <ul>
- * <li>{@code expr}: An unlabeled placeholder for a parser rule {@code expr}.</li>
- * <li>{@code ID}: An unlabeled placeholder for a token of type {@code ID}.</li>
- * <li>{@code e:expr}: A labeled placeholder for a parser rule {@code expr}.</li>
- * <li>{@code id:ID}: A labeled placeholder for a token of type {@code ID}.</li>
+ * <li>[expr]: An unlabeled placeholder for a parser rule [expr].</li>
+ * <li>[ID]: An unlabeled placeholder for a token of type [ID].</li>
+ * <li>{@code e:expr}: A labeled placeholder for a parser rule [expr].</li>
+ * <li>{@code id:ID}: A labeled placeholder for a token of type [ID].</li>
  * </ul>
  *
  * This class does not perform any validation on the tag or label names aside
@@ -32,22 +32,21 @@ class TagChunk extends Chunk {
   final String tag;
 
   /**
-   * The label assigned to this chunk, or {@code null} if no label is
+   * The label assigned to this chunk, or null if no label is
    * assigned to the chunk.
    */
   final String label;
 
   /**
-   * Construct a new instance of {@link TagChunk} using the specified label
+   * Construct a new instance of [TagChunk] using the specified label
    * and tag.
    *
-   * @param label The label for the tag. If this is {@code null}, the
-   * {@link TagChunk} represents an unlabeled tag.
+   * @param label The label for the tag. If this is null, the
+   * [TagChunk] represents an unlabeled tag.
    * @param tag The tag, which should be the name of a parser rule or token
    * type.
    *
-   * @exception IllegalArgumentException if {@code tag} is {@code null} or
-   * empty.
+   * @exception ArgumentError if [tag] is null or empty.
    */
   TagChunk(this.tag, {this.label}) {
     if (tag == null || tag.isEmpty) {
@@ -77,14 +76,13 @@ class TextChunk extends Chunk {
   /**
    * The text of the chunk.
    */
-
   final String text;
 
   /**
-   * Constructs a new instance of {@link TextChunk} with the specified text.
+   * Constructs a new instance of [TextChunk] with the specified text.
    *
    * @param text The text of this chunk.
-   * @exception IllegalArgumentException if {@code text} is {@code null}.
+   * @exception IllegalArgumentException if [text] is null.
    */
   TextChunk(this.text) {
     if (text == null) {
@@ -95,7 +93,7 @@ class TextChunk extends Chunk {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link TextChunk} returns the result of
+   * <p>The implementation for [TextChunk] returns the result of
    * {@link #getText()} in single quotes.</p>
    */
   String toString() {

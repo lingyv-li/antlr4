@@ -12,11 +12,11 @@ import 'token.dart';
 import 'token_source.dart';
 
 /**
- * An {@link IntStream} whose symbols are {@link Token} instances.
+ * An [IntStream] whose symbols are [Token] instances.
  */
 abstract class TokenStream extends IntStream {
   /**
-   * Get the {@link Token} instance associated with the value returned by
+   * Get the [Token] instance associated with the value returned by
    * {@link #LA LA(k)}. This method has the same pre- and post-conditions as
    * {@link IntStream#LA}. In addition, when the preconditions of this method
    * are met, the return value is non-null and the value of
@@ -27,18 +27,18 @@ abstract class TokenStream extends IntStream {
   Token LT(int k);
 
   /**
-   * Gets the {@link Token} at the specified {@code index} in the stream. When
+   * Gets the [Token] at the specified [index] in the stream. When
    * the preconditions of this method are met, the return value is non-null.
    *
    * <p>The preconditions for this method are the same as the preconditions of
    * {@link IntStream#seek}. If the behavior of {@code seek(index)} is
-   * unspecified for the current state and given {@code index}, then the
+   * unspecified for the current state and given [index], then the
    * behavior of this method is also unspecified.</p>
    *
-   * <p>The symbol referred to by {@code index} differs from {@code seek()} only
-   * in the case of filtering streams where {@code index} lies before the end
+   * <p>The symbol referred to by [index] differs from {@code seek()} only
+   * in the case of filtering streams where [index] lies before the end
    * of the stream. Unlike {@code seek()}, this method does not adjust
-   * {@code index} to point to a non-ignored symbol.</p>
+   * [index] to point to a non-ignored symbol.</p>
    *
    * @throws IllegalArgumentException if {code index} is less than 0
    * @throws UnsupportedOperationException if the stream does not support
@@ -47,13 +47,13 @@ abstract class TokenStream extends IntStream {
   Token get(int index);
 
   /**
-   * Gets the underlying {@link TokenSource} which provides tokens for this
+   * Gets the underlying [TokenSource] which provides tokens for this
    * stream.
    */
   TokenSource get tokenSource;
 
   /**
-   * Return the text of all tokens within the specified {@code interval}. This
+   * Return the text of all tokens within the specified [interval]. This
    * method behaves like the following code (including potential exceptions
    * for violating preconditions of {@link #get}, but may be optimized by the
    * specific implementation.
@@ -96,16 +96,16 @@ abstract class TokenStream extends IntStream {
    *
    * @param ctx The context providing the source interval of tokens to get
    * text for.
-   * @return The text of all tokens within the source interval of {@code ctx}.
+   * @return The text of all tokens within the source interval of [ctx].
    */
   String getTextFromCtx(RuleContext ctx);
 
   /**
-   * Return the text of all tokens in this stream between {@code start} and
-   * {@code stop} (inclusive).
+   * Return the text of all tokens in this stream between [start] and
+   * [stop] (inclusive).
    *
-   * <p>If the specified {@code start} or {@code stop} token was not provided by
-   * this stream, or if the {@code stop} occurred before the {@code start}
+   * <p>If the specified [start] or [stop] token was not provided by
+   * this stream, or if the [stop] occurred before the [start]
    * token, the behavior is unspecified.</p>
    *
    * <p>For streams which ensure that the {@link Token#getTokenIndex} method is
@@ -123,8 +123,8 @@ abstract class TokenStream extends IntStream {
    *
    * @param start The first token in the interval to get text for.
    * @param stop The last token in the interval to get text for (inclusive).
-   * @return The text of all tokens lying between the specified {@code start}
-   * and {@code stop} tokens.
+   * @return The text of all tokens lying between the specified [start]
+   * and [stop] tokens.
    *
    * @throws UnsupportedOperationException if this stream does not support
    * this method for the specified tokens
@@ -133,8 +133,8 @@ abstract class TokenStream extends IntStream {
 }
 
 /**
- * This implementation of {@link TokenStream} loads tokens from a
- * {@link TokenSource} on-demand, and places the tokens in a buffer to provide
+ * This implementation of [TokenStream] loads tokens from a
+ * [TokenSource] on-demand, and places the tokens in a buffer to provide
  * access to any previous token by index.
  *
  * <p>
@@ -142,37 +142,36 @@ abstract class TokenStream extends IntStream {
  * parser requires the token stream filter tokens to only those on a particular
  * channel, such as {@link Token#DEFAULT_CHANNEL} or
  * {@link Token#HIDDEN_CHANNEL}, use a filtering token stream such a
- * {@link CommonTokenStream}.</p>
+ * [CommonTokenStream].</p>
  */
 class BufferedTokenStream implements TokenStream {
   /**
-   * The {@link TokenSource} from which tokens for this stream are fetched.
+   * The [TokenSource] from which tokens for this stream are fetched.
    */
   TokenSource _tokenSource;
 
   /**
    * A collection of all tokens fetched from the token source. The list is
    * considered a complete view of the input once {@link #fetchedEOF} is set
-   * to {@code true}.
+   * to [true].
    */
   List<Token> tokens = List<Token>();
 
   /**
-   * The index into {@link #tokens} of the current token (next token to
-   * {@link #consume}). {@link #tokens}{@code [}{@link #p}{@code ]} should be
-   * {@link #LT LT(1)}.
+   * The index into [tokens] of the current token (next token to [consume]).
+   * [tokens][p] should be [LT(1)].
    *
    * <p>This field is set to -1 when the stream is first constructed or when
-   * {@link #setTokenSource} is called, indicating that the first token has
+   * [tokenSource] is set, indicating that the first token has
    * not yet been fetched from the token source. For additional information,
-   * see the documentation of {@link IntStream} for a description of
+   * see the documentation of [IntStream] for a description of
    * Initializing Methods.</p>
    */
   int p = -1;
 
   /**
-   * Indicates whether the {@link Token#EOF} token has been fetched from
-   * {@link #tokenSource} and added to {@link #tokens}. This field improves
+   * Indicates whether the [Token.EOF] token has been fetched from
+   * [tokenSource] and added to [tokens]. This field improves
    * performance for the following cases:
    *
    * <ul>
@@ -180,7 +179,7 @@ class BufferedTokenStream implements TokenStream {
    * consuming the EOF symbol is optimized by checking the values of
    * {@link #fetchedEOF} and {@link #p} instead of calling {@link #LA}.</li>
    * <li>{@link #fetch}: The check to prevent adding multiple EOF symbols into
-   * {@link #tokens} is trivial with this field.</li>
+   * [{@link #]tokens} is trivial with this field.</li>
    * <ul>
    */
   bool fetchedEOF = false;
@@ -235,10 +234,10 @@ class BufferedTokenStream implements TokenStream {
     }
   }
 
-  /** Make sure index {@code i} in tokens has a token.
+  /** Make sure index [i] in tokens has a token.
    *
-   * @return {@code true} if a token is located at index {@code i}, otherwise
-   *    {@code false}.
+   * @return [true] if a token is located at index [i], otherwise
+   *    [false].
    * @see #get(int i)
    */
   bool sync(int i) {
@@ -253,7 +252,7 @@ class BufferedTokenStream implements TokenStream {
     return true;
   }
 
-  /** Add {@code n} elements to buffer.
+  /** Add [n] elements to buffer.
    *
    * @return The actual number of elements added to the buffer.
    */
@@ -326,11 +325,11 @@ class BufferedTokenStream implements TokenStream {
   /**
    * Allowed derived classes to modify the behavior of operations which change
    * the current stream position by adjusting the target token index of a seek
-   * operation. The default implementation simply returns {@code i}. If an
+   * operation. The default implementation simply returns [i]. If an
    * exception is thrown in this method, the current stream index should not be
    * changed.
    *
-   * <p>For example, {@link CommonTokenStream} overrides this method to ensure that
+   * <p>For example, [CommonTokenStream] overrides this method to ensure that
    * the seek target is always an on-channel token.</p>
    *
    * @param i The target token index.
@@ -394,8 +393,8 @@ class BufferedTokenStream implements TokenStream {
 
   /**
    * Given a starting index, return the index of the next token on channel.
-   * Return {@code i} if {@code tokens[i]} is on channel. Return the index of
-   * the EOF token if there are no tokens on channel between {@code i} and
+   * Return [i] if {@code tokens[i]} is on channel. Return the index of
+   * the EOF token if there are no tokens on channel between [i] and
    * EOF.
    */
   int nextTokenOnChannel(int i, int channel) {
@@ -420,11 +419,11 @@ class BufferedTokenStream implements TokenStream {
 
   /**
    * Given a starting index, return the index of the previous token on
-   * channel. Return {@code i} if {@code tokens[i]} is on channel. Return -1
-   * if there are no tokens on channel between {@code i} and 0.
+   * channel. Return [i] if {@code tokens[i]} is on channel. Return -1
+   * if there are no tokens on channel between [i] and 0.
    *
    * <p>
-   * If {@code i} specifies an index at or after the EOF token, the EOF token
+   * If [i] specifies an index at or after the EOF token, the EOF token
    * index is returned. This is due to the fact that the EOF token is treated
    * as though it were on every channel.</p>
    */
@@ -553,7 +552,7 @@ class BufferedTokenStream implements TokenStream {
 }
 
 /**
- * This class extends {@link BufferedTokenStream} with functionality to filter
+ * This class extends [BufferedTokenStream] with functionality to filter
  * token streams to tokens on a particular channel (tokens where
  * {@link Token#getChannel} returns a particular value).
  *
@@ -587,9 +586,9 @@ class CommonTokenStream extends BufferedTokenStream {
   int channel;
 
   /**
-   * Constructs a new {@link CommonTokenStream} using the specified token
+   * Constructs a new [CommonTokenStream] using the specified token
    * source and filtering tokens to the specified channel. Only tokens whose
-   * {@link Token#getChannel} matches {@code channel} or have the
+   * {@link Token#getChannel} matches [channel] or have the
    * {@link Token#getType} equal to {@link Token#EOF} will be returned by the
    * token stream lookahead methods.
    *

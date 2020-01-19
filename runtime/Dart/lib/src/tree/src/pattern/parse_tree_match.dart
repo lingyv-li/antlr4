@@ -13,13 +13,13 @@ import '../tree.dart';
 import 'chunk.dart';
 
 /**
- * Represents the result of matching a {@link ParseTree} against a tree pattern.
+ * Represents the result of matching a [ParseTree] against a tree pattern.
  */
 class ParseTreeMatch {
   /**
    * Get the parse tree we are trying to match to a pattern.
    *
-   * @return The {@link ParseTree} we are trying to match to a pattern.
+   * @return The [ParseTree] we are trying to match to a pattern.
    */
   final ParseTree tree;
 
@@ -46,25 +46,25 @@ class ParseTreeMatch {
   /**
    * Get the node at which we first detected a mismatch.
    *
-   * @return the node at which we first detected a mismatch, or {@code null}
+   * @return the node at which we first detected a mismatch, or null
    * if the match was successful.
    */
   final ParseTree mismatchedNode;
 
   /**
-   * Constructs a new instance of {@link ParseTreeMatch} from the specified
+   * Constructs a new instance of [ParseTreeMatch] from the specified
    * parse tree and pattern.
    *
    * @param tree The parse tree to match against the pattern.
    * @param pattern The parse tree pattern.
    * @param labels A mapping from label names to collections of
-   * {@link ParseTree} objects located by the tree pattern matching process.
+   * [ParseTree] objects located by the tree pattern matching process.
    * @param mismatchedNode The first node which failed to match the tree
    * pattern during the matching process.
    *
-   * @exception ArgumentError.notNull) if {@code tree} is {@code null}
-   * @exception ArgumentError.notNull) if {@code pattern} is {@code null}
-   * @exception ArgumentError.notNull) if {@code labels} is {@code null}
+   * @exception ArgumentError.notNull) if [tree] is null
+   * @exception ArgumentError.notNull) if [pattern] is null
+   * @exception ArgumentError.notNull) if [labels] is null
    */
   ParseTreeMatch(this.tree, this.pattern, this.labels, this.mismatchedNode) {
     if (tree == null) {
@@ -81,20 +81,20 @@ class ParseTreeMatch {
   }
 
   /**
-   * Get the last node associated with a specific {@code label}.
+   * Get the last node associated with a specific [label].
    *
    * <p>For example, for pattern {@code <id:ID>}, {@code get("id")} returns the
-   * node matched for that {@code ID}. If more than one node
+   * node matched for that [ID]. If more than one node
    * matched the specified label, only the last is returned. If there is
-   * no node associated with the label, this returns {@code null}.</p>
+   * no node associated with the label, this returns null.</p>
    *
    * <p>Pattern tags like {@code <ID>} and {@code <expr>} without labels are
-   * considered to be labeled with {@code ID} and {@code expr}, respectively.</p>
+   * considered to be labeled with [ID] and [expr], respectively.</p>
    *
    * @param label The label to check.
    *
-   * @return The last {@link ParseTree} to match a tag with the specified
-   * label, or {@code null} if no parse tree matched a tag with the label.
+   * @return The last [ParseTree] to match a tag with the specified
+   * label, or null if no parse tree matched a tag with the label.
    */
 
   ParseTree get(String label) {
@@ -109,11 +109,11 @@ class ParseTreeMatch {
   /**
    * Return all nodes matching a rule or token tag with the specified label.
    *
-   * <p>If the {@code label} is the name of a parser rule or token in the
+   * <p>If the [label] is the name of a parser rule or token in the
    * grammar, the resulting list will contain both the parse trees matching
    * rule or tags explicitly labeled with the label and the complete set of
    * parse trees matching the labeled and unlabeled tags in the pattern for
-   * the parser rule or token. For example, if {@code label} is {@code "foo"},
+   * the parser rule or token. For example, if [label] is {@code "foo"},
    * the result will contain <em>all</em> of the following.</p>
    *
    * <ul>
@@ -125,8 +125,8 @@ class ParseTreeMatch {
    *
    * @param label The label.
    *
-   * @return A collection of all {@link ParseTree} nodes matching tags with
-   * the specified {@code label}. If no nodes matched the label, an empty list
+   * @return A collection of all [ParseTree] nodes matching tags with
+   * the specified [label]. If no nodes matched the label, an empty list
    * is returned.
    */
 
@@ -142,8 +142,8 @@ class ParseTreeMatch {
   /**
    * Gets a value indicating whether the match operation succeeded.
    *
-   * @return {@code true} if the match operation succeeded; otherwise,
-   * {@code false}.
+   * @return [true] if the match operation succeeded; otherwise,
+   * [false].
    */
   bool get succeeded => mismatchedNode == null;
 
@@ -156,7 +156,7 @@ class ParseTreeMatch {
 }
 
 /**
- * A pattern like {@code <ID> = <expr>;} converted to a {@link ParseTree} by
+ * A pattern like {@code <ID> = <expr>;} converted to a [ParseTree] by
  * {@link ParseTreePatternMatcher#compile(String, int)}.
  */
 class ParseTreePattern {
@@ -178,31 +178,31 @@ class ParseTreePattern {
 
 
   /**
-   * Get the tree pattern as a {@link ParseTree}. The rule and token tags from
+   * Get the tree pattern as a [ParseTree]. The rule and token tags from
    * the pattern are present in the parse tree as terminal nodes with a symbol
-   * of type {@link RuleTagToken} or {@link TokenTagToken}.
+   * of type [RuleTagToken] or [TokenTagToken].
    *
-   * @return The tree pattern as a {@link ParseTree}.
+   * @return The tree pattern as a [ParseTree].
    */
   final ParseTree patternTree;
 
   /**
-   * Get the {@link ParseTreePatternMatcher} which created this tree pattern.
+   * Get the [ParseTreePatternMatcher] which created this tree pattern.
    *
-   * @return The {@link ParseTreePatternMatcher} which created this tree
+   * @return The [ParseTreePatternMatcher] which created this tree
    * pattern.
    */
   final ParseTreePatternMatcher matcher;
 
   /**
-   * Construct a new instance of the {@link ParseTreePattern} class.
+   * Construct a new instance of the [ParseTreePattern] class.
    *
-   * @param matcher The {@link ParseTreePatternMatcher} which created this
+   * @param matcher The [ParseTreePatternMatcher] which created this
    * tree pattern.
    * @param pattern The tree pattern in concrete syntax form.
    * @param patternRuleIndex The parser rule which serves as the root of the
    * tree pattern.
-   * @param patternTree The tree pattern in {@link ParseTree} form.
+   * @param patternTree The tree pattern in [ParseTree] form.
    */
   ParseTreePattern(
       this.matcher, this.pattern, this.patternRuleIndex, this.patternTree);
@@ -211,7 +211,7 @@ class ParseTreePattern {
    * Match a specific parse tree against this tree pattern.
    *
    * @param tree The parse tree to match against this tree pattern.
-   * @return A {@link ParseTreeMatch} object describing the result of the
+   * @return A [ParseTreeMatch] object describing the result of the
    * match operation. The {@link ParseTreeMatch#succeeded()} method can be
    * used to determine whether or not the match was successful.
    */
@@ -224,8 +224,8 @@ class ParseTreePattern {
    * Determine whether or not a parse tree matches this tree pattern.
    *
    * @param tree The parse tree to match against this tree pattern.
-   * @return {@code true} if {@code tree} is a match for the current tree
-   * pattern; otherwise, {@code false}.
+   * @return [true] if [tree] is a match for the current tree
+   * pattern; otherwise, [false].
    */
   bool matches(ParseTree tree) {
     return matcher.match(tree, pattern: this).succeeded;
@@ -233,54 +233,54 @@ class ParseTreePattern {
 }
 
 /**
- * A tree pattern matching mechanism for ANTLR {@link ParseTree}s.
+ * A tree pattern matching mechanism for ANTLR [ParseTree]s.
  *
  * <p>Patterns are strings of source input text with special tags representing
  * token or rule references such as:</p>
  *
  * <p>{@code <ID> = <expr>;}</p>
  *
- * <p>Given a pattern start rule such as {@code statement}, this object constructs
- * a {@link ParseTree} with placeholders for the {@code ID} and {@code expr}
+ * <p>Given a pattern start rule such as [statement], this object constructs
+ * a [ParseTree] with placeholders for the [ID] and [expr]
  * subtree. Then the {@link #match} routines can compare an actual
- * {@link ParseTree} from a parse with this pattern. Tag {@code <ID>} matches
- * any {@code ID} token and tag {@code <expr>} references the result of the
- * {@code expr} rule (generally an instance of {@code ExprContext}.</p>
+ * [ParseTree] from a parse with this pattern. Tag {@code <ID>} matches
+ * any [ID] token and tag {@code <expr>} references the result of the
+ * [expr] rule (generally an instance of [ExprContext].</p>
  *
  * <p>Pattern {@code x = 0;} is a similar pattern that matches the same pattern
- * except that it requires the identifier to be {@code x} and the expression to
+ * except that it requires the identifier to be [x] and the expression to
  * be {@code 0}.</p>
  *
- * <p>The {@link #matches} routines return {@code true} or {@code false} based
+ * <p>The {@link #matches} routines return [true] or [false] based
  * upon a match for the tree rooted at the parameter sent in. The
- * {@link #match} routines return a {@link ParseTreeMatch} object that
+ * {@link #match} routines return a [ParseTreeMatch] object that
  * contains the parse tree, the parse tree pattern, and a map from tag name to
  * matched nodes (more below). A subtree that fails to match, returns with
  * {@link ParseTreeMatch#mismatchedNode} set to the first tree node that did not
  * match.</p>
  *
  * <p>For efficiency, you can compile a tree pattern in string form to a
- * {@link ParseTreePattern} object.</p>
+ * [ParseTreePattern] object.</p>
  *
- * <p>See {@code TestParseTreeMatcher} for lots of examples.
- * {@link ParseTreePattern} has two static helper methods:
+ * <p>See [TestParseTreeMatcher] for lots of examples.
+ * [ParseTreePattern] has two static helper methods:
  * {@link ParseTreePattern#findAll} and {@link ParseTreePattern#match} that
  * are easy to use but not super efficient because they create new
- * {@link ParseTreePatternMatcher} objects each time and have to compile the
+ * [ParseTreePatternMatcher] objects each time and have to compile the
  * pattern in string form before using it.</p>
  *
- * <p>The lexer and parser that you pass into the {@link ParseTreePatternMatcher}
+ * <p>The lexer and parser that you pass into the [ParseTreePatternMatcher]
  * constructor are used to parse the pattern in string form. The lexer converts
  * the {@code <ID> = <expr>;} into a sequence of four tokens (assuming lexer
  * throws out whitespace or puts it on a hidden channel). Be aware that the
  * input stream is reset for the lexer (but not the parser; a
- * {@link ParserInterpreter} is created to parse the input.). Any user-defined
+ * [ParserInterpreter] is created to parse the input.). Any user-defined
  * fields you have put into the lexer might get changed when this mechanism asks
  * it to scan the pattern string.</p>
  *
  * <p>Normally a parser does not accept token {@code <expr>} as a valid
- * {@code expr} but, from the parser passed in, we create a special version of
- * the underlying grammar representation (an {@link ATN}) that allows imaginary
+ * [expr] but, from the parser passed in, we create a special version of
+ * the underlying grammar representation (an [ATN]) that allows imaginary
  * tokens representing rules ({@code <expr>}) to match entire rules. We call
  * these <em>bypass alternatives</em>.</p>
  *
@@ -307,8 +307,8 @@ class ParseTreePatternMatcher {
   String escape = "\\"; // e.g., \< and \> must escape BOTH!
 
   /**
-   * Constructs a {@link ParseTreePatternMatcher} or from a {@link Lexer} and
-   * {@link Parser} object. The lexer input stream is altered for tokenizing
+   * Constructs a [ParseTreePatternMatcher] or from a [Lexer] and
+   * [Parser] object. The lexer input stream is altered for tokenizing
    * the tree patterns. The parser is used as a convenient mechanism to get
    * the grammar name, plus token, rule names.
    */
@@ -322,8 +322,8 @@ class ParseTreePatternMatcher {
    * @param stop The stop delimiter.
    * @param escapeLeft The escape sequence to use for escaping a start or stop delimiter.
    *
-   * @exception ArgumentError if {@code start} is {@code null} or empty.
-   * @exception ArgumentError if {@code stop} is {@code null} or empty.
+   * @exception ArgumentError if [start] is null or empty.
+   * @exception ArgumentError if [stop] is null or empty.
    */
   void setDelimiters(String start, String stop, String escapeLeft) {
     if (start == null || start.isEmpty) {
@@ -339,7 +339,7 @@ class ParseTreePatternMatcher {
     this.escape = escapeLeft;
   }
 
-  /** Does {@code pattern} matched as rule patternRuleIndex match tree? Pass in a
+  /** Does [pattern] matched as rule patternRuleIndex match tree? Pass in a
    *  compiled pattern instead of a string representation of a tree pattern.
    */
   bool matches(ParseTree tree,
@@ -355,8 +355,8 @@ class ParseTreePatternMatcher {
   }
 
   /**
-   * Compare {@code pattern} matched against {@code tree} and return a
-   * {@link ParseTreeMatch} object that contains the matched elements, or the
+   * Compare [pattern] matched against [tree] and return a
+   * [ParseTreeMatch] object that contains the matched elements, or the
    * node at which the match failed. Pass in a compiled pattern instead of a
    * string representation of a tree pattern.
    */
@@ -375,7 +375,7 @@ class ParseTreePatternMatcher {
 
   /**
    * For repeated use of a tree pattern, compile it to a
-   * {@link ParseTreePattern} using this method.
+   * [ParseTreePattern] using this method.
    */
   ParseTreePattern compile(String pattern, int patternRuleIndex) {
     List<Token> tokenList = tokenize(pattern);
@@ -413,11 +413,11 @@ class ParseTreePatternMatcher {
   // ---- SUPPORT CODE ----
 
   /**
-   * Recursively walk {@code tree} against {@code patternTree}, filling
+   * Recursively walk [tree] against [patternTree], filling
    * {@code match.}{@link ParseTreeMatch#labels labels}.
    *
-   * @return the first node encountered in {@code tree} which does not match
-   * a corresponding node in {@code patternTree}, or {@code null} if the match
+   * @return the first node encountered in [tree] which does not match
+   * a corresponding node in [patternTree], or null if the match
    * was successful. The specific node returned depends on the matching
    * algorithm used by the implementation, and may be overridden.
    */
@@ -511,7 +511,7 @@ class ParseTreePatternMatcher {
     return tree;
   }
 
-  /** Is {@code t} {@code (expr <expr>)} subtree? */
+  /** Is [t] {@code (expr <expr>)} subtree? */
   RuleTagToken getRuleTagToken(ParseTree t) {
     if (t is RuleNode) {
       RuleNode r = t;
@@ -686,8 +686,8 @@ class StartRuleDoesNotConsumeFullPattern extends Error {}
 
 /**
  * This exception is thrown to cancel a parsing operation. This exception does
- * not extend {@link RecognitionException}, allowing it to bypass the standard
- * error recovery mechanisms. {@link BailErrorStrategy} throws this exception in
+ * not extend [RecognitionException], allowing it to bypass the standard
+ * error recovery mechanisms. [BailErrorStrategy] throws this exception in
  * response to a parse error.
  */
 class ParseCancellationException extends StateError {

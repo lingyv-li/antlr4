@@ -25,7 +25,7 @@ import 'semantic_context.dart';
  */
 class ContextSensitivityInfo extends DecisionEventInfo {
   /**
-   * Constructs a new instance of the {@link ContextSensitivityInfo} class
+   * Constructs a new instance of the [ContextSensitivityInfo] class
    * with the specified detailed context sensitivity information.
    *
    * @param decision The decision number
@@ -48,7 +48,7 @@ class ContextSensitivityInfo extends DecisionEventInfo {
  * Note that we could record the parser call stack at the time this event
  * occurred but in the presence of left recursive rules, the stack is kind of
  * meaningless. It's better to look at the individual configurations for their
- * individual stacks. Of course that is a {@link PredictionContext} object
+ * individual stacks. Of course that is a [PredictionContext] object
  * not a parse tree node and so it does not have information about the extent
  * (start...stop) of the various subtrees. Examining the stack tops of all
  * configurations provide the return states for the rule invocations.
@@ -66,7 +66,7 @@ class DecisionEventInfo {
 
   /**
    * The configuration set containing additional information relevant to the
-   * prediction state when the current event occurred, or {@code null} if no
+   * prediction state when the current event occurred, or null if no
    * additional information is relevant or available.
    */
   final ATNConfigSet configs;
@@ -88,8 +88,8 @@ class DecisionEventInfo {
   final int stopIndex;
 
   /**
-   * {@code true} if the current event occurred during LL prediction;
-   * otherwise, {@code false} if the input occurred during SLL prediction.
+   * [true] if the current event occurred during LL prediction;
+   * otherwise, [false] if the input occurred during SLL prediction.
    */
   final bool fullCtx;
 
@@ -161,7 +161,7 @@ class DecisionInfo {
   int SLL_MaxLook;
 
   /**
-   * Gets the {@link LookaheadEventInfo} associated with the event where the
+   * Gets the [LookaheadEventInfo] associated with the event where the
    * {@link #SLL_MaxLook} value was set.
    */
   LookaheadEventInfo SLL_MaxLookEvent;
@@ -192,13 +192,13 @@ class DecisionInfo {
   int LL_MaxLook;
 
   /**
-   * Gets the {@link LookaheadEventInfo} associated with the event where the
+   * Gets the [LookaheadEventInfo] associated with the event where the
    * {@link #LL_MaxLook} value was set.
    */
   LookaheadEventInfo LL_MaxLookEvent;
 
   /**
-   * A collection of {@link ContextSensitivityInfo} instances describing the
+   * A collection of [ContextSensitivityInfo] instances describing the
    * context sensitivities encountered during LL prediction for this decision.
    *
    * @see ContextSensitivityInfo
@@ -206,7 +206,7 @@ class DecisionInfo {
   final List<ContextSensitivityInfo> contextSensitivities = [];
 
   /**
-   * A collection of {@link ErrorInfo} instances describing the parse errors
+   * A collection of [ErrorInfo] instances describing the parse errors
    * identified during calls to {@link ParserATNSimulator#adaptivePredict} for
    * this decision.
    *
@@ -215,7 +215,7 @@ class DecisionInfo {
   final List<ErrorInfo> errors = [];
 
   /**
-   * A collection of {@link AmbiguityInfo} instances describing the
+   * A collection of [AmbiguityInfo] instances describing the
    * ambiguities encountered during LL prediction for this decision.
    *
    * @see AmbiguityInfo
@@ -223,7 +223,7 @@ class DecisionInfo {
   final List<AmbiguityInfo> ambiguities = [];
 
   /**
-   * A collection of {@link PredicateEvalInfo} instances describing the
+   * A collection of [PredicateEvalInfo] instances describing the
    * results of evaluating individual predicates during prediction for this
    * decision.
    *
@@ -305,7 +305,7 @@ class DecisionInfo {
   int LL_DFATransitions;
 
   /**
-   * Constructs a new instance of the {@link DecisionInfo} class to contain
+   * Constructs a new instance of the [DecisionInfo] class to contain
    * statistics for a particular decision.
    *
    * @param decision The decision number
@@ -362,7 +362,7 @@ class AmbiguityInfo extends DecisionEventInfo {
   BitSet ambigAlts;
 
   /**
-   * Constructs a new instance of the {@link AmbiguityInfo} class with the
+   * Constructs a new instance of the [AmbiguityInfo] class with the
    * specified detailed ambiguity information.
    *
    * @param decision The decision number
@@ -374,8 +374,8 @@ class AmbiguityInfo extends DecisionEventInfo {
    * @param startIndex The start index for the current prediction
    * @param stopIndex The index at which the ambiguity was identified during
    * prediction
-   * @param fullCtx {@code true} if the ambiguity was identified during LL
-   * prediction; otherwise, {@code false} if the ambiguity was identified
+   * @param fullCtx [true] if the ambiguity was identified during LL
+   * prediction; otherwise, [false] if the ambiguity was identified
    * during SLL prediction
    */
   AmbiguityInfo(int decision, ATNConfigSet configs, BitSet this.ambigAlts,
@@ -396,7 +396,7 @@ class AmbiguityInfo extends DecisionEventInfo {
  */
 class ErrorInfo extends DecisionEventInfo {
   /**
-   * Constructs a new instance of the {@link ErrorInfo} class with the
+   * Constructs a new instance of the [ErrorInfo] class with the
    * specified detailed syntax error information.
    *
    * @param decision The decision number
@@ -405,8 +405,8 @@ class ErrorInfo extends DecisionEventInfo {
    * @param input The input token stream
    * @param startIndex The start index for the current prediction
    * @param stopIndex The index at which the syntax error was identified
-   * @param fullCtx {@code true} if the syntax error was identified during LL
-   * prediction; otherwise, {@code false} if the syntax error was identified
+   * @param fullCtx [true] if the syntax error was identified during LL
+   * prediction; otherwise, [false] if the syntax error was identified
    * during SLL prediction
    */
   ErrorInfo(int decision, ATNConfigSet configs, TokenStream input,
@@ -429,18 +429,18 @@ class LookaheadEventInfo extends DecisionEventInfo {
   int predictedAlt;
 
   /**
-   * Constructs a new instance of the {@link LookaheadEventInfo} class with
+   * Constructs a new instance of the [LookaheadEventInfo] class with
    * the specified detailed lookahead information.
    *
    * @param decision The decision number
    * @param configs The final configuration set containing the necessary
-   * information to determine the result of a prediction, or {@code null} if
+   * information to determine the result of a prediction, or null if
    * the final configuration set is not available
    * @param input The input token stream
    * @param startIndex The start index for the current prediction
    * @param stopIndex The index at which the prediction was finally made
-   * @param fullCtx {@code true} if the current lookahead is part of an LL
-   * prediction; otherwise, {@code false} if the current lookahead is part of
+   * @param fullCtx [true] if the current lookahead is part of an LL
+   * prediction; otherwise, [false] if the current lookahead is part of
    * an SLL prediction
    */
   LookaheadEventInfo(int decision, ATNConfigSet configs, int this.predictedAlt,
@@ -476,7 +476,7 @@ class PredicateEvalInfo extends DecisionEventInfo {
   final bool evalResult;
 
   /**
-   * Constructs a new instance of the {@link PredicateEvalInfo} class with the
+   * Constructs a new instance of the [PredicateEvalInfo] class with the
    * specified detailed predicate evaluation information.
    *
    * @param decision The decision number
@@ -488,10 +488,10 @@ class PredicateEvalInfo extends DecisionEventInfo {
    * @param semctx The semantic context which was evaluated
    * @param evalResult The results of evaluating the semantic context
    * @param predictedAlt The alternative number for the decision which is
-   * guarded by the semantic context {@code semctx}. See {@link #predictedAlt}
+   * guarded by the semantic context [semctx]. See {@link #predictedAlt}
    * for more information.
-   * @param fullCtx {@code true} if the semantic context was
-   * evaluated during LL prediction; otherwise, {@code false} if the semantic
+   * @param fullCtx [true] if the semantic context was
+   * evaluated during LL prediction; otherwise, [false] if the semantic
    * context was evaluated during SLL prediction
    *
    * @see ParserATNSimulator#evalSemanticContext(SemanticContext, ParserRuleContext, int, boolean)
@@ -522,10 +522,10 @@ class ParseInfo {
   ParseInfo(this.atnSimulator);
 
   /**
-   * Gets an array of {@link DecisionInfo} instances containing the profiling
+   * Gets an array of [DecisionInfo] instances containing the profiling
    * information gathered for each decision in the ATN.
    *
-   * @return An array of {@link DecisionInfo} instances, indexed by decision
+   * @return An array of [DecisionInfo] instances, indexed by decision
    * number.
    */
   List<DecisionInfo> get decisionInfo {

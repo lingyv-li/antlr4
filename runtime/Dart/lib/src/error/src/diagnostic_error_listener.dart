@@ -6,7 +6,7 @@ import '../../util/bit_set.dart';
 import 'error_listener.dart';
 
 /**
- * This implementation of {@link ANTLRErrorListener} can be used to identify
+ * This implementation of [ANTLRErrorListener] can be used to identify
  * certain potential correctness and performance problems in grammars. "Reports"
  * are made by calling {@link Parser#notifyErrorListeners} with the appropriate
  * message.
@@ -28,16 +28,16 @@ import 'error_listener.dart';
  */
 class DiagnosticErrorListener extends BaseErrorListener {
   /**
-   * When {@code true}, only exactly known ambiguities are reported.
+   * When [true], only exactly known ambiguities are reported.
    */
   final bool exactOnly;
 
   /**
-   * Initializes a new instance of {@link DiagnosticErrorListener}, specifying
+   * Initializes a new instance of [DiagnosticErrorListener], specifying
    * whether all ambiguities or only exact ambiguities are reported.
    *
-   * @param exactOnly {@code true} to report only exact ambiguities, otherwise
-   * {@code false} to report all ambiguities.
+   * @param exactOnly [true] to report only exact ambiguities, otherwise
+   * [false] to report all ambiguities.
    */
   DiagnosticErrorListener([this.exactOnly = true]);
 
@@ -99,8 +99,8 @@ class DiagnosticErrorListener extends BaseErrorListener {
    * @param reportedAlts The set of conflicting or ambiguous alternatives, as
    * reported by the parser.
    * @param configs The conflicting or ambiguous configuration set.
-   * @return Returns {@code reportedAlts} if it is not {@code null}, otherwise
-   * returns the set of alternatives represented in {@code configs}.
+   * @return Returns [reportedAlts] if it is not null, otherwise
+   * returns the set of alternatives represented in [configs].
    */
   BitSet getConflictingAlts(BitSet reportedAlts, ATNConfigSet configs) {
     if (reportedAlts != null) {

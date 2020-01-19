@@ -38,7 +38,7 @@ import 'errors.dart';
  */
 abstract class ErrorStrategy {
   /**
-   * Reset the error handler state for the specified {@code recognizer}.
+   * Reset the error handler state for the specified [recognizer].
    * @param recognizer the parser instance
    */
   void reset(Parser recognizer);
@@ -47,7 +47,7 @@ abstract class ErrorStrategy {
    * This method is called when an unexpected symbol is encountered during an
    * inline match operation, such as {@link Parser#match}. If the error
    * strategy successfully recovers from the match failure, this method
-   * returns the {@link Token} instance which should be treated as the
+   * returns the [Token] instance which should be treated as the
    * successful result of the match.
    *
    * <p>This method handles the consumption of any tokens - the caller should
@@ -64,7 +64,7 @@ abstract class ErrorStrategy {
   Token recoverInline(Parser recognizer);
 
   /**
-   * This method is called to recover from exception {@code e}. This method is
+   * This method is called to recover from exception [e]. This method is
    * called after {@link #reportError} by the default exception handler
    * generated for a rule method.
    *
@@ -80,7 +80,7 @@ abstract class ErrorStrategy {
   /**
    * This method provides the error handler with an opportunity to handle
    * syntactic or semantic errors in the input stream before they result in a
-   * {@link RecognitionException}.
+   * [RecognitionException].
    *
    * <p>The generated code currently contains calls to {@link #sync} after
    * entering the decision state of a closure block ({@code (...)*} or
@@ -99,7 +99,7 @@ abstract class ErrorStrategy {
   void sync(Parser recognizer);
 
   /**
-   * Tests whether or not {@code recognizer} is in the process of recovering
+   * Tests whether or not [recognizer] is in the process of recovering
    * from an error. In error recovery mode, {@link Parser#consume} adds
    * symbols to the parse tree by calling
    * {@link Parser#createErrorNode(ParserRuleContext, Token)} then
@@ -107,8 +107,8 @@ abstract class ErrorStrategy {
    * {@link Parser#createTerminalNode(ParserRuleContext, Token)}.
    *
    * @param recognizer the parser instance
-   * @return {@code true} if the parser is currently recovering from a parse
-   * error, otherwise {@code false}
+   * @return [true] if the parser is currently recovering from a parse
+   * error, otherwise [false]
    */
   bool inErrorRecoveryMode(Parser recognizer);
 
@@ -121,7 +121,7 @@ abstract class ErrorStrategy {
   void reportMatch(Parser recognizer);
 
   /**
-   * Report any kind of {@link RecognitionException}. This method is called by
+   * Report any kind of [RecognitionException]. This method is called by
    * the default exception handler generated for a rule method.
    *
    * @param recognizer the parser instance
@@ -131,7 +131,7 @@ abstract class ErrorStrategy {
 }
 
 /**
- * This is the default implementation of {@link ANTLRErrorStrategy} used for
+ * This is the default implementation of [ANTLRErrorStrategy] used for
  * error reporting and recovery in ANTLR parsers.
  */
 class DefaultErrorStrategy implements ErrorStrategy {
@@ -225,15 +225,15 @@ class DefaultErrorStrategy implements ErrorStrategy {
    *
    * <p>The default implementation returns immediately if the handler is already
    * in error recovery mode. Otherwise, it calls {@link #beginErrorCondition}
-   * and dispatches the reporting task based on the runtime type of {@code e}
+   * and dispatches the reporting task based on the runtime type of [e]
    * according to the following table.</p>
    *
    * <ul>
-   * <li>{@link NoViableAltException}: Dispatches the call to
+   * <li>[NoViableAltException]: Dispatches the call to
    * {@link #reportNoViableAlternative}</li>
-   * <li>{@link InputMismatchException}: Dispatches the call to
+   * <li>[InputMismatchException]: Dispatches the call to
    * {@link #reportInputMismatch}</li>
-   * <li>{@link FailedPredicateException}: Dispatches the call to
+   * <li>[FailedPredicateException]: Dispatches the call to
    * {@link #reportFailedPredicate}</li>
    * <li>All other types: calls {@link Parser#notifyErrorListeners} to report
    * the exception</li>
@@ -401,7 +401,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
 
   /**
    * This is called by {@link #reportError} when the exception is a
-   * {@link NoViableAltException}.
+   * [NoViableAltException].
    *
    * @see #reportError
    *
@@ -425,7 +425,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
 
   /**
    * This is called by {@link #reportError} when the exception is an
-   * {@link InputMismatchException}.
+   * [InputMismatchException].
    *
    * @see #reportError
    *
@@ -442,7 +442,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
 
   /**
    * This is called by {@link #reportError} when the exception is a
-   * {@link FailedPredicateException}.
+   * [FailedPredicateException].
    *
    * @see #reportError
    *
@@ -461,7 +461,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
    * of a token from the input stream. At the time this method is called, the
    * erroneous symbol is current {@code LT(1)} symbol and has not yet been
    * removed from the input stream. When this method returns,
-   * {@code recognizer} is in error recovery mode.
+   * [recognizer] is in error recovery mode.
    *
    * <p>This method is called when {@link #singleTokenDeletion} identifies
    * single-token deletion as a viable recovery strategy for a mismatched
@@ -495,7 +495,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
    * This method is called to report a syntax error which requires the
    * insertion of a missing token into the input stream. At the time this
    * method is called, the missing token has not yet been inserted. When this
-   * method returns, {@code recognizer} is in error recovery mode.
+   * method returns, [recognizer] is in error recovery mode.
    *
    * <p>This method is called when {@link #singleTokenInsertion} identifies
    * single-token insertion as a viable recovery strategy for a mismatched
@@ -531,7 +531,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
    * <p>The default implementation attempts to recover from the mismatched input
    * by using single token insertion and deletion as described below. If the
    * recovery attempt fails, this method throws an
-   * {@link InputMismatchException}.</p>
+   * [InputMismatchException].</p>
    *
    * <p><strong>EXTRA TOKEN</strong> (single token deletion)</p>
    *
@@ -546,7 +546,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
    *
    * <p>If current token (at {@code LA(1)}) is consistent with what could come
    * after the expected {@code LA(1)} token, then assume the token is missing
-   * and use the parser's {@link TokenFactory} to create it on the fly. The
+   * and use the parser's [TokenFactory] to create it on the fly. The
    * "insertion" is performed by returning the created token as the successful
    * result of the match operation.</p>
    *
@@ -555,7 +555,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
    * <p><strong>EXAMPLE</strong></p>
    *
    * <p>For example, Input {@code i=(3;} is clearly missing the {@code ')'}. When
-   * the parser returns from the nested call to {@code expr}, it will have
+   * the parser returns from the nested call to [expr], it will have
    * call chain:</p>
    *
    * <pre>
@@ -573,7 +573,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
    * The attempt to match {@code ')'} will fail when it sees {@code ';'} and
    * call {@link #recoverInline}. To recover, it sees that {@code LA(1)==';'}
    * is in the set of tokens that can follow the {@code ')'} token reference
-   * in rule {@code atom}. It can assume that you forgot the {@code ')'}.
+   * in rule [atom]. It can assume that you forgot the {@code ')'}.
    */
 
   Token recoverInline(Parser recognizer) {
@@ -607,18 +607,18 @@ class DefaultErrorStrategy implements ErrorStrategy {
    * This method implements the single-token insertion inline error recovery
    * strategy. It is called by {@link #recoverInline} if the single-token
    * deletion strategy fails to recover from the mismatched input. If this
-   * method returns {@code true}, {@code recognizer} will be in error recovery
+   * method returns [true], [recognizer] will be in error recovery
    * mode.
    *
    * <p>This method determines whether or not single-token insertion is viable by
    * checking if the {@code LA(1)} input symbol could be successfully matched
    * if it were instead the {@code LA(2)} symbol. If this method returns
-   * {@code true}, the caller is responsible for creating and inserting a
+   * [true], the caller is responsible for creating and inserting a
    * token with the correct type to produce this behavior.</p>
    *
    * @param recognizer the parser instance
-   * @return {@code true} if single-token insertion is a viable recovery
-   * strategy for the current mismatched input, otherwise {@code false}
+   * @return [true] if single-token insertion is a viable recovery
+   * strategy for the current mismatched input, otherwise [false]
    */
   bool singleTokenInsertion(Parser recognizer) {
     int currentSymbolType = recognizer.inputStream.LA(1);
@@ -643,7 +643,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
    * strategy. It is called by {@link #recoverInline} to attempt to recover
    * from mismatched input. If this method returns null, the parser and error
    * handler state will not have changed. If this method returns non-null,
-   * {@code recognizer} will <em>not</em> be in error recovery mode since the
+   * [recognizer] will <em>not</em> be in error recovery mode since the
    * returned token was a successful match.
    *
    * <p>If the single-token deletion is successful, this method calls
@@ -653,9 +653,9 @@ class DefaultErrorStrategy implements ErrorStrategy {
    * match.</p>
    *
    * @param recognizer the parser instance
-   * @return the successfully matched {@link Token} instance if single-token
+   * @return the successfully matched [Token] instance if single-token
    * deletion successfully recovers from the mismatched input, otherwise
-   * {@code null}
+   * null
    */
   Token singleTokenDeletion(Parser recognizer) {
     int nextTokenType = recognizer.inputStream.LA(2);
@@ -890,9 +890,9 @@ class DefaultErrorStrategy implements ErrorStrategy {
 }
 
 /**
- * This implementation of {@link ANTLRErrorStrategy} responds to syntax errors
+ * This implementation of [ANTLRErrorStrategy] responds to syntax errors
  * by immediately canceling the parse operation with a
- * {@link ParseCancellationException}. The implementation ensures that the
+ * [ParseCancellationException]. The implementation ensures that the
  * {@link ParserRuleContext#exception} field is set for all parse tree nodes
  * that were not completed prior to encountering the error.
  *
@@ -908,7 +908,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
  * the first stage.</li>
  * <li><strong>Silent validation:</strong> When syntax errors are not being
  * reported or logged, and the parse result is simply ignored if errors occur,
- * the {@link BailErrorStrategy} avoids wasting work on recovering from errors
+ * the [BailErrorStrategy] avoids wasting work on recovering from errors
  * when the result will be ignored either way.</li>
  * </ul>
  *
@@ -918,10 +918,10 @@ class DefaultErrorStrategy implements ErrorStrategy {
  * @see Parser#setErrorHandler(ANTLRErrorStrategy)
  */
 class BailErrorStrategy extends DefaultErrorStrategy {
-  /** Instead of recovering from exception {@code e}, re-throw it wrapped
-   *  in a {@link ParseCancellationException} so it is not caught by the
+  /** Instead of recovering from exception [e], re-throw it wrapped
+   *  in a [ParseCancellationException] so it is not caught by the
    *  rule function catches.  Use {@link Exception#getCause()} to get the
-   *  original {@link RecognitionException}.
+   *  original [RecognitionException].
    */
 
   void recover(Parser recognizer, RecognitionException e) {

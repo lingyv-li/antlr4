@@ -27,7 +27,7 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
   /**
    * Get the vocabulary used by the recognizer.
    *
-   * @return A {@link Vocabulary} instance providing information about the
+   * @return A [Vocabulary] instance providing information about the
    * vocabulary used by the grammar.
    */
   Vocabulary get vocabulary;
@@ -107,9 +107,9 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
   String get grammarFileName;
 
   /**
-   * Get the {@link ATN} used by the recognizer for prediction.
+   * Get the [ATN] used by the recognizer for prediction.
    *
-   * @return The {@link ATN} used by the recognizer for prediction.
+   * @return The [ATN] used by the recognizer for prediction.
    */
   ATN getATN();
 
@@ -130,7 +130,7 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
   }
 
   /**
-   * @exception NullPointerException if {@code listener} is {@code null}.
+   * @exception NullPointerException if [listener] is null.
    */
   void addErrorListener(ErrorListener listener) {
     if (listener == null) {

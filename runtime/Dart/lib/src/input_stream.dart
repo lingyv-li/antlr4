@@ -57,17 +57,17 @@ abstract class IntStream {
    *
    * Note that calling this method does not guarantee that {@code index()} is
    * incremented by exactly 1, as that would preclude the ability to implement
-   * filtering streams (e.g. {@link CommonTokenStream} which distinguishes
+   * filtering streams (e.g. [CommonTokenStream] which distinguishes
    * between "on-channel" and "off-channel" tokens).
    *
    * @throws IllegalStateException if an attempt is made to consume the
    * end of the stream (i.e. if {@code LA(1)==}{@link #EOF EOF} before calling
-   * {@code consume}).
+   * [consume]).
    */
   void consume();
 
   /**
-   * Gets the value of the symbol at offset {@code i} from the current
+   * Gets the value of the symbol at offset [i] from the current
    * position. When {@code i==1}, this method returns the value of the current
    * symbol in the stream (which is the next symbol to be consumed). When
    * {@code i==-1}, this method returns the value of the previously read
@@ -90,7 +90,7 @@ abstract class IntStream {
    *     that has not yet been released.</li>
    * </ul>
    *
-   * <p>If {@code i} represents a position at or beyond the end of the stream,
+   * <p>If [i] represents a position at or beyond the end of the stream,
    * this method returns {@link #EOF}.</p>
    *
    * <p>The return value is unspecified if {@code i<0} and fewer than {@code -i}
@@ -109,7 +109,7 @@ abstract class IntStream {
    * streaming input sources by specifying the minimum buffering requirements
    * to support arbitrary lookahead during prediction.
    *
-   * <p>The returned mark is an opaque handle (type {@code int}) which is passed
+   * <p>The returned mark is an opaque handle (type [int]) which is passed
    * to {@link #release release()} when the guarantees provided by the marked
    * range are no longer necessary. When calls to
    * {@code mark()}/{@code release()} are nested, the marks must be released
@@ -175,22 +175,22 @@ abstract class IntStream {
   int get index;
 
   /**
-   * Set the input cursor to the position indicated by {@code index}. If the
+   * Set the input cursor to the position indicated by [index]. If the
    * specified index lies past the end of the stream, the operation behaves as
-   * though {@code index} was the index of the EOF symbol. After this method
+   * though [index] was the index of the EOF symbol. After this method
    * returns without throwing an exception, then at least one of the following
    * will be true.
    *
    * <ul>
    *   <li>{@link #index index()} will return the index of the first symbol
-   *     appearing at or after the specified {@code index}. Specifically,
+   *     appearing at or after the specified [index]. Specifically,
    *     implementations which filter their sources should automatically
-   *     adjust {@code index} forward the minimum amount required for the
+   *     adjust [index] forward the minimum amount required for the
    *     operation to target a non-ignored symbol.</li>
    *   <li>{@code LA(1)} returns {@link #EOF}</li>
    * </ul>
    *
-   * This operation is guaranteed to not throw an exception if {@code index}
+   * This operation is guaranteed to not throw an exception if [index]
    * lies within a marked region. For more information on marked regions, see
    * {@link #mark}. The behavior of this method is unspecified if no call to
    * an {@link IntStream initializing method} has occurred after this stream
@@ -198,7 +198,7 @@ abstract class IntStream {
    *
    * @param index The absolute index to seek to.
    *
-   * @throws IllegalArgumentException if {@code index} is less than 0
+   * @throws IllegalArgumentException if [index] is less than 0
    * @throws UnsupportedOperationException if the stream does not support
    * seeking to the specified index
    */
@@ -227,13 +227,13 @@ abstract class CharStream extends IntStream {
   /**
    * This method returns the text for a range of characters within this input
    * stream. This method is guaranteed to not throw an exception if the
-   * specified {@code interval} lies entirely within a marked range. For more
+   * specified [interval] lies entirely within a marked range. For more
    * information about marked ranges, see {@link IntStream#mark}.
    *
    * @param interval an interval within the stream
    * @return the text of the specified interval
    *
-   * @throws NullPointerException if {@code interval} is {@code null}
+   * @throws NullPointerException if [interval] is null
    * @throws IllegalArgumentException if {@code interval.a < 0}, or if
    * {@code interval.b < interval.a - 1}, or if {@code interval.b} lies at or
    * past the end of the stream

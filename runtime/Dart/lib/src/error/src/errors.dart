@@ -23,22 +23,22 @@ import '../../util/utils.dart';
  */
 class RecognitionException extends StateError {
   /**
-   * Gets the {@link Recognizer} where this exception occurred.
+   * Gets the [Recognizer] where this exception occurred.
    *
-   * <p>If the recognizer is not available, this method returns {@code null}.</p>
+   * <p>If the recognizer is not available, this method returns null.</p>
    *
-   * @return The recognizer where this exception occurred, or {@code null} if
+   * @return The recognizer where this exception occurred, or null if
    * the recognizer is not available.
    */
   final Recognizer recognizer;
 
   /**
-   * Gets the {@link RuleContext} at the time this exception was thrown.
+   * Gets the [RuleContext] at the time this exception was thrown.
    *
-   * <p>If the context is not available, this method returns {@code null}.</p>
+   * <p>If the context is not available, this method returns null.</p>
    *
-   * @return The {@link RuleContext} at the time this exception was thrown.
-   * If the context is not available, this method returns {@code null}.
+   * @return The [RuleContext] at the time this exception was thrown.
+   * If the context is not available, this method returns null.
    */
   final RuleContext ctx;
 
@@ -46,26 +46,26 @@ class RecognitionException extends StateError {
    * Gets the input stream which is the symbol source for the recognizer where
    * this exception was thrown.
    *
-   * <p>If the input stream is not available, this method returns {@code null}.</p>
+   * <p>If the input stream is not available, this method returns null.</p>
    *
    * @return The input stream which is the symbol source for the recognizer
-   * where this exception was thrown, or {@code null} if the stream is not
+   * where this exception was thrown, or null if the stream is not
    * available.
    */
   final IntStream inputStream;
 
   /**
-   * The current {@link Token} when an error occurred. Since not all streams
-   * support accessing symbols by index, we have to track the {@link Token}
+   * The current [Token] when an error occurred. Since not all streams
+   * support accessing symbols by index, we have to track the [Token]
    * instance itself.
    */
   Token offendingToken;
 
   /**
    * Get the ATN state number the parser was in at the time the error
-   * occurred. For {@link NoViableAltException} and
-   * {@link LexerNoViableAltException} exceptions, this is the
-   * {@link DecisionState} number. For others, it is the state whose outgoing
+   * occurred. For [NoViableAltException] and
+   * [LexerNoViableAltException] exceptions, this is the
+   * [DecisionState] number. For others, it is the state whose outgoing
    * edge we couldn't match.
    *
    * <p>If the state number is not known, this method returns -1.</p>
@@ -83,10 +83,10 @@ class RecognitionException extends StateError {
    * previously matched symbol at the time this exception was thrown.
    *
    * <p>If the set of expected tokens is not known and could not be computed,
-   * this method returns {@code null}.</p>
+   * this method returns null.</p>
    *
    * @return The set of token types that could potentially follow the current
-   * state in the ATN, or {@code null} if the information is not available.
+   * state in the ATN, or null if the information is not available.
    */
   IntervalSet get expectedTokens {
     if (recognizer != null) {

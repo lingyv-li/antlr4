@@ -50,7 +50,7 @@ class ParserRuleContext extends RuleContext {
   Token start, stop;
 
   /// The exception that forced this rule to return. If the rule successfully
-  /// completed, this is {@code null}.
+  /// completed, this is null.
   RecognitionException exception = null;
 
   ParserRuleContext([RuleContext parent, int invokingStateNumber])
@@ -259,11 +259,11 @@ class ParserRuleContext extends RuleContext {
 }
 
 /**
- * This class extends {@link ParserRuleContext} by allowing the value of
+ * This class extends [ParserRuleContext] by allowing the value of
  * {@link #getRuleIndex} to be explicitly set for the context.
  *
  * <p>
- * {@link ParserRuleContext} does not include field storage for the rule index
+ * [ParserRuleContext] does not include field storage for the rule index
  * since the context classes created by the code generator override the
  * {@link #getRuleIndex} method to return the correct value for that context.
  * Since the parser interpreter does not use the context classes generated for a
@@ -274,7 +274,7 @@ class InterpreterRuleContext extends ParserRuleContext {
   int ruleIndex = -1;
 
   /**
-   * Constructs a new {@link InterpreterRuleContext} with the specified
+   * Constructs a new [InterpreterRuleContext] with the specified
    * parent, invoking state, and rule index.
    *
    * @param parent The parent context.

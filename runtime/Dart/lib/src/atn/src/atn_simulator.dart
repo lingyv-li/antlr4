@@ -68,7 +68,7 @@ abstract class ATNSimulator {
   }
 }
 
-/** Used to cache {@link PredictionContext} objects. Its used for the shared
+/** Used to cache [PredictionContext] objects. Its used for the shared
  *  context cash associated with contexts in DFA states. This cache
  *  can be used for both lexers and parsers.
  */

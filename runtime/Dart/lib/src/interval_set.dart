@@ -144,7 +144,7 @@ class Interval {
 }
 
 /**
- * This class implements the {@link IntervalSet} backed by a sorted array of
+ * This class implements the [IntervalSet] backed by a sorted array of
  * non-overlapping intervals. It is particularly efficient for representing
  * large collections of numbers, where the majority of elements appear as part
  * of a sequential range of numbers that are all part of the set. For example,
@@ -342,7 +342,7 @@ class IntervalSet {
   /**
    * Compute the set difference between two interval sets. The specific
    * operation is {@code left - right}. If either of the input sets is
-   * {@code null}, it is treated as though it was an empty set.
+   * null, it is treated as though it was an empty set.
    */
   static IntervalSet subtract(IntervalSet left, IntervalSet right) {
     if (left == null || left.isNil) {

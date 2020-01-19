@@ -28,12 +28,12 @@ abstract class TokenFactory<Symbol extends Token> {
 }
 
 /**
- * This default implementation of {@link TokenFactory} creates
- * {@link CommonToken} objects.
+ * This default implementation of [TokenFactory] creates
+ * [CommonToken] objects.
  */
 class CommonTokenFactory implements TokenFactory<CommonToken> {
   /**
-   * The default {@link CommonTokenFactory} instance.
+   * The default [CommonTokenFactory] instance.
    *
    * <p>
    * This token factory does not explicitly copy token text when constructing
@@ -47,23 +47,23 @@ class CommonTokenFactory implements TokenFactory<CommonToken> {
    * where the input stream might not be able to provide arbitrary substrings
    * of text from the input after the lexer creates a token (e.g. the
    * implementation of {@link CharStream#getText} in
-   * {@link UnbufferedCharStream} throws an
-   * {@link UnsupportedOperationException}). Explicitly setting the token text
+   * [UnbufferedCharStream] throws an
+   * [UnsupportedOperationException]). Explicitly setting the token text
    * allows {@link Token#getText} to be called at any time regardless of the
    * input stream implementation.
    *
    * <p>
-   * The default value is {@code false} to avoid the performance and memory
+   * The default value is [false] to avoid the performance and memory
    * overhead of copying text for every token unless explicitly requested.</p>
    */
   final bool copyText;
 
   /**
-   * Constructs a {@link CommonTokenFactory} with the specified value for
+   * Constructs a [CommonTokenFactory] with the specified value for
    * {@link #copyText}.
    *
    * <p>
-   * When {@code copyText} is {@code false}, the {@link #DEFAULT} instance
+   * When [copyText] is [false], the {@link #DEFAULT} instance
    * should be used instead of constructing a new instance.</p>
    *
    * @param copyText The value for {@link #copyText}.

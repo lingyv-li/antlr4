@@ -7,42 +7,42 @@ import '../../lexer.dart';
 import '../../util/murmur_hash.dart';
 
 /**
- * Represents the serialization type of a {@link LexerAction}.
+ * Represents the serialization type of a [LexerAction].
  *
  * @author Sam Harwell
  * @since 4.2
  */
 enum LexerActionType {
   /**
-   * The type of a {@link LexerChannelAction} action.
+   * The type of a [LexerChannelAction] action.
    */
   CHANNEL,
   /**
-   * The type of a {@link LexerCustomAction} action.
+   * The type of a [LexerCustomAction] action.
    */
   CUSTOM,
   /**
-   * The type of a {@link LexerModeAction} action.
+   * The type of a [LexerModeAction] action.
    */
   MODE,
   /**
-   * The type of a {@link LexerMoreAction} action.
+   * The type of a [LexerMoreAction] action.
    */
   MORE,
   /**
-   * The type of a {@link LexerPopModeAction} action.
+   * The type of a [LexerPopModeAction] action.
    */
   POP_MODE,
   /**
-   * The type of a {@link LexerPushModeAction} action.
+   * The type of a [LexerPushModeAction] action.
    */
   PUSH_MODE,
   /**
-   * The type of a {@link LexerSkipAction} action.
+   * The type of a [LexerSkipAction] action.
    */
   SKIP,
   /**
-   * The type of a {@link LexerTypeAction} action.
+   * The type of a [LexerTypeAction] action.
    */
   TYPE,
 }
@@ -65,22 +65,22 @@ abstract class LexerAction {
 
   /**
    * Gets whether the lexer action is position-dependent. Position-dependent
-   * actions may have different semantics depending on the {@link CharStream}
+   * actions may have different semantics depending on the [CharStream]
    * index at the time the action is executed.
    *
-   * <p>Many lexer commands, including {@code type}, {@code skip}, and
-   * {@code more}, do not check the input index during their execution.
+   * <p>Many lexer commands, including [type], [skip], and
+   * [more], do not check the input index during their execution.
    * Actions like this are position-independent, and may be stored more
    * efficiently as part of the {@link LexerATNConfig#lexerActionExecutor}.</p>
    *
-   * @return {@code true} if the lexer action semantics can be affected by the
-   * position of the input {@link CharStream} at the time it is executed;
-   * otherwise, {@code false}.
+   * @return [true] if the lexer action semantics can be affected by the
+   * position of the input [CharStream] at the time it is executed;
+   * otherwise, [false].
    */
   bool get isPositionDependent;
 
   /**
-   * Execute the lexer action in the context of the specified {@link Lexer}.
+   * Execute the lexer action in the context of the specified [Lexer].
    *
    * <p>For position-dependent actions, the input stream must already be
    * positioned correctly prior to calling this method.</p>
@@ -91,7 +91,7 @@ abstract class LexerAction {
 }
 
 /**
- * Implements the {@code channel} lexer action by calling
+ * Implements the [channel] lexer action by calling
  * {@link Lexer#setChannel} with the assigned channel.
  *
  * @author Sam Harwell
@@ -99,14 +99,14 @@ abstract class LexerAction {
  */
 class LexerChannelAction implements LexerAction {
   /**
-   * Gets the channel to use for the {@link Token} created by the lexer.
+   * Gets the channel to use for the [Token] created by the lexer.
    *
-   * @return The channel to use for the {@link Token} created by the lexer.
+   * @return The channel to use for the [Token] created by the lexer.
    */
   final int channel;
 
   /**
-   * Constructs a new {@code channel} action with the specified channel value.
+   * Constructs a new [channel] action with the specified channel value.
    * @param channel The channel value to pass to {@link Lexer#setChannel}.
    */
   LexerChannelAction(this.channel);
@@ -197,14 +197,14 @@ class LexerCustomAction implements LexerAction {
 
   /**
    * Gets whether the lexer action is position-dependent. Position-dependent
-   * actions may have different semantics depending on the {@link CharStream}
+   * actions may have different semantics depending on the [CharStream]
    * index at the time the action is executed.
    *
    * <p>Custom actions are position-dependent since they may represent a
    * user-defined embedded action which makes calls to methods like
    * {@link Lexer#getText}.</p>
    *
-   * @return This method returns {@code true}.
+   * @return This method returns [true].
    */
 
   bool get isPositionDependent => true;
@@ -239,7 +239,7 @@ class LexerCustomAction implements LexerAction {
 }
 
 /**
- * Implements the {@code mode} lexer action by calling {@link Lexer#mode} with
+ * Implements the [mode] lexer action by calling {@link Lexer#mode} with
  * the assigned mode.
  *
  * @author Sam Harwell
@@ -249,12 +249,12 @@ class LexerModeAction implements LexerAction {
   /**
    * Get the lexer mode this action should transition the lexer to.
    *
-   * @return The lexer mode for this {@code mode} command.
+   * @return The lexer mode for this [mode] command.
    */
   final int mode;
 
   /**
-   * Constructs a new {@code mode} action with the specified mode value.
+   * Constructs a new [mode] action with the specified mode value.
    * @param mode The mode value to pass to {@link Lexer#mode}.
    */
   LexerModeAction(this.mode);
@@ -268,7 +268,7 @@ class LexerModeAction implements LexerAction {
 
   /**
    * {@inheritDoc}
-   * @return This method returns {@code false}.
+   * @return This method returns [false].
    */
 
   bool get isPositionDependent => false;
@@ -306,9 +306,9 @@ class LexerModeAction implements LexerAction {
 }
 
 /**
- * Implements the {@code more} lexer action by calling {@link Lexer#more}.
+ * Implements the [more] lexer action by calling {@link Lexer#more}.
  *
- * <p>The {@code more} command does not have any parameters, so this action is
+ * <p>The [more] command does not have any parameters, so this action is
  * implemented as a singleton instance exposed by {@link #INSTANCE}.</p>
  *
  * @author Sam Harwell
@@ -328,7 +328,7 @@ class LexerMoreAction implements LexerAction {
 
   /**
    * {@inheritDoc}
-   * @return This method returns {@code false}.
+   * @return This method returns [false].
    */
 
   bool get isPositionDependent => false;
@@ -359,9 +359,9 @@ class LexerMoreAction implements LexerAction {
 }
 
 /**
- * Implements the {@code popMode} lexer action by calling {@link Lexer#popMode}.
+ * Implements the [popMode] lexer action by calling {@link Lexer#popMode}.
  *
- * <p>The {@code popMode} command does not have any parameters, so this action is
+ * <p>The [popMode] command does not have any parameters, so this action is
  * implemented as a singleton instance exposed by {@link #INSTANCE}.</p>
  *
  * @author Sam Harwell
@@ -382,7 +382,7 @@ class LexerPopModeAction implements LexerAction {
 
   /**
    * {@inheritDoc}
-   * @return This method returns {@code false}.
+   * @return This method returns [false].
    */
 
   bool get isPositionDependent => false;
@@ -413,7 +413,7 @@ class LexerPopModeAction implements LexerAction {
 }
 
 /**
- * Implements the {@code pushMode} lexer action by calling
+ * Implements the [pushMode] lexer action by calling
  * {@link Lexer#pushMode} with the assigned mode.
  *
  * @author Sam Harwell
@@ -423,12 +423,12 @@ class LexerPushModeAction implements LexerAction {
   /**
    * Get the lexer mode this action should transition the lexer to.
    *
-   * @return The lexer mode for this {@code pushMode} command.
+   * @return The lexer mode for this [pushMode] command.
    */
   final int mode;
 
   /**
-   * Constructs a new {@code pushMode} action with the specified mode value.
+   * Constructs a new [pushMode] action with the specified mode value.
    * @param mode The mode value to pass to {@link Lexer#pushMode}.
    */
   LexerPushModeAction(this.mode);
@@ -442,7 +442,7 @@ class LexerPushModeAction implements LexerAction {
 
   /**
    * {@inheritDoc}
-   * @return This method returns {@code false}.
+   * @return This method returns [false].
    */
 
   bool get isPositionDependent => false;
@@ -480,9 +480,9 @@ class LexerPushModeAction implements LexerAction {
 }
 
 /**
- * Implements the {@code skip} lexer action by calling {@link Lexer#skip}.
+ * Implements the [skip] lexer action by calling {@link Lexer#skip}.
  *
- * <p>The {@code skip} command does not have any parameters, so this action is
+ * <p>The [skip] command does not have any parameters, so this action is
  * implemented as a singleton instance exposed by {@link #INSTANCE}.</p>
  *
  * @author Sam Harwell
@@ -503,7 +503,7 @@ class LexerSkipAction implements LexerAction {
 
   /**
    * {@inheritDoc}
-   * @return This method returns {@code false}.
+   * @return This method returns [false].
    */
 
   bool get isPositionDependent => false;
@@ -533,7 +533,7 @@ class LexerSkipAction implements LexerAction {
 }
 
 /**
- * Implements the {@code type} lexer action by calling {@link Lexer#setType}
+ * Implements the [type] lexer action by calling {@link Lexer#setType}
  * with the assigned type.
  *
  * @author Sam Harwell
@@ -547,7 +547,7 @@ class LexerTypeAction implements LexerAction {
   final int type;
 
   /**
-   * Constructs a new {@code type} action with the specified token type value.
+   * Constructs a new [type] action with the specified token type value.
    * @param type The type to assign to the token using {@link Lexer#setType}.
    */
   LexerTypeAction(this.type);
@@ -560,7 +560,7 @@ class LexerTypeAction implements LexerAction {
 
   /**
    * {@inheritDoc}
-   * @return This method returns {@code false}.
+   * @return This method returns [false].
    */
 
   bool get isPositionDependent => false;
@@ -598,8 +598,8 @@ class LexerTypeAction implements LexerAction {
 }
 
 /**
- * This implementation of {@link LexerAction} is used for tracking input offsets
- * for position-dependent actions within a {@link LexerActionExecutor}.
+ * This implementation of [LexerAction] is used for tracking input offsets
+ * for position-dependent actions within a [LexerActionExecutor].
  *
  * <p>This action is not serialized as part of the ATN, and is only required for
  * position-dependent lexer actions which appear at a location other than the
@@ -612,11 +612,11 @@ class LexerTypeAction implements LexerAction {
  */
 class LexerIndexedCustomAction implements LexerAction {
   /**
-   * Gets the location in the input {@link CharStream} at which the lexer
+   * Gets the location in the input [CharStream] at which the lexer
    * action should be executed. The value is interpreted as an offset relative
    * to the token start index.
    *
-   * @return The location in the input {@link CharStream} at which the lexer
+   * @return The location in the input [CharStream] at which the lexer
    * action should be executed.
    */
   final int offset;
@@ -624,22 +624,22 @@ class LexerIndexedCustomAction implements LexerAction {
   /**
    * Gets the lexer action to execute.
    *
-   * @return A {@link LexerAction} object which executes the lexer action.
+   * @return A [LexerAction] object which executes the lexer action.
    */
   final LexerAction action;
 
   /**
    * Constructs a new indexed custom action by associating a character offset
-   * with a {@link LexerAction}.
+   * with a [LexerAction].
    *
    * <p>Note: This class is only required for lexer actions for which
-   * {@link LexerAction#isPositionDependent} returns {@code true}.</p>
+   * {@link LexerAction#isPositionDependent} returns [true].</p>
    *
-   * @param offset The offset into the input {@link CharStream}, relative to
+   * @param offset The offset into the input [CharStream], relative to
    * the token start index, at which the specified lexer action should be
    * executed.
    * @param action The lexer action to execute at a particular offset in the
-   * input {@link CharStream}.
+   * input [CharStream].
    */
   LexerIndexedCustomAction(this.offset, this.action);
 
@@ -647,13 +647,13 @@ class LexerIndexedCustomAction implements LexerAction {
    * {@inheritDoc}
    *
    * @return This method returns the result of calling {@link #getActionType}
-   * on the {@link LexerAction} returned by {@link #getAction}.
+   * on the [LexerAction] returned by {@link #getAction}.
    */
   LexerActionType get actionType => action.actionType;
 
   /**
    * {@inheritDoc}
-   * @return This method returns {@code true}.
+   * @return This method returns [true].
    */
 
   bool get isPositionDependent => true;
@@ -662,7 +662,7 @@ class LexerIndexedCustomAction implements LexerAction {
    * {@inheritDoc}
    *
    * <p>This method calls {@link #execute} on the result of {@link #getAction}
-   * using the provided {@code lexer}.</p>
+   * using the provided [lexer].</p>
    */
 
   void execute(Lexer lexer) {

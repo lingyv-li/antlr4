@@ -225,12 +225,12 @@ class LexerATNSimulator extends ATNSimulator {
   /**
    * Get an existing target state for an edge in the DFA. If the target state
    * for the edge has not yet been computed or is otherwise not available,
-   * this method returns {@code null}.
+   * this method returns null.
    *
    * @param s The current DFA state
    * @param t The next input symbol
    * @return The existing target DFA state for the given input symbol
-   * {@code t}, or {@code null} if the target state for this edge is not
+   * [t], or null if the target state for this edge is not
    * already cached
    */
 
@@ -257,7 +257,7 @@ class LexerATNSimulator extends ATNSimulator {
    * @param t The next input symbol
    *
    * @return The computed target DFA state for the given input symbol
-   * {@code t}. If {@code t} does not lead to a valid DFA state, this method
+   * [t]. If [t] does not lead to a valid DFA state, this method
    * returns {@link #ERROR}.
    */
 
@@ -303,7 +303,7 @@ class LexerATNSimulator extends ATNSimulator {
   }
 
   /** Given a starting configuration set, figure out all ATN configurations
-   *  we can reach upon input {@code t}. Parameter {@code reach} is a return
+   *  we can reach upon input [t]. Parameter [reach] is a return
    *  parameter.
    */
   void getReachableConfigSet(
@@ -394,11 +394,11 @@ class LexerATNSimulator extends ATNSimulator {
    * Since the alternatives within any lexer decision are ordered by
    * preference, this method stops pursuing the closure as soon as an accept
    * state is reached. After the first accept state is reached by depth-first
-   * search from {@code config}, all other (potentially reachable) states for
+   * search from [config], all other (potentially reachable) states for
    * this rule would have a lower priority.
    *
-   * @return {@code true} if an accept state is reached, otherwise
-   * {@code false}.
+   * @return [true] if an accept state is reached, otherwise
+   * [false].
    */
   bool closure(
       CharStream input,
@@ -578,23 +578,23 @@ class LexerATNSimulator extends ATNSimulator {
   /**
    * Evaluate a predicate specified in the lexer.
    *
-   * <p>If {@code speculative} is {@code true}, this method was called before
+   * <p>If [speculative] is [true], this method was called before
    * {@link #consume} for the matched character. This method should call
    * {@link #consume} before evaluating the predicate to ensure position
    * sensitive values, including {@link Lexer#getText}, {@link Lexer#getLine},
    * and {@link Lexer#getCharPositionInLine}, properly reflect the current
-   * lexer state. This method should restore {@code input} and the simulator
+   * lexer state. This method should restore [input] and the simulator
    * to the original state before returning (i.e. undo the actions made by the
    * call to {@link #consume}.</p>
    *
    * @param input The input stream.
    * @param ruleIndex The rule containing the predicate.
    * @param predIndex The index of the predicate within the rule.
-   * @param speculative {@code true} if the current index in {@code input} is
+   * @param speculative [true] if the current index in [input] is
    * one character before the predicate's location.
    *
-   * @return {@code true} if the specified predicate evaluates to
-   * {@code true}.
+   * @return [true] if the specified predicate evaluates to
+   * [true].
    */
   bool evaluatePredicate(
       CharStream input, int ruleIndex, int predIndex, bool speculative) {

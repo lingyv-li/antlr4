@@ -2,7 +2,7 @@ class MurmurHash {
   static final int DEFAULT_SEED = 0;
 
   /**
-   * Initialize the hash using the specified {@code seed}.
+   * Initialize the hash using the specified [seed].
    *
    * @param seed the seed
    * @return the intermediate hash value
@@ -12,7 +12,7 @@ class MurmurHash {
   }
 
   /**
-   * Update the intermediate hash value for the next input {@code value}.
+   * Update the intermediate hash value for the next input [value].
    *
    * @param hash the intermediate hash value
    * @param value the value to add to the current hash
@@ -40,7 +40,7 @@ class MurmurHash {
   }
 
   /**
-   * Apply the final computation steps to the intermediate value {@code hash}
+   * Apply the final computation steps to the intermediate value [hash]
    * to form the final result of the MurmurHash 3 hash function.
    *
    * @param hash the intermediate hash value

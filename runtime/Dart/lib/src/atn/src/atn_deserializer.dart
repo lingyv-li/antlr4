@@ -88,7 +88,7 @@ class ATNDeserializer {
   /**
    * This UUID indicates an extension of {@link #ADDED_PRECEDENCE_TRANSITIONS}
    * for the addition of lexer actions encoded as a sequence of
-   * {@link LexerAction} instances.
+   * [LexerAction] instances.
    */
   static final ADDED_LEXER_ACTIONS = "AADB8D7E-AEEF-4415-AD2B-8204D6CF042E";
 
@@ -126,16 +126,16 @@ class ATNDeserializer {
   }
 
 // Determines if a particular serialized representation of an ATN supports
-// a particular feature, identified by the {@link UUID} used for serializing
+// a particular feature, identified by the [UUID] used for serializing
 // the ATN at the time the feature was first introduced.
 //
-// @param feature The {@link UUID} marking the first time the feature was
+// @param feature The [UUID] marking the first time the feature was
 // supported in the serialized ATN.
-// @param actualUuid The {@link UUID} of the actual serialized ATN which is
+// @param actualUuid The [UUID] of the actual serialized ATN which is
 // currently being deserialized.
-// @return {@code true} if the {@code actualUuid} value represents a
-// serialized ATN at or after the feature identified by {@code feature} was
-// introduced; otherwise, {@code false}.
+// @return [true] if the [actualUuid] value represents a
+// serialized ATN at or after the feature identified by [feature] was
+// introduced; otherwise, [false].
 
   isFeatureSupported(feature, actualUuid) {
     var idx1 = SUPPORTED_UUIDS.indexOf(feature);
@@ -569,7 +569,7 @@ class ATNDeserializer {
   }
 
   /**
-   * Analyze the {@link StarLoopEntryState} states in the specified ATN to set
+   * Analyze the [StarLoopEntryState] states in the specified ATN to set
    * the {@link StarLoopEntryState#isPrecedenceDecision} field to the
    * correct value.
    *

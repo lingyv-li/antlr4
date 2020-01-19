@@ -15,12 +15,12 @@ import 'errors.dart';
 abstract class ErrorListener {
   /**
    * Upon syntax error, notify any interested parties. This is not how to
-   * recover from errors or compute error messages. {@link ANTLRErrorStrategy}
+   * recover from errors or compute error messages. [ANTLRErrorStrategy]
    * specifies how to recover from syntax errors and how to compute error
    * messages. This listener's job is simply to emit a computed message,
    * though it has enough information to create its own message in many cases.
    *
-   * <p>The {@link RecognitionException} is non-null for all syntax errors except
+   * <p>The [RecognitionException] is non-null for all syntax errors except
    * when we discover mismatched token errors that we can recover from
    * in-line, without returning from the surrounding rule (via the single
    * token insertion and deletion mechanism).</p>
@@ -32,7 +32,7 @@ abstract class ErrorListener {
    * @param offendingSymbol
    *        The offending token in the input token
    * 		  stream, unless recognizer is a lexer (then it's null). If
-   * 		  no viable alternative error, {@code e} has token at which we
+   * 		  no viable alternative error, [e] has token at which we
    * 		  started production for the decision.
    * @param line
    * 		  The line number in the input where the error occurred.
@@ -57,14 +57,14 @@ abstract class ErrorListener {
    * will call either {@link #reportContextSensitivity} or
    * {@link #reportAmbiguity}.</p>
    *
-   * <p>When {@code ambigAlts} is not null, it contains the set of potentially
+   * <p>When [ambigAlts] is not null, it contains the set of potentially
    * viable alternatives identified by the prediction algorithm. When
-   * {@code ambigAlts} is null, use {@link ATNConfigSet#getAlts} to obtain the
-   * represented alternatives from the {@code configs} argument.</p>
+   * [ambigAlts] is null, use {@link ATNConfigSet#getAlts} to obtain the
+   * represented alternatives from the [configs] argument.</p>
    *
-   * <p>When {@code exact} is {@code true}, <em>all</em> of the potentially
+   * <p>When [exact] is [true], <em>all</em> of the potentially
    * viable alternatives are truly viable, i.e. this is reporting an exact
-   * ambiguity. When {@code exact} is {@code false}, <em>at least two</em> of
+   * ambiguity. When [exact] is [false], <em>at least two</em> of
    * the potentially viable alternatives are viable for the current input, but
    * the prediction algorithm terminated as soon as it determined that at
    * least the <em>minimum</em> potentially viable alternative is truly
@@ -72,7 +72,7 @@ abstract class ErrorListener {
    *
    * <p>When the {@link PredictionMode#LL_EXACT_AMBIG_DETECTION} prediction
    * mode is used, the parser is required to identify exact ambiguities so
-   * {@code exact} will always be {@code true}.</p>
+   * [exact] will always be [true].</p>
    *
    * <p>This method is not used by lexers.</p>
    *
@@ -80,12 +80,12 @@ abstract class ErrorListener {
    * @param dfa the DFA for the current decision
    * @param startIndex the input index where the decision started
    * @param stopIndex the input input where the ambiguity was identified
-   * @param exact {@code true} if the ambiguity is exactly known, otherwise
-   * {@code false}. This is always {@code true} when
+   * @param exact [true] if the ambiguity is exactly known, otherwise
+   * [false]. This is always [true] when
    * {@link PredictionMode#LL_EXACT_AMBIG_DETECTION} is used.
-   * @param ambigAlts the potentially ambiguous alternatives, or {@code null}
+   * @param ambigAlts the potentially ambiguous alternatives, or null
    * to indicate that the potentially ambiguous alternatives are the complete
-   * set of represented alternatives in {@code configs}
+   * set of represented alternatives in [configs]
    * @param configs the ATN configuration set where the ambiguity was
    * identified
    */
@@ -96,10 +96,10 @@ abstract class ErrorListener {
    * This method is called when an SLL conflict occurs and the parser is about
    * to use the full context information to make an LL decision.
    *
-   * <p>If one or more configurations in {@code configs} contains a semantic
+   * <p>If one or more configurations in [configs] contains a semantic
    * predicate, the predicates are evaluated before this method is called. The
    * subset of alternatives which are still viable after predicates are
-   * evaluated is reported in {@code conflictingAlts}.</p>
+   * evaluated is reported in [conflictingAlts].</p>
    *
    * <p>This method is not used by lexers.</p>
    *
@@ -108,8 +108,8 @@ abstract class ErrorListener {
    * @param startIndex the input index where the decision started
    * @param stopIndex the input index where the SLL conflict occurred
    * @param conflictingAlts The specific conflicting alternatives. If this is
-   * {@code null}, the conflicting alternatives are all alternatives
-   * represented in {@code configs}. At the moment, conflictingAlts is non-null
+   * null, the conflicting alternatives are all alternatives
+   * represented in [configs]. At the moment, conflictingAlts is non-null
    * (for the reference implementation, but Sam's optimized version can see this
    * as null).
    * @param configs the ATN configuration set where the SLL conflict was
@@ -128,16 +128,16 @@ abstract class ErrorListener {
    *
    * <p>For prediction implementations that only evaluate full-context
    * predictions when an SLL conflict is found (including the default
-   * {@link ParserATNSimulator} implementation), this method reports cases
+   * [ParserATNSimulator] implementation), this method reports cases
    * where SLL conflicts were resolved to unique full-context predictions,
    * i.e. the decision was context-sensitive. This report does not necessarily
    * indicate a problem, and it may appear even in completely unambiguous
    * grammars.</p>
    *
-   * <p>{@code configs} may have more than one represented alternative if the
+   * <p>[configs] may have more than one represented alternative if the
    * full-context prediction algorithm does not evaluate predicates before
    * beginning the full-context prediction. In all cases, the final prediction
-   * is passed as the {@code prediction} argument.</p>
+   * is passed as the [prediction] argument.</p>
    *
    * <p>Note that the definition of "context sensitivity" in this method
    * differs from the concept in {@link DecisionInfo#contextSensitivities}.
@@ -180,7 +180,7 @@ class BaseErrorListener extends ErrorListener {
 
 class ConsoleErrorListener extends BaseErrorListener {
   /**
-   * Provides a default instance of {@link ConsoleErrorListener}.
+   * Provides a default instance of [ConsoleErrorListener].
    */
   static final INSTANCE = ConsoleErrorListener();
 
@@ -189,7 +189,7 @@ class ConsoleErrorListener extends BaseErrorListener {
    *
    * <p>
    * This implementation prints messages to {@link System//err} containing the
-   * values of {@code line}, {@code charPositionInLine}, and {@code msg} using
+   * values of [line], [charPositionInLine], and [msg] using
    * the following format.</p>
    *
    * <pre>
@@ -202,7 +202,7 @@ class ConsoleErrorListener extends BaseErrorListener {
 }
 
 /**
- * This implementation of {@link ErrorListener} dispatches all calls to a
+ * This implementation of [ErrorListener] dispatches all calls to a
  * collection of delegate listeners. This reduces the effort required to support multiple
  * listeners.
  */

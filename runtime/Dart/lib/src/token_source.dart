@@ -7,14 +7,14 @@ import 'token_factory.dart';
 
 /**
  * A source of tokens must provide a sequence of tokens via {@link #nextToken()}
- * and also must reveal it's source of characters; {@link CommonToken}'s text is
- * computed from a {@link CharStream}; it only store indices into the char
+ * and also must reveal it's source of characters; [CommonToken]'s text is
+ * computed from a [CharStream]; it only store indices into the char
  * stream.
  *
  * <p>Errors from the lexer are never passed to the parser. Either you want to keep
  * going or you do not upon token recognition error. If you do not want to
  * continue lexing then you do not want to continue parsing. Just throw an
- * exception not under {@link RecognitionException} and Java will naturally toss
+ * exception not under [RecognitionException] and Java will naturally toss
  * you all the way out of the recognizers. If you want to continue lexing then
  * you should not throw an exception to the parser--it has already requested a
  * token. Keep lexing until you get a valid one. Just report errors and keep
@@ -22,8 +22,8 @@ import 'token_factory.dart';
  */
 abstract class TokenSource {
   /**
-   * Return a {@link Token} object from your input stream (usually a
-   * {@link CharStream}). Do not fail/return upon lexing error; keep chewing
+   * Return a [Token] object from your input stream (usually a
+   * [CharStream]). Do not fail/return upon lexing error; keep chewing
    * on the characters until you get a good one; errors are not passed through
    * to the parser.
    */
@@ -48,11 +48,11 @@ abstract class TokenSource {
   int get charPositionInLine;
 
   /**
-   * Get the {@link CharStream} from which this token source is currently
+   * Get the [CharStream] from which this token source is currently
    * providing tokens.
    *
-   * @return The {@link CharStream} associated with the current position in
-   * the input, or {@code null} if no input stream is available for the token
+   * @return The [CharStream] associated with the current position in
+   * the input, or null if no input stream is available for the token
    * source.
    */
   CharStream get inputStream;
@@ -65,25 +65,25 @@ abstract class TokenSource {
   String get sourceName;
 
   /**
-   * Set the {@link TokenFactory} this token source should use for creating
-   * {@link Token} objects from the input.
+   * Set the [TokenFactory] this token source should use for creating
+   * [Token] objects from the input.
    *
-   * @param factory The {@link TokenFactory} to use for creating tokens.
+   * @param factory The [TokenFactory] to use for creating tokens.
    */
   void set tokenFactory(TokenFactory factory);
 
   /**
-   * Gets the {@link TokenFactory} this token source is currently using for
-   * creating {@link Token} objects from the input.
+   * Gets the [TokenFactory] this token source is currently using for
+   * creating [Token] objects from the input.
    *
-   * @return The {@link TokenFactory} currently used by this token source.
+   * @return The [TokenFactory] currently used by this token source.
    */
   TokenFactory get tokenFactory;
 }
 
 /**
- * Provides an implementation of {@link TokenSource} as a wrapper around a list
- * of {@link Token} objects.
+ * Provides an implementation of [TokenSource] as a wrapper around a list
+ * of [Token] objects.
  *
  * <p>If the final token in the list is an {@link Token#EOF} token, it will be used
  * as the EOF token for every call to {@link #nextToken} after the end of the
@@ -91,7 +91,7 @@ abstract class TokenSource {
  */
 class ListTokenSource implements TokenSource {
   /**
-   * The wrapped collection of {@link Token} objects to return.
+   * The wrapped collection of [Token] objects to return.
    */
   final List<Token> tokens;
 
@@ -111,31 +111,31 @@ class ListTokenSource implements TokenSource {
 
   /**
    * This is the backing field for {@link #getTokenFactory} and
-   * {@link setTokenFactory}.
+   * [setTokenFactory].
    */
   TokenFactory tokenFactory = CommonTokenFactory.DEFAULT;
 
   /**
-   * Constructs a new {@link ListTokenSource} instance from the specified
-   * collection of {@link Token} objects.
+   * Constructs a new [ListTokenSource] instance from the specified
+   * collection of [Token] objects.
    *
-   * @param tokens The collection of {@link Token} objects to provide as a
-   * {@link TokenSource}.
-   * @exception NullPointerException if {@code tokens} is {@code null}
+   * @param tokens The collection of [Token] objects to provide as a
+   * [TokenSource].
+   * @exception NullPointerException if [tokens] is null
    */
 
   /**
-   * Constructs a new {@link ListTokenSource} instance from the specified
-   * collection of {@link Token} objects and source name.
+   * Constructs a new [ListTokenSource] instance from the specified
+   * collection of [Token] objects and source name.
    *
-   * @param tokens The collection of {@link Token} objects to provide as a
-   * {@link TokenSource}.
-   * @param sourceName The name of the {@link TokenSource}. If this value is
-   * {@code null}, {@link #getSourceName} will attempt to infer the name from
-   * the next {@link Token} (or the previous token if the end of the input has
+   * @param tokens The collection of [Token] objects to provide as a
+   * [TokenSource].
+   * @param sourceName The name of the [TokenSource]. If this value is
+   * null, {@link #getSourceName} will attempt to infer the name from
+   * the next [Token] (or the previous token if the end of the input has
    * been reached).
    *
-   * @exception NullPointerException if {@code tokens} is {@code null}
+   * @exception NullPointerException if [tokens] is null
    */
   ListTokenSource(this.tokens, [this._sourceName = null]) {
     if (tokens == null) {
@@ -258,7 +258,7 @@ class ListTokenSource implements TokenSource {
   }
 
   /**
-   * The name of the input source. If this value is {@code null}, a call to
+   * The name of the input source. If this value is null, a call to
    * {@link #getSourceName} should return the source name used to create the
    * the next token in {@link #tokens} (or the previous token if the end of
    * the input has been reached).

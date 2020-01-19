@@ -19,10 +19,10 @@
 
 /**
  *  TODO add this for Dart
- *  This class represents the primary interface for creating {@link CharStream}s
+ *  This class represents the primary interface for creating [CharStream]s
  *  from a variety of sources as of 4.7.  The motivation was to support
- *  Unicode code points > U+FFFF.  {@link ANTLRInputStream} and
- *  {@link ANTLRFileStream} are now deprecated in favor of the streams created
+ *  Unicode code points > U+FFFF.  [ANTLRInputStream] and
+ *  [ANTLRFileStream] are now deprecated in favor of the streams created
  *  by this interface.
  *
  *  DEPRECATED: {@code new ANTLRFileStream("myinputfile")}
@@ -30,7 +30,7 @@
  *
  *  WARNING: If you use both the deprecated and the new streams, you will see
  *  a nontrivial performance degradation. This speed hit is because the
- *  {@link Lexer}'s internal code goes from a monomorphic to megamorphic
+ *  [Lexer]'s internal code goes from a monomorphic to megamorphic
  *  dynamic dispatch to get characters from the input stream. Java's
  *  on-the-fly compiler (JIT) is unable to perform the same optimizations
  *  so stick with either the old or the new streams, if performance is
@@ -50,7 +50,7 @@
  *
  *  The new streams also use 8-bit buffers when possible so this new
  *  interface supports character streams that use half as much memory
- *  as the old {@link ANTLRFileStream}, which assumed 16-bit characters.
+ *  as the old [ANTLRFileStream], which assumed 16-bit characters.
  *
  *  A big shout out to Ben Hamilton (github bhamiltoncx) for his superhuman
  *  efforts across all targets to get true Unicode 3.1 support for U+10FFFF.

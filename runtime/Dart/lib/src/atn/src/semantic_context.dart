@@ -8,12 +8,12 @@ import '../../util/murmur_hash.dart';
  *  an ATN configuration is valid.  It's either a single predicate,
  *  a conjunction {@code p1&&p2}, or a sum of products {@code p1||p2}.
  *
- *  <p>I have scoped the {@link AND}, {@link OR}, and {@link Predicate} subclasses of
- *  {@link SemanticContext} within the scope of this outer class.</p>
+ *  <p>I have scoped the [AND], [OR], and [Predicate] subclasses of
+ *  [SemanticContext] within the scope of this outer class.</p>
  */
 abstract class SemanticContext {
   /**
-   * The default {@link SemanticContext}, which is semantically equivalent to
+   * The default [SemanticContext], which is semantically equivalent to
    * a predicate of the form {@code {true}?}.
    */
   static const SemanticContext NONE = const Predicate();
@@ -43,13 +43,13 @@ abstract class SemanticContext {
    * @return The simplified semantic context after precedence predicates are
    * evaluated, which will be one of the following values.
    * <ul>
-   * <li>{@link #NONE}in if the predicate simplifies to {@code true} after
+   * <li>{@link #NONE}in if the predicate simplifies to [true] after
    * precedence predicates are evaluated.</li>
-   * <li>{@code null}in if the predicate simplifies to {@code false} after
+   * <li>nullin if the predicate simplifies to [false] after
    * precedence predicates are evaluated.</li>
-   * <li>{@code this}in if the semantic context is not changed as a result of
+   * <li>[this]in if the semantic context is not changed as a result of
    * precedence predicate evaluation.</li>
-   * <li>A non-{@code null} {@link SemanticContext}in the new simplified
+   * <li>A non-null [SemanticContext]in the new simplified
    * semantic context after precedence predicates are evaluated.</li>
    * </ul>
    */
@@ -183,7 +183,7 @@ abstract class Operator extends SemanticContext {
   /**
    * Gets the operands for the semantic context operator.
    *
-   * @return a collection of {@link SemanticContext} operands for the
+   * @return a collection of [SemanticContext] operands for the
    * operator.
    *
    * @since 4.3

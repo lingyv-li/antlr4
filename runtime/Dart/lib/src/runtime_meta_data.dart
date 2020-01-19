@@ -120,7 +120,7 @@ class RuntimeMetaData {
    *
    * <p>
    * Note that some breaking changes between releases could result in other
-   * types of runtime exceptions, such as a {@link LinkageError}, prior to
+   * types of runtime exceptions, such as a [LinkageError], prior to
    * calling this method. In these cases, the underlying version mismatch will
    * not be reported here. This method is primarily intended to
    * notify users of potential semantic changes between releases that do not
@@ -174,7 +174,7 @@ class RuntimeMetaData {
 
   /**
    * Gets the major and minor version numbers from a version string. For
-   * details about the syntax of the input {@code version}.
+   * details about the syntax of the input [version].
    * E.g., from x.y.z return x.y.
    *
    * @param version The complete version string.

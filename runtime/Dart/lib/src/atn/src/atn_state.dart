@@ -31,13 +31,13 @@ enum StateType {
  * <ul>
  *
  * <li>Solid edges marked with an &#0949; indicate a required
- * {@link EpsilonTransition}.</li>
+ * [EpsilonTransition].</li>
  *
  * <li>Dashed edges indicate locations where any transition derived from
- * {@link Transition} might appear.</li>
+ * [Transition] might appear.</li>
  *
  * <li>Dashed nodes are place holders for either a sequence of linked
- * {@link BasicState} states or the inclusion of a block representing a nested
+ * [BasicState] states or the inclusion of a block representing a nested
  * construct in one of the forms below.</li>
  *
  * <li>Nodes showing multiple outgoing alternatives with a {@code ...} support
@@ -209,7 +209,7 @@ class BasicBlockStartState extends BlockStartState {
 
 /** Start of {@code (A|B|...)+} loop. Technically a decision state, but
  *  we don't use for code generation; somebody might need it, so I'm defining
- *  it for completeness. In reality, the {@link PlusLoopbackState} node is the
+ *  it for completeness. In reality, the [PlusLoopbackState] node is the
  *  real decision-making note for {@code A+}.
  */
 class PlusBlockStartState extends BlockStartState {
@@ -265,8 +265,8 @@ class StarLoopEntryState extends DecisionState {
    * decision making.
    *
    * <p>This is a computed property that is calculated during ATN deserialization
-   * and stored for use in {@link ParserATNSimulator} and
-   * {@link ParserInterpreter}.</p>
+   * and stored for use in [ParserATNSimulator] and
+   * [ParserInterpreter].</p>
    *
    * @see DFA#isPrecedenceDfa()
    */

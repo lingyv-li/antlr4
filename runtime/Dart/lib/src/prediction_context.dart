@@ -32,7 +32,7 @@ abstract class PredictionContext {
   int id = globalNodeCount++;
 
   /**
-   * Stores the computed hash code of this {@link PredictionContext}. The hash
+   * Stores the computed hash code of this [PredictionContext]. The hash
    * code is computed in parts to match the following reference algorithm.
    *
    * <pre>
@@ -56,8 +56,8 @@ abstract class PredictionContext {
 
   PredictionContext(this.cachedHashCode);
 
-  /** Convert a {@link RuleContext} tree to a {@link PredictionContext} graph.
-   *  Return {@link #EMPTY} if {@code outerContext} is empty or null.
+  /** Convert a [RuleContext] tree to a [PredictionContext] graph.
+   *  Return {@link #EMPTY} if [outerContext] is empty or null.
    */
   static PredictionContext fromRuleContext(ATN atn, RuleContext outerContext) {
     if (outerContext == null) outerContext = RuleContext.EMPTY;
@@ -156,7 +156,7 @@ abstract class PredictionContext {
   }
 
   /**
-   * Merge two {@link SingletonPredictionContext} instances.
+   * Merge two [SingletonPredictionContext] instances.
    *
    * <p>Stack tops equal, parents merge is same; return left graph.<br>
    * <embed src="images/SingletonMerge_SameRootSamePar.svg" type="image/svg+xml"/></p>
@@ -176,9 +176,9 @@ abstract class PredictionContext {
    * parent.<br>
    * <embed src="images/SingletonMerge_DiffRootDiffPar.svg" type="image/svg+xml"/></p>
    *
-   * @param a the first {@link SingletonPredictionContext}
-   * @param b the second {@link SingletonPredictionContext}
-   * @param rootIsWildcard {@code true} if this is a local-context merge,
+   * @param a the first [SingletonPredictionContext]
+   * @param b the second [SingletonPredictionContext]
+   * @param rootIsWildcard [true] if this is a local-context merge,
    * otherwise false to indicate a full-context merge
    * @param mergeCache
    */
@@ -255,13 +255,13 @@ abstract class PredictionContext {
   }
 
   /**
-   * Handle case where at least one of {@code a} or {@code b} is
+   * Handle case where at least one of [a] or [b] is
    * {@link #EMPTY}. In the following diagrams, the symbol {@code $} is used
    * to represent {@link #EMPTY}.
    *
    * <h2>Local-Context Merges</h2>
    *
-   * <p>These local-context merge operations are used when {@code rootIsWildcard}
+   * <p>These local-context merge operations are used when [rootIsWildcard]
    * is true.</p>
    *
    * <p>{@link #EMPTY} is superset of any graph; return {@link #EMPTY}.<br>
@@ -276,7 +276,7 @@ abstract class PredictionContext {
    *
    * <h2>Full-Context Merges</h2>
    *
-   * <p>These full-context merge operations are used when {@code rootIsWildcard}
+   * <p>These full-context merge operations are used when [rootIsWildcard]
    * is false.</p>
    *
    * <p><embed src="images/FullMerge_EmptyRoots.svg" type="image/svg+xml"/></p>
@@ -287,9 +287,9 @@ abstract class PredictionContext {
    *
    * <p><embed src="images/FullMerge_SameRoot.svg" type="image/svg+xml"/></p>
    *
-   * @param a the first {@link SingletonPredictionContext}
-   * @param b the second {@link SingletonPredictionContext}
-   * @param rootIsWildcard {@code true} if this is a local-context merge,
+   * @param a the first [SingletonPredictionContext]
+   * @param b the second [SingletonPredictionContext]
+   * @param rootIsWildcard [true] if this is a local-context merge,
    * otherwise false to indicate a full-context merge
    */
   static PredictionContext mergeRoot(SingletonPredictionContext a,
@@ -320,7 +320,7 @@ abstract class PredictionContext {
   }
 
   /**
-   * Merge two {@link ArrayPredictionContext} instances.
+   * Merge two [ArrayPredictionContext] instances.
    *
    * <p>Different tops, different parents.<br>
    * <embed src="images/ArrayMerge_DiffTopDiffPar.svg" type="image/svg+xml"/></p>
@@ -335,7 +335,7 @@ abstract class PredictionContext {
    * <embed src="images/ArrayMerge_ShareTopSharePar.svg" type="image/svg+xml"/></p>
    *
    * <p>Equal tops, merge parents and reduce top to
-   * {@link SingletonPredictionContext}.<br>
+   * [SingletonPredictionContext].<br>
    * <embed src="images/ArrayMerge_EqualTop.svg" type="image/svg+xml"/></p>
    */
   static PredictionContext mergeArrays(
@@ -449,7 +449,7 @@ abstract class PredictionContext {
   }
 
   /**
-   * Make pass over all <em>M</em> {@code parents}; merge any {@code equals()}
+   * Make pass over all <em>M</em> [parents]; merge any {@code equals()}
    * ones.
    */
   static void combineCommonParents(List<PredictionContext> parents) {

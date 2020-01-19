@@ -92,12 +92,12 @@ abstract class Token {
    */
   int get stopIndex;
 
-  /** Gets the {@link TokenSource} which created this token.
+  /** Gets the [TokenSource] which created this token.
    */
   TokenSource get tokenSource;
 
   /**
-   * Gets the {@link CharStream} from which this token was derived.
+   * Gets the [CharStream] from which this token was derived.
    */
   CharStream get inputStream;
 }
@@ -118,7 +118,7 @@ abstract class WritableToken extends Token {
 
 class CommonToken extends WritableToken {
   /**
-   * An empty {@link Pair} which is used as the default value of
+   * An empty [Pair] which is used as the default value of
    * {@link #source} for tokens that do not have a source.
    */
   static const Pair<TokenSource, CharStream> EMPTY_SOURCE =
@@ -134,9 +134,9 @@ class CommonToken extends WritableToken {
 
   /**
    * These properties share a field to reduce the memory footprint of
-   * {@link CommonToken}. Tokens created by a {@link CommonTokenFactory} from
+   * [CommonToken]. Tokens created by a [CommonTokenFactory] from
    * the same source and input stream share a reference to the same
-   * {@link Pair} containing these values.</p>
+   * [Pair] containing these values.</p>
    */
   Pair<TokenSource, CharStream> source;
 
@@ -155,7 +155,7 @@ class CommonToken extends WritableToken {
   int stopIndex;
 
   /**
-   * Constructs a new {@link CommonToken} with the specified token type and
+   * Constructs a new [CommonToken] with the specified token type and
    * text.
    *
    * @param type The token type.
@@ -175,12 +175,12 @@ class CommonToken extends WritableToken {
   }
 
   /**
-   * Constructs a new {@link CommonToken} as a copy of another {@link Token}.
+   * Constructs a new [CommonToken] as a copy of another [Token].
    *
    * <p>
-   * If {@code oldToken} is also a {@link CommonToken} instance, the newly
+   * If [oldToken] is also a [CommonToken] instance, the newly
    * constructed token will share a reference to the {@link #text} field and
-   * the {@link Pair} stored in {@link #source}. Otherwise, {@link #text} will
+   * the [Pair] stored in {@link #source}. Otherwise, {@link #text} will
    * be assigned the result of calling {@link #getText}, and {@link #source}
    * will be constructed from the result of {@link Token#getTokenSource} and
    * {@link Token#getInputStream}.</p>
@@ -223,10 +223,10 @@ class CommonToken extends WritableToken {
 
   /**
    * Explicitly set the text for this token. If {code text} is not
-   * {@code null}, then {@link #getText} will return this value rather than
+   * null, then {@link #getText} will return this value rather than
    * extracting the text from the input.
    *
-   * @param text The explicit text of the token, or {@code null} if the text
+   * @param text The explicit text of the token, or null if the text
    * should be obtained from the input along with the start and stop indexes
    * of the token.
    */
@@ -259,8 +259,8 @@ class CommonToken extends WritableToken {
 }
 
 /**
- * A {@link Token} object representing an entire subtree matched by a parser
- * rule; e.g., {@code <expr>}. These tokens are created for {@link TagChunk}
+ * A [Token] object representing an entire subtree matched by a parser
+ * rule; e.g., {@code <expr>}. These tokens are created for [TagChunk]
  * chunks where the tag corresponds to a parser rule.
  */
 class RuleTagToken implements Token {
@@ -281,20 +281,20 @@ class RuleTagToken implements Token {
    * Gets the label associated with the rule tag.
    *
    * @return The name of the label associated with the rule tag, or
-   * {@code null} if this is an unlabeled rule tag.
+   * null if this is an unlabeled rule tag.
    */
   final String label;
 
   /**
-   * Constructs a new instance of {@link RuleTagToken} with the specified rule
+   * Constructs a new instance of [RuleTagToken] with the specified rule
    * name, bypass token type, and label.
    *
    * @param ruleName The name of the parser rule this rule tag matches.
    * @param bypassTokenType The bypass token type assigned to the parser rule.
-   * @param label The label associated with the rule tag, or {@code null} if
+   * @param label The label associated with the rule tag, or null if
    * the rule tag is unlabeled.
    *
-   * @exception ArgumentError.value(value) if {@code ruleName} is {@code null}
+   * @exception ArgumentError.value(value) if [ruleName] is null
    * or empty.
    */
   RuleTagToken(this.ruleName, this.bypassTokenType, [this.label]) {
@@ -343,7 +343,7 @@ class RuleTagToken implements Token {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link RuleTagToken} always returns 0.</p>
+   * <p>The implementation for [RuleTagToken] always returns 0.</p>
    */
 
   int get line {
@@ -353,7 +353,7 @@ class RuleTagToken implements Token {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link RuleTagToken} always returns -1.</p>
+   * <p>The implementation for [RuleTagToken] always returns -1.</p>
    */
   int get charPositionInLine {
     return -1;
@@ -362,7 +362,7 @@ class RuleTagToken implements Token {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link RuleTagToken} always returns -1.</p>
+   * <p>The implementation for [RuleTagToken] always returns -1.</p>
    */
   int get tokenIndex {
     return -1;
@@ -371,7 +371,7 @@ class RuleTagToken implements Token {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link RuleTagToken} always returns -1.</p>
+   * <p>The implementation for [RuleTagToken] always returns -1.</p>
    */
   int get startIndex {
     return -1;
@@ -380,7 +380,7 @@ class RuleTagToken implements Token {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link RuleTagToken} always returns -1.</p>
+   * <p>The implementation for [RuleTagToken] always returns -1.</p>
    */
 
   int get stopIndex {
@@ -390,7 +390,7 @@ class RuleTagToken implements Token {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link RuleTagToken} always returns {@code null}.</p>
+   * <p>The implementation for [RuleTagToken] always returns null.</p>
    */
 
   TokenSource get tokenSource {
@@ -400,7 +400,7 @@ class RuleTagToken implements Token {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link RuleTagToken} always returns {@code null}.</p>
+   * <p>The implementation for [RuleTagToken] always returns null.</p>
    */
 
   CharStream get inputStream {
@@ -410,7 +410,7 @@ class RuleTagToken implements Token {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link RuleTagToken} returns a string of the form
+   * <p>The implementation for [RuleTagToken] returns a string of the form
    * {@code ruleName:bypassTokenType}.</p>
    */
 
@@ -420,8 +420,8 @@ class RuleTagToken implements Token {
 }
 
 /**
- * A {@link Token} object representing a token of a particular type; e.g.,
- * {@code <ID>}. These tokens are created for {@link TagChunk} chunks where the
+ * A [Token] object representing a token of a particular type; e.g.,
+ * {@code <ID>}. These tokens are created for [TagChunk] chunks where the
  * tag corresponds to a lexer rule or token type.
  */
 class TokenTagToken extends CommonToken {
@@ -435,17 +435,17 @@ class TokenTagToken extends CommonToken {
    * Gets the label associated with the rule tag.
    *
    * @return The name of the label associated with the rule tag, or
-   * {@code null} if this is an unlabeled rule tag.
+   * null if this is an unlabeled rule tag.
    */
   final String label;
 
   /**
-   * Constructs a new instance of {@link TokenTagToken} with the specified
+   * Constructs a new instance of [TokenTagToken] with the specified
    * token name, type, and label.
    *
    * @param tokenName The token name.
    * @param type The token type.
-   * @param label The label associated with the token tag, or {@code null} if
+   * @param label The label associated with the token tag, or null if
    * the token tag is unlabeled.
    */
   TokenTagToken(this.tokenName, type, [this.label]) : super(type);
@@ -453,7 +453,7 @@ class TokenTagToken extends CommonToken {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link TokenTagToken} returns the token tag
+   * <p>The implementation for [TokenTagToken] returns the token tag
    * formatted with {@code <} and {@code >} delimiters.</p>
    */
 
@@ -468,7 +468,7 @@ class TokenTagToken extends CommonToken {
   /**
    * {@inheritDoc}
    *
-   * <p>The implementation for {@link TokenTagToken} returns a string of the form
+   * <p>The implementation for [TokenTagToken] returns a string of the form
    * {@code tokenName:type}.</p>
    */
 

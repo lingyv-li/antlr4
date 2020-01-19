@@ -49,10 +49,10 @@ abstract class Transition {
   /**
    * Determines if the transition is an "epsilon" transition.
    *
-   * <p>The default implementation returns {@code false}.</p>
+   * <p>The default implementation returns [false].</p>
    *
-   * @return {@code true} if traversing this transition in the ATN does not
-   * consume an input symbol; otherwise, {@code false} if traversing this
+   * @return [true] if traversing this transition in the ATN does not
+   * consume an input symbol; otherwise, [false] if traversing this
    * transition consumes (matches) an input symbol.
    */
   bool get isEpsilon => false;
