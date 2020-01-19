@@ -255,7 +255,7 @@ class InputStream extends CharStream {
   }
 
   InputStream.fromString(String data) {
-    this.data = data.codeUnits;
+    this.data = data.runes.toList(growable: false);
   }
 
   static Future<InputStream> fromStringStream(Stream<String> stream) async {
