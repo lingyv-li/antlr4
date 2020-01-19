@@ -1,4 +1,4 @@
 #!/bin/bash
 
 set -euo pipefail
-mvn -q -Dparallel=methods -DthreadCount=4 -Dtest=dart.* test
+mvn -q -Dparallel=classes -DthreadCount=4 -Dtest=dart.* test
