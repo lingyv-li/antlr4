@@ -10,7 +10,7 @@ import '../../../token_source.dart';
 import '../../../token_stream.dart';
 import '../../../util/utils.dart';
 import '../tree.dart';
-import 'Chunk.dart';
+import 'chunk.dart';
 
 /**
  * Represents the result of matching a {@link ParseTree} against a tree pattern.
