@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-apt-get update
+sudo apt-get update
 
-apt-get -y install maven
+sudo apt-get -y install maven
