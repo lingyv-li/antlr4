@@ -122,6 +122,10 @@ public class BaseDartTest implements RuntimeTestSupport {
 
 	private static String cacheDartPackages;
 
+	private String getPropertyPrefix() {
+		return "antlr-php";
+	}
+
 	@Override
 	public void testSetUp() throws Exception {
 		if (CREATE_PER_TEST_DIRECTORIES) {
@@ -530,7 +534,7 @@ public class BaseDartTest implements RuntimeTestSupport {
 		if (cacheDartPackages == null) {
 			System.out.println("Not skipping" + tmpdir);
 			try {
-				Process process = Runtime.getRuntime().exec(new String[]{"pub", "get"}, null, new File(tmpdir));
+				Process process = Runtime.getRuntime().exec(new String[]{locatePub(), "get"}, null, new File(tmpdir));
 				StreamVacuum stderrVacuum = new StreamVacuum(process.getErrorStream());
 				stderrVacuum.start();
 				process.waitFor();
@@ -573,7 +577,7 @@ public class BaseDartTest implements RuntimeTestSupport {
 	public String execClass(String className) {
 		try {
 			String[] args = new String[]{
-				"dart",
+				locateDart(),
 				className, new File(tmpdir, "input").getAbsolutePath()
 			};
 			String cmdLine = Utils.join(args, " ");
@@ -600,6 +604,58 @@ public class BaseDartTest implements RuntimeTestSupport {
 			e.printStackTrace(System.err);
 		}
 		return null;
+	}
+
+	private String locateTool(String tool) {
+		final String phpPath = System.getProperty("DART_PATH");
+
+		if (phpPath != null && new File(phpPath).exists()) {
+			return phpPath;
+		}
+
+		String[] roots = {"/usr/local/bin/", "/opt/local/bin", "/usr/bin/", "/usr/lib/dart/bin"};
+
+		for (String root : roots) {
+			if (new File(root + tool).exists()) {
+				return root + tool;
+			}
+		}
+
+		throw new RuntimeException("Could not locate " + tool);
+	}
+
+	protected String locatePub() {
+		String propName = getPropertyPrefix() + "-pub";
+		String prop = System.getProperty(propName);
+
+		if (prop == null || prop.length() == 0) {
+			prop = locateTool("pub");
+		}
+
+		File file = new File(prop);
+
+		if (!file.exists()) {
+			throw new RuntimeException("Missing system property:" + propName);
+		}
+
+		return file.getAbsolutePath();
+	}
+
+	protected String locateDart() {
+		String propName = getPropertyPrefix() + "-dart";
+		String prop = System.getProperty(propName);
+
+		if (prop == null || prop.length() == 0) {
+			prop = locateTool("dart");
+		}
+
+		File file = new File(prop);
+
+		if (!file.exists()) {
+			throw new RuntimeException("Missing system property:" + propName);
+		}
+
+		return file.getAbsolutePath();
 	}
 
 	private String locateRuntime() {
