@@ -19,7 +19,7 @@ class Interval {
 
   static final Interval INVALID = Interval(-1, -2);
 
-  static List<Interval> cache = List<Interval>(INTERVAL_POOL_MAX_VALUE + 1);
+  static List<Interval> cache = List<Interval>.filled(INTERVAL_POOL_MAX_VALUE + 1, null);
 
   int a;
   int b;
@@ -56,11 +56,7 @@ class Interval {
 
   @override
   bool operator ==(Object o) {
-    if (o == null || !(o is Interval)) {
-      return false;
-    }
-    Interval other = o;
-    return a == other.a && b == other.b;
+    return o is Interval && a == o.a && b == o.b;
   }
 
   @override
@@ -544,11 +540,7 @@ class IntervalSet {
 
   @override
   bool operator ==(Object obj) {
-    if (obj == null || !(obj is IntervalSet)) {
-      return false;
-    }
-    IntervalSet other = obj;
-    return ListEquality().equals(intervals, other?.intervals);
+    return obj is IntervalSet && ListEquality().equals(intervals, obj.intervals);
   }
 
   @override
@@ -628,7 +620,7 @@ class IntervalSet {
   }
 
   List<int> toIntegerList() {
-    final values = List<int>(length);
+    final values = List<int>.filled(length, null, growable: true);
     final n = intervals.length;
     for (var i = 0; i < n; i++) {
       final I = intervals[i];

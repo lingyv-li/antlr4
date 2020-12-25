@@ -202,7 +202,6 @@ class ATNConfigSet extends Iterable<ATNConfig> {
   bool operator ==(other) {
     return identical(this, other) ||
         (other is ATNConfigSet &&
-            other != null &&
             ListEquality().equals(configs, other.configs) &&
             fullCtx == other.fullCtx &&
             uniqueAlt == other.uniqueAlt &&

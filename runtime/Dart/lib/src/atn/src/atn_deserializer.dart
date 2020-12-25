@@ -266,10 +266,10 @@ class ATNDeserializer {
   void readRules(ATN atn) {
     final nrules = readInt();
     if (atn.grammarType == ATNType.LEXER) {
-      atn.ruleToTokenType = List<int>(nrules);
+      atn.ruleToTokenType = List<int>.filled(nrules, null);
     }
 
-    atn.ruleToStartState = List<RuleStartState>(nrules);
+    atn.ruleToStartState = List<RuleStartState>.filled(nrules, null);
     for (var i = 0; i < nrules; i++) {
       final s = readInt();
       RuleStartState startState = atn.states[s];
@@ -285,12 +285,12 @@ class ATNDeserializer {
         if (!isFeatureSupported(ADDED_LEXER_ACTIONS, uuid)) {
           // this piece of unused metadata was serialized prior to the
           // addition of LexerAction
-          final actionIndexIgnored = readInt();
+          final _ = readInt();
         }
       }
     }
 
-    atn.ruleToStopState = List<RuleStopState>(nrules);
+    atn.ruleToStopState = List.filled(nrules, null);
     for (var state in atn.states) {
       if (!(state is RuleStopState)) {
         continue;
@@ -419,7 +419,7 @@ class ATNDeserializer {
   void readLexerActions(ATN atn) {
     if (atn.grammarType == ATNType.LEXER) {
       if (isFeatureSupported(ADDED_LEXER_ACTIONS, uuid)) {
-        atn.lexerActions = List<LexerAction>(readInt());
+        atn.lexerActions = List<LexerAction>.filled(readInt(), null);
         for (var i = 0; i < atn.lexerActions.length; i++) {
           final actionType = LexerActionType.values[readInt()];
           var data1 = readInt();
@@ -670,7 +670,7 @@ class ATNDeserializer {
   static final byteToHex  = List.generate(256, (i) => i.toRadixString(16).padLeft(2, '0').toUpperCase());
 
   String readUUID() {
-    final bb = List<int>(16);
+    final bb = List<int>.filled(16, 0);
     for (var i = 7; i >= 0; i--) {
       final int = readInt();
       /* jshint bitwise: false */

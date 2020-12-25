@@ -345,10 +345,10 @@ abstract class PredictionContext {
     var j = 0; // walks b
     var k = 0; // walks target M array
 
-    var mergedReturnStates = List<int>(
-        a.returnStates.length + b.returnStates.length); // TODO Will it grow?
-    var mergedParents = List<PredictionContext>(
-        a.returnStates.length + b.returnStates.length); // TODO Will it grow?
+    var mergedReturnStates = List<int>.filled(
+        a.returnStates.length + b.returnStates.length, null); // TODO Will it grow?
+    var mergedParents = List<PredictionContext>.filled(
+        a.returnStates.length + b.returnStates.length, null); // TODO Will it grow?
     // walk and merge to yield mergedParents, mergedReturnStates
     while (i < a.returnStates.length && j < b.returnStates.length) {
       final a_parent = a.parents[i];
@@ -413,8 +413,8 @@ abstract class PredictionContext {
         if (mergeCache != null) mergeCache[Pair(a, b)] = a_;
         return a_;
       }
-      mergedParents = List(k)..setRange(0, k, mergedParents);
-      mergedReturnStates = List(k)..setRange(0, k, mergedReturnStates);
+      mergedParents = List.filled(k, null)..setRange(0, k, mergedParents);
+      mergedReturnStates = List.filled(k, null)..setRange(0, k, mergedReturnStates);
     }
 
     PredictionContext M =
@@ -541,13 +541,13 @@ abstract class PredictionContext {
     }
 
     var changed = false;
-    var parents = List<PredictionContext>(context.length);
+    var parents = List<PredictionContext>.filled(context.length, null);
     for (var i = 0; i < parents.length; i++) {
       final parent =
           getCachedContext(context.getParent(i), contextCache, visited);
       if (changed || parent != context.getParent(i)) {
         if (!changed) {
-          parents = List<PredictionContext>(context.length);
+          parents = List<PredictionContext>.filled(context.length, null);
           for (var j = 0; j < context.length; j++) {
             parents[j] = context.getParent(j);
           }

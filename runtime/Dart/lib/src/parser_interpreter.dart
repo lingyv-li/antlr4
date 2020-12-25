@@ -85,7 +85,7 @@ class ParserInterpreter extends Parser {
       : super(input) {
     // init decision DFA
     final numberOfDecisions = atn.numberOfDecisions;
-    decisionToDFA = List<DFA>(numberOfDecisions);
+    decisionToDFA = List<DFA>.filled(numberOfDecisions, null);
     for (var i = 0; i < numberOfDecisions; i++) {
       final decisionState = atn.getDecisionState(i);
       decisionToDFA[i] = DFA(decisionState, i);

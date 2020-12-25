@@ -101,7 +101,7 @@ class DFA {
     // s0.edges is never null for a precedence DFA
     if (precedence >= s0.edges.length) {
       final original = s0.edges;
-      s0.edges = List(precedence + 1);
+      s0.edges = List.filled(precedence + 1, null);
       List.copyRange(s0.edges, 0, original);
     }
 

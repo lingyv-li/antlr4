@@ -656,7 +656,7 @@ class LexerATNSimulator extends ATNSimulator {
           level: Level.FINE.value);
     }
 
-    p.edges ??= List<DFAState>(MAX_DFA_EDGE - MIN_DFA_EDGE + 1);
+    p.edges ??= List<DFAState>.filled(MAX_DFA_EDGE - MIN_DFA_EDGE + 1, null);
     p.edges[t - MIN_DFA_EDGE] = q; // connect
   }
 

@@ -35,7 +35,7 @@ class LL1Analyzer {
       return null;
     }
 
-    final look = List<IntervalSet>(s.numberOfTransitions);
+    final look = List<IntervalSet>.filled(s.numberOfTransitions, null);
     for (var alt = 0; alt < s.numberOfTransitions; alt++) {
       look[alt] = IntervalSet();
       final lookBusy = <ATNConfig>{};

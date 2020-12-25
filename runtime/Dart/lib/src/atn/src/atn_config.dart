@@ -123,7 +123,7 @@ class ATNConfig {
   ///  syntactic/semantic contexts are the same.
   @override
   bool operator ==(Object other) {
-    if (other is ATNConfig && other != null) {
+    if (other is ATNConfig) {
       return state.stateNumber == other.state.stateNumber &&
           alt == other.alt &&
           (context == other.context ||

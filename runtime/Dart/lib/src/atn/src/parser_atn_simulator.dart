@@ -1165,7 +1165,7 @@ class ParserATNSimulator extends ATNSimulator {
 		 *
 		 * From this, it is clear that NONE||anything==NONE.
 		 */
-    var altToPred = List<SemanticContext>(nalts + 1);
+    var altToPred = List<SemanticContext>.filled(nalts + 1, null);
     for (var c in configs) {
       if (ambigAlts[c.alt]) {
         altToPred[c.alt] =
@@ -2008,7 +2008,7 @@ class ParserATNSimulator extends ATNSimulator {
       return to;
     }
 
-    from.edges ??= List(atn.maxTokenType + 1 + 1);
+    from.edges ??= List.filled(atn.maxTokenType + 1 + 1, null);
 
     from.edges[t + 1] = to; // connect
 
