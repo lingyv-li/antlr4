@@ -125,7 +125,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
 //				System.out.println("nextToken line "+tokenStartLine+" at "+((char)input.LA(1))+
 //								   " in mode "+mode+
 //								   " at index "+input.index());
-          int ttype;
+          var ttype = 0;
           try {
             ttype = interpreter.match(_input, mode_);
           } on LexerNoViableAltException catch (e) {

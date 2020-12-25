@@ -19,12 +19,12 @@ import 'semantic_context.dart';
 
 class ProfilingATNSimulator extends ParserATNSimulator {
   List<DecisionInfo> decisions;
-  int numDecisions;
+  int numDecisions = 0;
 
-  int _sllStopIndex;
-  int _llStopIndex;
+  int _sllStopIndex = 0;
+  int _llStopIndex = 0;
 
-  int currentDecision;
+  int currentDecision = 0;
   DFAState currentState;
 
   /// At the point of LL failover, we record how SLL would resolve the conflict so that
@@ -37,7 +37,7 @@ class ProfilingATNSimulator extends ParserATNSimulator {
   ///  was not required in order to produce a correct prediction for this decision and input sequence.
   ///  It may in fact still be a context sensitivity but we don't know by looking at the
   ///  minimum alternatives for the current input.
-  int conflictingAltResolvedBySLL;
+  int conflictingAltResolvedBySLL = 0;
 
   ProfilingATNSimulator(Parser parser)
       : super(parser, parser.interpreter.atn, parser.interpreter.decisionToDFA,

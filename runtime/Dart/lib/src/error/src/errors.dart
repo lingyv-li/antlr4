@@ -176,8 +176,8 @@ class InputMismatchException extends RecognitionException {
 ///  Disambiguating predicate evaluation occurs when we test a predicate during
 ///  prediction.
 class FailedPredicateException extends RecognitionException {
-  int ruleIndex;
-  int predIndex;
+  int ruleIndex = 0;
+  int predIndex = 0;
   final String predicate;
 
   FailedPredicateException(Parser recognizer,

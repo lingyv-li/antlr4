@@ -21,8 +21,8 @@ class Interval {
 
   static List<Interval> cache = List<Interval>.filled(INTERVAL_POOL_MAX_VALUE + 1, null);
 
-  int a;
-  int b;
+  int a = 0;
+  int b = 0;
 
   static int creates = 0;
   static int misses = 0;

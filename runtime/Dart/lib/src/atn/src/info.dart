@@ -101,7 +101,7 @@ class DecisionInfo {
 
   /// The total number of times {@link ParserATNSimulator#adaptivePredict} was
   /// invoked for this decision.
-  int invocations;
+  int invocations = 0;
 
   /// The total time spent in {@link ParserATNSimulator#adaptivePredict} for
   /// this decision, in nanoseconds.
@@ -115,23 +115,23 @@ class DecisionInfo {
   /// which is warmed up by parsing the input prior to profiling. If desired,
   /// call {@link ATNSimulator#clearDFA} to reset the DFA cache to its initial
   /// state before starting the profiling measurement pass.</p>
-  int timeInPrediction;
+  int timeInPrediction = 0;
 
   /// The sum of the lookahead required for SLL prediction for this decision.
   /// Note that SLL prediction is used before LL prediction for performance
   /// reasons even when {@link PredictionMode#LL} or
   /// {@link PredictionMode#LL_EXACT_AMBIG_DETECTION} is used.
-  int SLL_TotalLook;
+  int SLL_TotalLook = 0;
 
   /// Gets the minimum lookahead required for any single SLL prediction to
   /// complete for this decision, by reaching a unique prediction, reaching an
   /// SLL conflict state, or encountering a syntax error.
-  int SLL_MinLook;
+  int SLL_MinLook = 0;
 
   /// Gets the maximum lookahead required for any single SLL prediction to
   /// complete for this decision, by reaching a unique prediction, reaching an
   /// SLL conflict state, or encountering a syntax error.
-  int SLL_MaxLook;
+  int SLL_MaxLook = 0;
 
   /// Gets the [LookaheadEventInfo] associated with the event where the
   /// {@link #SLL_MaxLook} value was set.
@@ -140,21 +140,21 @@ class DecisionInfo {
   /// The sum of the lookahead required for LL prediction for this decision.
   /// Note that LL prediction is only used when SLL prediction reaches a
   /// conflict state.
-  int LL_TotalLook;
+  int LL_TotalLook = 0;
 
   /// Gets the minimum lookahead required for any single LL prediction to
   /// complete for this decision. An LL prediction completes when the algorithm
   /// reaches a unique prediction, a conflict state (for
   /// {@link PredictionMode#LL}, an ambiguity state (for
   /// {@link PredictionMode#LL_EXACT_AMBIG_DETECTION}, or a syntax error.
-  int LL_MinLook;
+  int LL_MinLook = 0;
 
   /// Gets the maximum lookahead required for any single LL prediction to
   /// complete for this decision. An LL prediction completes when the algorithm
   /// reaches a unique prediction, a conflict state (for
   /// {@link PredictionMode#LL}, an ambiguity state (for
   /// {@link PredictionMode#LL_EXACT_AMBIG_DETECTION}, or a syntax error.
-  int LL_MaxLook;
+  int LL_MaxLook = 0;
 
   /// Gets the [LookaheadEventInfo] associated with the event where the
   /// {@link #LL_MaxLook} value was set.
@@ -200,7 +200,7 @@ class DecisionInfo {
   /// @see #SLL_ATNTransitions
   /// @see ParserATNSimulator#computeTargetState
   /// @see LexerATNSimulator#computeTargetState
-  int SLL_ATNTransitions;
+  int SLL_ATNTransitions = 0;
 
   /// The total number of DFA transitions required during SLL prediction for
   /// this decision.
@@ -210,7 +210,7 @@ class DecisionInfo {
   ///
   /// @see ParserATNSimulator#getExistingTargetState
   /// @see LexerATNSimulator#getExistingTargetState
-  int SLL_DFATransitions;
+  int SLL_DFATransitions = 0;
 
   /// Gets the total number of times SLL prediction completed in a conflict
   /// state, resulting in fallback to LL prediction.
@@ -221,7 +221,7 @@ class DecisionInfo {
   /// conflicts for this decision produce the same result as LL prediction for
   /// this decision, {@link PredictionMode#SLL} would produce the same overall
   /// parsing result as {@link PredictionMode#LL}.</p>
-  int LL_Fallback;
+  int LL_Fallback = 0;
 
   /// The total number of ATN transitions required during LL prediction for
   /// this decision. An ATN transition is determined by the number of times the
@@ -237,7 +237,7 @@ class DecisionInfo {
   /// @see #LL_DFATransitions
   /// @see ParserATNSimulator#computeTargetState
   /// @see LexerATNSimulator#computeTargetState
-  int LL_ATNTransitions;
+  int LL_ATNTransitions = 0;
 
   /// The total number of DFA transitions required during LL prediction for
   /// this decision.
@@ -247,7 +247,7 @@ class DecisionInfo {
   ///
   /// @see ParserATNSimulator#getExistingTargetState
   /// @see LexerATNSimulator#getExistingTargetState
-  int LL_DFATransitions;
+  int LL_DFATransitions = 0;
 
   /// Constructs a new instance of the [DecisionInfo] class to contain
   /// statistics for a particular decision.
@@ -354,7 +354,7 @@ class LookaheadEventInfo extends DecisionEventInfo {
   ///  the outermost alt shown for a rule; left-recursive rules have
   ///  user-level alts that differ from the rewritten rule with a (...) block
   ///  and a (..)* loop.
-  int predictedAlt;
+  int predictedAlt = 0;
 
   /// Constructs a new instance of the [LookaheadEventInfo] class with
   /// the specified detailed lookahead information.

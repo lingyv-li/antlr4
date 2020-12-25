@@ -98,7 +98,7 @@ abstract class ATNState {
 
   int stateNumber = INVALID_STATE_NUMBER;
 
-  int ruleIndex; // at runtime, we don't have Rule objects
+  int ruleIndex = 0; // at runtime, we don't have Rule objects
 
   bool epsilonOnlyTransitions = false;
 

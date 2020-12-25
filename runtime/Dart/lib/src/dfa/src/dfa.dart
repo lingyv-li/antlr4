@@ -27,7 +27,7 @@ class DFA {
   /// [false]. This is the backing field for {@link #isPrecedenceDfa}.
   bool precedenceDfa;
 
-  DFA(this.atnStartState, [this.decision]) {
+  DFA(this.atnStartState, [this.decision = 0]) {
     var precedenceDfa = false;
     if (atnStartState is StarLoopEntryState) {
       if ((atnStartState as StarLoopEntryState).isPrecedenceDecision) {

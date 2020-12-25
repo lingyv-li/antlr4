@@ -68,7 +68,7 @@ abstract class RuleContext extends RuleNode {
   /// What state invoked the rule associated with this context?
   /// The "return address" is the followState of invokingState
   /// If parent is null, this should be -1.
-  int invokingState;
+  int invokingState = -1;
 
   RuleContext({this.parent, this.invokingState}) {
     invokingState = invokingState ?? -1;

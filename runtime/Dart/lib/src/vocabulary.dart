@@ -139,7 +139,7 @@ class VocabularyImpl implements Vocabulary {
   final List<String> displayNames;
 
   @override
-  int maxTokenType;
+  int maxTokenType = 0;
 
   /// Constructs a new instance of [VocabularyImpl] from the specified
   /// literal, symbolic, and display token names.

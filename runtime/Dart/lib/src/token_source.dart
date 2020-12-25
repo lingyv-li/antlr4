@@ -86,7 +86,7 @@ class ListTokenSource implements TokenSource {
   /// The index into {@link #tokens} of token to return by the next call to
   /// {@link #nextToken}. The end of the input is indicated by this value
   /// being greater than or equal to the number of items in {@link #tokens}.
-  int i;
+  int i = 0;
 
   /// This field caches the EOF token for the token source.
   Token eofToken;

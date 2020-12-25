@@ -54,7 +54,7 @@ class ATNConfig {
   ATNState state;
 
   /// What alt (or lexer rule) is predicted by this configuration */
-  int alt;
+  int alt = 0;
 
   /// The stack of invoking states leading to the rule/states associated
   ///  with this config.  We track only those contexts pushed during

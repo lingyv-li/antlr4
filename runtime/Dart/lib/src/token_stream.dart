@@ -264,7 +264,7 @@ class BufferedTokenStream implements TokenStream {
   }
 
   /// Get all tokens from start..stop inclusively */
-  List<Token> getRange(int start, [int stop]) {
+  List<Token> getRange(int start, int stop) {
     if (start < 0 || stop < 0) return null;
     lazyInit();
     final subset = <Token>[];
@@ -558,7 +558,7 @@ class CommonTokenStream extends BufferedTokenStream {
   /// <p>
   /// The default value is {@link Token#DEFAULT_CHANNEL}, which matches the
   /// default channel assigned to tokens created by the lexer.</p>
-  int channel;
+  int channel = 0;
 
   /// Constructs a new [CommonTokenStream] using the specified token
   /// source and filtering tokens to the specified channel. Only tokens whose

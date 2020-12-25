@@ -107,10 +107,10 @@ class CommonToken extends WritableToken {
       Pair<TokenSource, CharStream>(null, null);
 
   @override
-  int type;
+  int type = 0;
 
   @override
-  int line;
+  int line = 0;
 
   @override
   int charPositionInLine = -1; // set to invalid position
@@ -134,10 +134,10 @@ class CommonToken extends WritableToken {
   int tokenIndex = -1;
 
   @override
-  int startIndex;
+  int startIndex = 0;
 
   @override
-  int stopIndex;
+  int stopIndex = 0;
 
   /// Constructs a new [CommonToken] with the specified token type and
   /// text.

@@ -141,7 +141,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
   ParserRuleContext nextTokensContext;
 
   /// @see #nextTokensContext
-  int nextTokensState;
+  int nextTokensState = 0;
 
   /// {@inheritDoc}
   ///
