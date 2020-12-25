@@ -72,6 +72,9 @@ class CommonTokenFactory implements TokenFactory<CommonToken> {
     if (source == null) {
       return CommonToken(type, text: text);
     }
+    if (channel == null || start == null || stop == null || line == null || charPositionInLine == null) {
+      throw ArgumentError.notNull('channel start stop line charPositionInLine');
+    }
 
     final t = CommonToken(type,
         source: source, channel: channel, startIndex: start, stopIndex: stop);

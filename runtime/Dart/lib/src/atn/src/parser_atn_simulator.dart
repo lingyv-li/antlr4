@@ -635,7 +635,7 @@ class ParserATNSimulator extends ATNSimulator {
     var previous = s0;
     input.seek(startIndex);
     var t = input.LA(1);
-    int predictedAlt = 0;
+    var predictedAlt = 0;
     while (true) {
       // while more work
 //			log("LL REACH "+getLookaheadName(input)+

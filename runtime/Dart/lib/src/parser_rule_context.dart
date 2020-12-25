@@ -49,7 +49,7 @@ class ParserRuleContext extends RuleContext {
   /// completed, this is null.
   RecognitionException exception;
 
-  ParserRuleContext([RuleContext parent, int invokingStateNumber])
+  ParserRuleContext([RuleContext parent, int invokingStateNumber = -1])
       : super(parent: parent, invokingState: invokingStateNumber);
 
   /// COPY a ctx (I'm deliberately not using copy constructor) to avoid

@@ -147,8 +147,8 @@ class CommonToken extends WritableToken {
   CommonToken(this.type,
       {this.source = EMPTY_SOURCE,
       this.channel = Token.DEFAULT_CHANNEL,
-      this.startIndex,
-      this.stopIndex,
+      this.startIndex = 0,
+      this.stopIndex = 0,
       text}) {
     _text = text;
     if (source.a != null) {

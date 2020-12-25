@@ -25,22 +25,19 @@ class DFA {
 
   /// [true] if this DFA is for a precedence decision; otherwise,
   /// [false]. This is the backing field for {@link #isPrecedenceDfa}.
-  bool precedenceDfa;
+  final bool precedenceDfa;
 
-  DFA(this.atnStartState, [this.decision = 0]) {
-    var precedenceDfa = false;
-    if (atnStartState is StarLoopEntryState) {
-      if ((atnStartState as StarLoopEntryState).isPrecedenceDecision) {
-        precedenceDfa = true;
-        final precedenceState = DFAState(configs: ATNConfigSet());
-        precedenceState.edges = [];
-        precedenceState.isAcceptState = false;
-        precedenceState.requiresFullContext = false;
-        s0 = precedenceState;
-      }
+  DFA(this.atnStartState, [this.decision = 0])
+      : precedenceDfa = atnStartState is StarLoopEntryState &&
+            atnStartState.isPrecedenceDecision {
+    if (atnStartState is StarLoopEntryState &&
+        (atnStartState as StarLoopEntryState).isPrecedenceDecision) {
+      final precedenceState = DFAState(configs: ATNConfigSet());
+      precedenceState.edges = [];
+      precedenceState.isAcceptState = false;
+      precedenceState.requiresFullContext = false;
+      s0 = precedenceState;
     }
-
-    this.precedenceDfa = precedenceDfa;
   }
 
   /// Gets whether this DFA is a precedence DFA. Precedence DFAs use a special

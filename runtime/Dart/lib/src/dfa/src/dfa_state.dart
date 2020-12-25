@@ -83,7 +83,7 @@ class DFAState {
 
   List<PredPrediction> predicates;
 
-  DFAState({this.stateNumber, this.configs});
+  DFAState({this.stateNumber = -1, this.configs});
 
   /// Get the set of all alts mentioned by all ATN configurations in this
   ///  DFA state.

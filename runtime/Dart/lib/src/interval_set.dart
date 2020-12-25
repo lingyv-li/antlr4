@@ -36,7 +36,7 @@ class Interval {
   ///  Return shared object for 0..INTERVAL_POOL_MAX_VALUE or a new
   ///  Interval object with a..a in it.  On Java.g4, 218623 IntervalSets
   ///  have a..a (set with 1 element).
-  static Interval of(int a, int b) {
+  static Interval/*!*/ of(int a, int b) {
     // cache just a..a
     if (a != b || a < 0 || a > INTERVAL_POOL_MAX_VALUE) {
       return Interval(a, b);

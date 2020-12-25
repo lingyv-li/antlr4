@@ -38,8 +38,11 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
   Map<String, int> get tokenTypeMap {
     final _vocabulary = vocabulary;
 
-    var result = tokenTypeMapCache[_vocabulary];
-    if (result == null) {
+    Map<String, int> result;
+    final cachedResult = tokenTypeMapCache[_vocabulary];
+    if (cachedResult != null) {
+      result = cachedResult;
+    } else {
       result = {};
       for (var i = 0; i <= getATN().maxTokenType; i++) {
         final literalName = _vocabulary.getLiteralName(i);

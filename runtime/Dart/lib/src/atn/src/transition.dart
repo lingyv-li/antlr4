@@ -162,7 +162,6 @@ class PredicateTransition extends AbstractPredicateTransition {
 
   Predicate get predicate => Predicate(ruleIndex, predIndex, isCtxDependent);
 
-
   @override
   String toString() {
     return 'pred_$ruleIndex:$predIndex';
@@ -228,9 +227,9 @@ class SetTransition extends Transition {
   @override
   IntervalSet label;
 
-  SetTransition(ATNState target, [IntervalSet st]) : super(target) {
-    label = st ?? IntervalSet.ofOne(Token.INVALID_TYPE);
-  }
+  SetTransition(ATNState target, [IntervalSet st])
+      : label = st ?? IntervalSet.ofOne(Token.INVALID_TYPE),
+        super(target);
 
   @override
   bool matches(symbol, minVocabSymbol, maxVocabSymbol) {

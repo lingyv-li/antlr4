@@ -40,14 +40,11 @@ class ProfilingATNSimulator extends ParserATNSimulator {
   int conflictingAltResolvedBySLL = 0;
 
   ProfilingATNSimulator(Parser parser)
-      : super(parser, parser.interpreter.atn, parser.interpreter.decisionToDFA,
-            parser.interpreter.sharedContextCache) {
-    numDecisions = atn.decisionToState.length;
-    decisions = List<DecisionInfo>.filled(numDecisions, null);
-    for (var i = 0; i < numDecisions; i++) {
-      decisions[i] = DecisionInfo(i);
-    }
-  }
+      : decisions = List<DecisionInfo>.generate(
+            parser.interpreter.atn.decisionToState.length,
+            (i) => DecisionInfo(i)),
+        super(parser, parser.interpreter.atn, parser.interpreter.decisionToDFA,
+            parser.interpreter.sharedContextCache);
 
   @override
   int adaptivePredict(

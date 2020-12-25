@@ -200,7 +200,7 @@ abstract class Operator extends SemanticContext {
 class AND extends Operator {
   List<SemanticContext> opnds;
 
-  AND(SemanticContext a, SemanticContext b) {
+  static List<SemanticContext> getOpnds(SemanticContext a, SemanticContext b) {
     var operands = <SemanticContext>{};
     if (a is AND) {
       operands.addAll(a.opnds);
@@ -224,8 +224,10 @@ class AND extends Operator {
       operands.add(reduced);
     }
 
-    opnds = operands.toList();
+    return operands.toList();
   }
+
+  AND(SemanticContext a, SemanticContext b) : opnds = getOpnds(a, b);
 
   @override
   List<SemanticContext> get operands {
@@ -303,8 +305,8 @@ class AND extends Operator {
 /// contexts is true.
 class OR extends Operator {
   List<SemanticContext> opnds;
-
-  OR(SemanticContext a, SemanticContext b) {
+  
+  static List<SemanticContext> getOpnds(SemanticContext a, SemanticContext b) {
     var operands = <SemanticContext>{};
     if (a is OR) {
       operands.addAll(a.opnds);
@@ -328,8 +330,10 @@ class OR extends Operator {
       operands.add(reduced);
     }
 
-    opnds = operands.toList();
+    return operands.toList();
   }
+
+  OR(SemanticContext a, SemanticContext b) : opnds = getOpnds(a, b);
 
   @override
   List<SemanticContext> get operands {

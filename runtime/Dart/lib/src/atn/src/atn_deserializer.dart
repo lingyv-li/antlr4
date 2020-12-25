@@ -17,9 +17,9 @@ class ATNDeserializationOptions {
   static final ATNDeserializationOptions defaultOptions =
       ATNDeserializationOptions()..makeReadOnly();
 
-  bool readOnly;
-  bool verifyATN;
-  bool generateRuleBypassTransitions;
+  bool readOnly = false;
+  bool verifyATN = false;
+  bool generateRuleBypassTransitions = false;
 
   ATNDeserializationOptions([ATNDeserializationOptions options]) {
     if (options == null) {
@@ -266,7 +266,7 @@ class ATNDeserializer {
   void readRules(ATN atn) {
     final nrules = readInt();
     if (atn.grammarType == ATNType.LEXER) {
-      atn.ruleToTokenType = List<int>.filled(nrules, null);
+      atn.ruleToTokenType = List<int>.filled(nrules, 0);
     }
 
     atn.ruleToStartState = List<RuleStartState>.filled(nrules, null);
@@ -310,7 +310,7 @@ class ATNDeserializer {
     }
   }
 
-  void readSets(ATN atn, List<IntervalSet> sets, readUnicode) {
+  void readSets(ATN atn, List<IntervalSet> sets, int Function() readUnicode) {
     final nsets = readInt();
     for (var i = 0; i < nsets; i++) {
       final nintervals = readInt();
@@ -323,8 +323,8 @@ class ATNDeserializer {
       }
 
       for (var j = 0; j < nintervals; j++) {
-        int a = readUnicode();
-        int b = readUnicode();
+        var a = readUnicode();
+        var b = readUnicode();
         set.addRange(a, b);
       }
     }
@@ -419,8 +419,7 @@ class ATNDeserializer {
   void readLexerActions(ATN atn) {
     if (atn.grammarType == ATNType.LEXER) {
       if (isFeatureSupported(ADDED_LEXER_ACTIONS, uuid)) {
-        atn.lexerActions = List<LexerAction>.filled(readInt(), null);
-        for (var i = 0; i < atn.lexerActions.length; i++) {
+        atn.lexerActions = List<LexerAction>.generate(readInt(), (i) {
           final actionType = LexerActionType.values[readInt()];
           var data1 = readInt();
           if (data1 == 0xFFFF) {
@@ -434,8 +433,8 @@ class ATNDeserializer {
           final lexerAction =
               lexerActionFactory(actionType, data1, data2);
 
-          atn.lexerActions[i] = lexerAction;
-        }
+          return lexerAction;
+        });
       } else {
         // for compatibility with older serialized ATNs, convert the old
         // serialized action index for action transitions to the new

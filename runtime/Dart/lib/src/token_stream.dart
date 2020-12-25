@@ -191,7 +191,7 @@ class BufferedTokenStream implements TokenStream {
 
   @override
   void consume() {
-    bool skipEofCheck;
+    var skipEofCheck = false;
     if (p >= 0) {
       if (fetchedEOF) {
         // the last token in tokens is EOF. skip check if p indexes any

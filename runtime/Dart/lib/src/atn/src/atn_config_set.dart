@@ -15,6 +15,7 @@ import '../../util/bit_set.dart';
 import '../../util/utils.dart';
 import 'atn.dart';
 import 'atn_config.dart';
+import 'atn_simulator.dart';
 import 'atn_state.dart';
 import 'semantic_context.dart';
 
@@ -77,7 +78,7 @@ class ATNConfigSet extends Iterable<ATNConfig> {
   /// Indicates that this configuration set is part of a full context
   ///  LL prediction. It will be used to determine how to merge $. With SLL
   ///  it's a wildcard whereas it is not for LL context merge.
-  bool fullCtx;
+  bool fullCtx = false;
 
   int cachedHashCode = -1;
 
@@ -178,7 +179,7 @@ class ATNConfigSet extends Iterable<ATNConfig> {
     return configs[i];
   }
 
-  void optimizeConfigs(interpreter) {
+  void optimizeConfigs(ATNSimulator interpreter) {
     if (readOnly) throw StateError('This set is readonly');
 
     if (configLookup.isEmpty) return;

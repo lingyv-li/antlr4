@@ -70,9 +70,7 @@ abstract class RuleContext extends RuleNode {
   /// If parent is null, this should be -1.
   int invokingState = -1;
 
-  RuleContext({this.parent, this.invokingState}) {
-    invokingState = invokingState ?? -1;
-  }
+  RuleContext({this.parent, this.invokingState = -1});
 
   int depth() {
     var n = 0;

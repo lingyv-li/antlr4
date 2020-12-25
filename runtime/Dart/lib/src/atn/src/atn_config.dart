@@ -90,14 +90,15 @@ class ATNConfig {
       [this.semanticContext = SemanticContext.NONE]);
 
   ATNConfig.dup(ATNConfig c,
-      {this.state, this.alt, this.context, this.semanticContext}) {
-    state = state ?? c.state;
-    alt = alt ?? c.alt;
-    context = context ?? c.context;
-    semanticContext = semanticContext ?? c.semanticContext;
-    reachesIntoOuterContext =
-        c.reachesIntoOuterContext ?? reachesIntoOuterContext;
-  }
+      {ATNState state,
+      int alt,
+      PredictionContext context,
+      SemanticContext semanticContext})
+      : state = state ?? c.state,
+        alt = alt ?? c.alt,
+        context = context ?? c.context,
+        semanticContext = semanticContext ?? c.semanticContext,
+        reachesIntoOuterContext = c.reachesIntoOuterContext;
 
   /// This method gets the value of the {@link #reachesIntoOuterContext} field
   /// as it existed prior to the introduction of the
