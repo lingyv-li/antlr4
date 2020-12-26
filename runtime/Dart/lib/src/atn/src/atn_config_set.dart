@@ -44,14 +44,14 @@ class ATNConfigSet extends Iterable<ATNConfig> {
   ///
   /// All configs but hashed by (s, i, _, pi) not including context. Wiped out
   /// when we go readonly as this set becomes a DFA state.
-  Set<ATNConfig> configLookup = HashSet<ATNConfig>(equals: (a, b) {
+  Set<ATNConfig>? configLookup = HashSet<ATNConfig>(equals: (a, b) {
     if (a == null || b == null) return false;
-    return a.state.stateNumber == b.state.stateNumber &&
+    return a.state!.stateNumber == b.state!.stateNumber &&
         a.alt == b.alt &&
         a.semanticContext == b.semanticContext;
   }, hashCode: (ATNConfig o) {
     var hashCode = 7;
-    hashCode = 31 * hashCode + o.state.stateNumber;
+    hashCode = 31 * hashCode + o.state!.stateNumber;
     hashCode = 31 * hashCode + o.alt;
     hashCode = 31 * hashCode + o.semanticContext.hashCode;
     return hashCode;
@@ -68,7 +68,7 @@ class ATNConfigSet extends Iterable<ATNConfig> {
   ///  not necessarily represent the ambiguous alternatives. In fact,
   ///  I should also point out that this seems to include predicated alternatives
   ///  that have predicates that evaluate to false. Computed in computeTargetState().
-  BitSet conflictingAlts;
+  BitSet? conflictingAlts;
 
   // Used in parser and lexer. In lexer, it indicates we hit a pred
   // while computing a closure operation.  Don't make a DFA state from this.
@@ -102,7 +102,7 @@ class ATNConfigSet extends Iterable<ATNConfig> {
   /// <p>This method updates {@link #dipsIntoOuterContext} and
   /// {@link #hasSemanticContext} when necessary.</p>
   bool add(ATNConfig config,
-      [Map<Pair<PredictionContext, PredictionContext>, PredictionContext>
+      [Map<Pair<PredictionContext, PredictionContext>, PredictionContext?>?
           mergeCache]) {
     if (readOnly) throw StateError('This set is readonly');
     if (config.semanticContext != SemanticContext.NONE) {
@@ -111,11 +111,11 @@ class ATNConfigSet extends Iterable<ATNConfig> {
     if (config.outerContextDepth > 0) {
       dipsIntoOuterContext = true;
     }
-    final existing = configLookup.lookup(config) ?? config;
+    final existing = configLookup!.lookup(config) ?? config;
     if (identical(existing, config)) {
       // we added this new one
       cachedHashCode = -1;
-      configLookup.add(config);
+      configLookup!.add(config);
       configs.add(config); // track order here
       return true;
     }
@@ -143,8 +143,8 @@ class ATNConfigSet extends Iterable<ATNConfig> {
     return configs;
   }
 
-  Set<ATNState> get states {
-    final states = <ATNState>{};
+  Set<ATNState?> get states {
+    final states = <ATNState?>{};
     for (var i = 0; i < configs.length; i++) {
       states.add(configs[i].state);
     }
@@ -182,7 +182,7 @@ class ATNConfigSet extends Iterable<ATNConfig> {
   void optimizeConfigs(ATNSimulator interpreter) {
     if (readOnly) throw StateError('This set is readonly');
 
-    if (configLookup.isEmpty) return;
+    if (configLookup!.isEmpty) return;
 
     for (var config in configs) {
 //			int before = PredictionContext.getAllContextNodes(config.context).length;
@@ -244,13 +244,13 @@ class ATNConfigSet extends Iterable<ATNConfig> {
   }
 
   @override
-  bool contains(Object o) {
+  bool contains(Object? o) {
     if (configLookup == null) {
       throw UnsupportedError(
           'This method is not implemented for readonly sets.');
     }
 
-    return configLookup.contains(o);
+    return configLookup!.contains(o);
   }
 
   @override
@@ -260,7 +260,7 @@ class ATNConfigSet extends Iterable<ATNConfig> {
     if (readOnly) throw StateError('This set is readonly');
     configs.clear();
     cachedHashCode = -1;
-    configLookup.clear();
+    configLookup!.clear();
   }
 
   @override

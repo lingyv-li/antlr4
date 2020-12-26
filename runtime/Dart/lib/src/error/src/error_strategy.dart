@@ -130,7 +130,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
   ///  one token/tree node is consumed for two errors.
   int lastErrorIndex = -1;
 
-  IntervalSet lastErrorStates;
+  IntervalSet? lastErrorStates;
 
   /// This field is used to propagate information about the lookahead following
   /// the previous match. Since prediction prefers completing the current rule
@@ -138,7 +138,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
   /// original point where it was discoverable. The original context is used to
   /// compute the true expected sets as though the reporting occurred as early
   /// as possible.
-  ParserRuleContext nextTokensContext;
+  ParserRuleContext? nextTokensContext;
 
   /// @see #nextTokensContext
   int nextTokensState = 0;
@@ -240,9 +240,9 @@ class DefaultErrorStrategy implements ErrorStrategy {
 //						   ", lastErrorIndex="+
 //						   lastErrorIndex+
 //						   ", states="+lastErrorStates);
-    if (lastErrorIndex == recognizer.inputStream.index &&
+    if (lastErrorIndex == recognizer.inputStream!.index &&
         lastErrorStates != null &&
-        lastErrorStates.contains(recognizer.state)) {
+        lastErrorStates!.contains(recognizer.state)) {
       // uh oh, another error at same token index and previously-visited
       // state in ATN; must be a case where LT(1) is in the recovery
       // token set so nothing got consumed. Consume a single token
@@ -252,8 +252,8 @@ class DefaultErrorStrategy implements ErrorStrategy {
 //			log("FAILSAFE consumes "+recognizer.getTokenNames()[recognizer.inputStream.LA(1)], level: Level.SEVERE.value);
       recognizer.consume();
     }
-    lastErrorIndex = recognizer.inputStream.index;
-    lastErrorStates ??= IntervalSet(); lastErrorStates.addOne(recognizer.state);
+    lastErrorIndex = recognizer.inputStream!.index;
+    lastErrorStates ??= IntervalSet(); lastErrorStates!.addOne(recognizer.state);
     final followSet = getErrorRecoverySet(recognizer);
     consumeUntil(recognizer, followSet);
   }
@@ -305,18 +305,18 @@ class DefaultErrorStrategy implements ErrorStrategy {
 
   @override
   void sync(Parser recognizer) {
-    final s = recognizer.interpreter.atn.states[recognizer.state];
+    final s = recognizer.interpreter!.atn.states[recognizer.state];
 //		log("sync @ "+s.stateNumber+"="+s.getClass().getSimpleName(), level: Level.SEVERE.value);
     // If already recovering, don't try to sync
     if (inErrorRecoveryMode(recognizer)) {
       return;
     }
 
-    final tokens = recognizer.inputStream;
+    final tokens = recognizer.inputStream!;
     final la = tokens.LA(1);
 
     // try cheaper subset first; might get lucky. seems to shave a wee bit off
-    final nextTokens = recognizer.getATN().nextTokens(s);
+    final nextTokens = recognizer.getATN().nextTokens(s)!;
     if (nextTokens.contains(la)) {
       // We are sure the token matches
       nextTokensContext = null;
@@ -334,7 +334,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
       return;
     }
 
-    switch (s.stateType) {
+    switch (s!.stateType) {
       case StateType.BLOCK_START:
       case StateType.STAR_BLOCK_START:
       case StateType.PLUS_BLOCK_START:
@@ -373,7 +373,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
     final tokens = recognizer.inputStream;
     String input;
     if (tokens != null) {
-      if (e.startToken.type == Token.EOF) {
+      if (e.startToken!.type == Token.EOF) {
         input = '<EOF>';
       } else {
         input = tokens.getTextRange(e.startToken, e.offendingToken);
@@ -409,7 +409,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
   /// @param e the recognition exception
   void reportFailedPredicate(Parser recognizer, FailedPredicateException e) {
     final ruleName =
-        recognizer.ruleNames[recognizer.context.ruleIndex];
+        recognizer.ruleNames[recognizer.context!.ruleIndex];
     final msg = 'rule ' + ruleName + ' ' + e.message;
     recognizer.notifyErrorListeners(msg, e.offendingToken, e);
   }
@@ -572,15 +572,15 @@ class DefaultErrorStrategy implements ErrorStrategy {
   /// @return [true] if single-token insertion is a viable recovery
   /// strategy for the current mismatched input, otherwise [false]
   bool singleTokenInsertion(Parser recognizer) {
-    final currentSymbolType = recognizer.inputStream.LA(1);
+    final currentSymbolType = recognizer.inputStream!.LA(1);
     // if current token is consistent with what could come after current
     // ATN state, then we know we're missing a token; error recovery
     // is free to conjure up and insert the missing token
     final currentState =
-        recognizer.interpreter.atn.states[recognizer.state];
+        recognizer.interpreter!.atn.states[recognizer.state]!;
     final next = currentState.transition(0).target;
-    final atn = recognizer.interpreter.atn;
-    final expectingAtLL2 = atn.nextTokens(next, recognizer.context);
+    final atn = recognizer.interpreter!.atn;
+    final expectingAtLL2 = atn.nextTokens(next, recognizer.context)!;
 //		System.out.println("LT(2) set="+expectingAtLL2.toString(recognizer.getTokenNames()));
     if (expectingAtLL2.contains(currentSymbolType)) {
       reportMissingToken(recognizer);
@@ -606,8 +606,8 @@ class DefaultErrorStrategy implements ErrorStrategy {
   /// @return the successfully matched [Token] instance if single-token
   /// deletion successfully recovers from the mismatched input, otherwise
   /// null
-  Token singleTokenDeletion(Parser recognizer) {
-    final nextTokenType = recognizer.inputStream.LA(2);
+  Token? singleTokenDeletion(Parser recognizer) {
+    final nextTokenType = recognizer.inputStream!.LA(2);
     final expecting = getExpectedTokens(recognizer);
     if (expecting.contains(nextTokenType)) {
       reportUnwantedToken(recognizer);
@@ -645,7 +645,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
   ///  If you change what tokens must be created by the lexer,
   ///  override this method to create the appropriate tokens.
   Token getMissingSymbol(Parser recognizer) {
-    final currentSymbol = recognizer.currentToken;
+    final currentSymbol = recognizer.currentToken!;
     final expecting = getExpectedTokens(recognizer);
     var expectedTokenType = Token.INVALID_TYPE;
     if (!expecting.isNil) {
@@ -660,14 +660,14 @@ class DefaultErrorStrategy implements ErrorStrategy {
           '>';
     }
     var current = currentSymbol;
-    final lookback = recognizer.inputStream.LT(-1);
+    final lookback = recognizer.inputStream!.LT(-1);
     if (current.type == Token.EOF && lookback != null) {
       current = lookback;
     }
     return recognizer.tokenFactory.create(
         expectedTokenType,
         tokenText,
-        Pair(current.tokenSource, current.tokenSource.inputStream),
+        Pair(current.tokenSource, current.tokenSource!.inputStream),
         Token.DEFAULT_CHANNEL,
         -1,
         -1,
@@ -686,7 +686,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
   ///  the token). This is better than forcing you to override a method in
   ///  your token objects because you don't have to go modify your lexer
   ///  so that it creates a new Java type.
-  String getTokenErrorDisplay(Token t) {
+  String getTokenErrorDisplay(Token? t) {
     if (t == null) return '<no token>';
     var s = getSymbolText(t);
     if (s == null) {
@@ -699,7 +699,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
     return escapeWSAndQuote(s);
   }
 
-  String getSymbolText(Token symbol) {
+  String? getSymbolText(Token symbol) {
     return symbol.text;
   }
 
@@ -808,13 +808,13 @@ class DefaultErrorStrategy implements ErrorStrategy {
 	 *  at run-time upon error to avoid overhead during parsing.
 	 */
   IntervalSet getErrorRecoverySet(Parser recognizer) {
-    final atn = recognizer.interpreter.atn;
-    RuleContext ctx = recognizer.context;
+    final atn = recognizer.interpreter!.atn;
+    RuleContext? ctx = recognizer.context;
     final recoverSet = IntervalSet();
     while (ctx != null && ctx.invokingState >= 0) {
       // compute what follows who invoked us
-      final invokingState = atn.states[ctx.invokingState];
-      RuleTransition rt = invokingState.transition(0);
+      final invokingState = atn.states[ctx.invokingState]!;
+      RuleTransition rt = invokingState.transition(0) as RuleTransition;
       final follow = atn.nextTokens(rt.followState);
       recoverSet.addAll(follow);
       ctx = ctx.parent;
@@ -827,12 +827,12 @@ class DefaultErrorStrategy implements ErrorStrategy {
   /// Consume tokens until one matches the given token set. */
   void consumeUntil(Parser recognizer, IntervalSet set) {
 //		log("consumeUntil("+set.toString(recognizer.getTokenNames())+")", level: Level.SEVERE.value);
-    var ttype = recognizer.inputStream.LA(1);
+    var ttype = recognizer.inputStream!.LA(1);
     while (ttype != Token.EOF && !set.contains(ttype)) {
       //System.out.println("consume during recover LA(1)="+getTokenNames()[input.LA(1)]);
 //			recognizer.inputStream.consume();
       recognizer.consume();
-      ttype = recognizer.inputStream.LA(1);
+      ttype = recognizer.inputStream!.LA(1);
     }
   }
 }

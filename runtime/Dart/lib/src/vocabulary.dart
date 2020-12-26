@@ -52,7 +52,7 @@ abstract class Vocabulary {
   ///
   /// @return The string literal associated with the specified token type, or
   /// null if no string literal is associated with the type.
-  String getLiteralName(int tokenType);
+  String? getLiteralName(int tokenType);
 
   /// Gets the symbolic name associated with a token type. The string returned
   /// by this method, when not null, can be used unaltered in a parser
@@ -95,7 +95,7 @@ abstract class Vocabulary {
   ///
   /// @return The symbolic name associated with the specified token type, or
   /// null if no symbolic name is associated with the type.
-  String getSymbolicName(int tokenType);
+  String? getSymbolicName(int tokenType);
 
   /// Gets the display name of a token type.
   ///
@@ -132,9 +132,9 @@ class VocabularyImpl implements Vocabulary {
   static final VocabularyImpl EMPTY_VOCABULARY =
       VocabularyImpl(EMPTY_NAMES, EMPTY_NAMES, EMPTY_NAMES);
 
-  final List<String> literalNames;
+  final List<String?> literalNames;
 
-  final List<String> symbolicNames;
+  final List<String?> symbolicNames;
 
   final List<String> displayNames;
 
@@ -181,8 +181,8 @@ class VocabularyImpl implements Vocabulary {
       return EMPTY_VOCABULARY;
     }
 
-    final literalNames = List<String>.from(tokenNames);
-    final symbolicNames = List<String>.from(tokenNames);
+    final literalNames = List<String?>.from(tokenNames);
+    final symbolicNames = List<String?>.from(tokenNames);
     for (var i = 0; i < tokenNames.length; i++) {
       final tokenName = tokenNames[i];
       if (tokenName == null) {
@@ -209,7 +209,7 @@ class VocabularyImpl implements Vocabulary {
   }
 
   @override
-  String getLiteralName(int tokenType) {
+  String? getLiteralName(int tokenType) {
     if (tokenType >= 0 && tokenType < literalNames.length) {
       return literalNames[tokenType];
     }
@@ -218,7 +218,7 @@ class VocabularyImpl implements Vocabulary {
   }
 
   @override
-  String getSymbolicName(int tokenType) {
+  String? getSymbolicName(int tokenType) {
     if (tokenType >= 0 && tokenType < symbolicNames.length) {
       return symbolicNames[tokenType];
     }

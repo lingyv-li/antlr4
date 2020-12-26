@@ -36,7 +36,7 @@ enum TransitionType {
 ///  ATN transitions.</p>
 abstract class Transition {
   /// The target of this transition. */
-  ATNState target;
+  ATNState? target;
 
   Transition(this.target) {
     if (target == null) {
@@ -55,7 +55,7 @@ abstract class Transition {
   /// transition consumes (matches) an input symbol.
   bool get isEpsilon => false;
 
-  IntervalSet get label => null;
+  IntervalSet? get label => null;
 
   bool matches(int symbol, int minVocabSymbol, int maxVocabSymbol);
 }
@@ -69,7 +69,7 @@ class EpsilonTransition extends Transition {
   /// @since 4.4.1
   final int outermostPrecedenceReturn;
 
-  EpsilonTransition(ATNState target, [this.outermostPrecedenceReturn = -1])
+  EpsilonTransition(ATNState? target, [this.outermostPrecedenceReturn = -1])
       : super(target);
 
   @override
@@ -93,7 +93,7 @@ class RangeTransition extends Transition {
   final int from;
   final int to;
 
-  RangeTransition(ATNState target, this.from, this.to) : super(target);
+  RangeTransition(ATNState? target, this.from, this.to) : super(target);
 
   @override
   IntervalSet get label {
@@ -121,9 +121,9 @@ class RuleTransition extends Transition {
   final int precedence;
 
   /// What node to begin computations following ref to rule */
-  ATNState followState;
+  ATNState? followState;
 
-  RuleTransition(RuleStartState ruleStart, this.ruleIndex, this.precedence,
+  RuleTransition(RuleStartState? ruleStart, this.ruleIndex, this.precedence,
       this.followState)
       : super(ruleStart);
 
@@ -140,7 +140,7 @@ class RuleTransition extends Transition {
 }
 
 abstract class AbstractPredicateTransition extends Transition {
-  AbstractPredicateTransition(ATNState target) : super(target);
+  AbstractPredicateTransition(ATNState? target) : super(target);
 }
 
 class PredicateTransition extends AbstractPredicateTransition {
@@ -176,7 +176,7 @@ class AtomTransition extends Transition {
   /// The token type or character value; or, signifies special label. */
   final int atomLabel;
 
-  AtomTransition(ATNState target, this.atomLabel) : super(target);
+  AtomTransition(ATNState? target, this.atomLabel) : super(target);
 
   @override
   IntervalSet get label {
@@ -227,7 +227,7 @@ class SetTransition extends Transition {
   @override
   IntervalSet label;
 
-  SetTransition(ATNState target, [IntervalSet st])
+  SetTransition(ATNState? target, [IntervalSet? st])
       : label = st ?? IntervalSet.ofOne(Token.INVALID_TYPE),
         super(target);
 

@@ -28,9 +28,9 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
   static final MIN_CHAR_VALUE = 0x0000;
   static final MAX_CHAR_VALUE = 0x10FFFF;
 
-  CharStream _input;
+  CharStream? _input;
 
-  Pair<TokenSource, CharStream> _tokenFactorySourcePair;
+  Pair<TokenSource, CharStream?>? _tokenFactorySourcePair;
   @override
   TokenFactory tokenFactory = CommonTokenFactory.DEFAULT;
 
@@ -41,7 +41,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
   /// emissions, then set this to the last token to be matched or
   /// something nonnull so that the auto token emit mechanism will not
   /// emit another token.
-  Token _token;
+  Token? _token;
 
   /// What character index in the stream did the current token start at?
   /// Needed, for example, to get the text for current token. Set at
@@ -69,7 +69,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
 
   /// You can set the text for the current token to override what is in
   /// the input char buffer. Use setText() or can set this instance var.
-  String _text;
+  String? _text;
 
   Lexer(CharStream input) {
     _input = input;
@@ -79,7 +79,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
   void reset() {
     // wack Lexer state variables
     if (_input != null) {
-      _input.seek(0); // rewind the input
+      _input!.seek(0); // rewind the input
     }
     _token = null;
     type = Token.INVALID_TYPE;
@@ -93,19 +93,19 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
     mode_ = Lexer.DEFAULT_MODE;
     _modeStack.clear();
 
-    interpreter.reset();
+    interpreter!.reset();
   }
 
   /// Return a token from this source; i.e., match a token on the char stream.
   @override
-  Token nextToken() {
+  Token? nextToken() {
     if (_input == null) {
       throw StateError('nextToken requires a non-null input stream.');
     }
 
     // Mark start location in char stream so unbuffered streams are
     // guaranteed at least have text of current token
-    final tokenStartMarker = _input.mark();
+    final tokenStartMarker = _input!.mark();
     try {
       outer:
       while (true) {
@@ -116,9 +116,9 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
 
         _token = null;
         channel = Token.DEFAULT_CHANNEL;
-        tokenStartCharIndex = _input.index;
-        tokenStartCharPositionInLine = interpreter.charPositionInLine;
-        tokenStartLine = interpreter.line;
+        tokenStartCharIndex = _input!.index;
+        tokenStartCharPositionInLine = interpreter!.charPositionInLine;
+        tokenStartLine = interpreter!.line;
         _text = null;
         do {
           type = Token.INVALID_TYPE;
@@ -127,13 +127,13 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
 //								   " at index "+input.index());
           var ttype = 0;
           try {
-            ttype = interpreter.match(_input, mode_);
+            ttype = interpreter!.match(_input!, mode_);
           } on LexerNoViableAltException catch (e) {
             notifyListeners(e); // report error
             recover(e);
             ttype = SKIP;
           }
-          if (_input.LA(1) == IntStream.EOF) {
+          if (_input!.LA(1) == IntStream.EOF) {
             _hitEOF = true;
           }
           if (type == Token.INVALID_TYPE) type = ttype;
@@ -147,7 +147,7 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
     } finally {
       // make sure we release marker after match or
       // unbuffered char stream will keep buffering
-      _input.release(tokenStartMarker);
+      _input!.release(tokenStartMarker);
     }
   }
 
@@ -185,23 +185,23 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
 
   /// Set the char stream and reset the lexer
   @override
-  set inputStream(IntStream input) {
+  set inputStream(IntStream? input) {
     _input = null;
     _tokenFactorySourcePair =
-        Pair<TokenSource, CharStream>(this, _input);
+        Pair<TokenSource, CharStream?>(this, _input);
     reset();
-    _input = input;
+    _input = input as CharStream?;
     _tokenFactorySourcePair =
-        Pair<TokenSource, CharStream>(this, _input);
+        Pair<TokenSource, CharStream?>(this, _input);
   }
 
   @override
   String get sourceName {
-    return _input.sourceName;
+    return _input!.sourceName;
   }
 
   @override
-  CharStream get inputStream {
+  CharStream? get inputStream {
     return _input;
   }
 
@@ -236,51 +236,51 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
   Token emitEOF() {
     final cpos = charPositionInLine;
     final eof = tokenFactory.create(Token.EOF, null, _tokenFactorySourcePair,
-        Token.DEFAULT_CHANNEL, _input.index, _input.index - 1, line, cpos);
+        Token.DEFAULT_CHANNEL, _input!.index, _input!.index - 1, line, cpos);
     emitToken(eof);
     return eof;
   }
 
   @override
   int get charPositionInLine {
-    return interpreter.charPositionInLine;
+    return interpreter!.charPositionInLine;
   }
 
   @override
   int get line {
-    return interpreter.line;
+    return interpreter!.line;
   }
 
   set line(int line) {
-    interpreter.line = line;
+    interpreter!.line = line;
   }
 
   set charPositionInLine(int charPositionInLine) {
-    interpreter.charPositionInLine = charPositionInLine;
+    interpreter!.charPositionInLine = charPositionInLine;
   }
 
   /// What is the index of the current character of lookahead?
   int get charIndex {
-    return _input.index;
+    return _input!.index;
   }
 
   /// Return the text matched so far for the current token or any
   ///  text override.
-  String get text {
+  String? get text {
     if (_text != null) {
       return _text;
     }
-    return interpreter.getText(_input);
+    return interpreter!.getText(_input!);
   }
 
   /// Set the complete text of this token; it wipes any previous
   ///  changes to the text.
-  set text(String text) {
+  set text(String? text) {
     _text = text;
   }
 
   /// Override if emitting multiple tokens.
-  Token get token {
+  Token? get token {
     return _token;
   }
 
@@ -288,25 +288,25 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
     this._token = _token;
   }
 
-  List<String> get channelNames => null;
+  List<String>? get channelNames => null;
 
-  List<String> get modeNames => null;
+  List<String>? get modeNames => null;
 
   /// Return a list of all Token objects in input char stream.
   ///  Forces load of all tokens. Does not include EOF token.
   List<Token> get allTokens {
     final tokens = <Token>[];
-    var t = nextToken();
+    var t = nextToken()!;
     while (t.type != Token.EOF) {
       tokens.add(t);
-      t = nextToken();
+      t = nextToken()!;
     }
     return tokens;
   }
 
   void notifyListeners(LexerNoViableAltException e) {
     final text =
-        _input.getText(Interval.of(tokenStartCharIndex, _input.index));
+        _input!.getText(Interval.of(tokenStartCharIndex, _input!.index));
     final msg = "token recognition error at: '" + getErrorDisplay(text) + "'";
 
     final listener = errorListenerDispatch;
@@ -329,15 +329,15 @@ abstract class Lexer extends Recognizer<LexerATNSimulator>
   ///  to do sophisticated error recovery if you are in a fragment rule.
   void recover(RecognitionException re) {
     if (re is LexerNoViableAltException) {
-      if (_input.LA(1) != IntStream.EOF) {
+      if (_input!.LA(1) != IntStream.EOF) {
         // skip a char and try again
-        interpreter.consume(_input);
+        interpreter!.consume(_input!);
       }
     } else {
       //System.out.println("consuming char "+(char)input.LA(1)+" during recovery");
       //re.printStackTrace();
       // TODO: Do we lose character or line position information?
-      _input.consume();
+      _input!.consume();
     }
   }
 }

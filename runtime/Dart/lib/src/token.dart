@@ -45,7 +45,7 @@ abstract class Token {
   static const int MIN_USER_CHANNEL_VALUE = 2;
 
   /// Get the text of the token.
-  String get text;
+  String? get text;
 
   /// Get the token type of the token */
   int get type;
@@ -80,14 +80,14 @@ abstract class Token {
   int get stopIndex;
 
   /// Gets the [TokenSource] which created this token.
-  TokenSource get tokenSource;
+  TokenSource? get tokenSource;
 
   /// Gets the [CharStream] from which this token was derived.
-  CharStream get inputStream;
+  CharStream? get inputStream;
 }
 
 abstract class WritableToken extends Token {
-  set text(String text);
+  set text(String? text);
 
   set type(int ttype);
 
@@ -103,8 +103,8 @@ abstract class WritableToken extends Token {
 class CommonToken extends WritableToken {
   /// An empty [Pair] which is used as the default value of
   /// {@link #source} for tokens that do not have a source.
-  static const Pair<TokenSource, CharStream> EMPTY_SOURCE =
-      Pair<TokenSource, CharStream>(null, null);
+  static const Pair<TokenSource?, CharStream?> EMPTY_SOURCE =
+      Pair<TokenSource?, CharStream?>(null, null);
 
   @override
   int type = 0;
@@ -122,13 +122,13 @@ class CommonToken extends WritableToken {
   /// [CommonToken]. Tokens created by a [CommonTokenFactory] from
   /// the same source and input stream share a reference to the same
   /// [Pair] containing these values.</p>
-  Pair<TokenSource, CharStream> source;
+  Pair<TokenSource?, CharStream?>? source;
 
   /// This is the backing field for {@link #getText} when the token text is
   /// explicitly set in the constructor or via {@link #setText}.
   ///
   /// @see #getText()
-  String _text;
+  String? _text;
 
   @override
   int tokenIndex = -1;
@@ -151,9 +151,9 @@ class CommonToken extends WritableToken {
       this.stopIndex = 0,
       text}) {
     _text = text;
-    if (source.a != null) {
-      line = source.a.line;
-      charPositionInLine = source.a.charPositionInLine;
+    if (source!.a != null) {
+      line = source!.a!.line;
+      charPositionInLine = source!.a!.charPositionInLine;
     }
   }
 
@@ -182,13 +182,13 @@ class CommonToken extends WritableToken {
       source = oldToken.source;
     } else {
       _text = oldToken.text;
-      source = Pair<TokenSource, CharStream>(
+      source = Pair<TokenSource?, CharStream?>(
           oldToken.tokenSource, oldToken.inputStream);
     }
   }
 
   @override
-  String get text {
+  String? get text {
     if (_text != null) {
       return _text;
     }
@@ -211,22 +211,22 @@ class CommonToken extends WritableToken {
   /// should be obtained from the input along with the start and stop indexes
   /// of the token.
   @override
-  set text(String text) {
+  set text(String? text) {
     _text = text;
   }
 
   @override
-  TokenSource get tokenSource {
-    return source.a;
+  TokenSource? get tokenSource {
+    return source!.a;
   }
 
   @override
-  CharStream get inputStream {
-    return source.b;
+  CharStream? get inputStream {
+    return source!.b;
   }
 
   @override
-  String toString([Recognizer r]) {
+  String toString([Recognizer? r]) {
     var txt = text;
     if (txt != null) {
       txt = txt
@@ -259,7 +259,7 @@ class RuleTagToken implements Token {
   ///
   /// @return The name of the label associated with the rule tag, or
   /// null if this is an unlabeled rule tag.
-  final String label;
+  final String? label;
 
   /// Constructs a new instance of [RuleTagToken] with the specified rule
   /// name, bypass token type, and label.
@@ -295,7 +295,7 @@ class RuleTagToken implements Token {
   @override
   String get text {
     if (label != null) {
-      return '<' + label + ':' + ruleName + '>';
+      return '<' + label! + ':' + ruleName + '>';
     }
 
     return '<' + ruleName + '>';
@@ -358,7 +358,7 @@ class RuleTagToken implements Token {
   /// <p>The implementation for [RuleTagToken] always returns null.</p>
 
   @override
-  TokenSource get tokenSource {
+  TokenSource? get tokenSource {
     return null;
   }
 
@@ -367,7 +367,7 @@ class RuleTagToken implements Token {
   /// <p>The implementation for [RuleTagToken] always returns null.</p>
 
   @override
-  CharStream get inputStream {
+  CharStream? get inputStream {
     return null;
   }
 
@@ -394,7 +394,7 @@ class TokenTagToken extends CommonToken {
   ///
   /// @return The name of the label associated with the rule tag, or
   /// null if this is an unlabeled rule tag.
-  final String label;
+  final String? label;
 
   /// Constructs a new instance of [TokenTagToken] with the specified
   /// token name, type, and label.
@@ -413,7 +413,7 @@ class TokenTagToken extends CommonToken {
   @override
   String get text {
     if (label != null) {
-      return '<' + label + ':' + tokenName + '>';
+      return '<' + label! + ':' + tokenName + '>';
     }
 
     return '<' + tokenName + '>';

@@ -42,7 +42,7 @@ class SimState {
   int line = 0;
   int charPos = -1;
 
-  DFAState dfaState;
+  DFAState? dfaState;
 
   void reset() {
     index = -1;
@@ -60,7 +60,7 @@ class LexerATNSimulator extends ATNSimulator {
   static final int MIN_DFA_EDGE = 0;
   static final int MAX_DFA_EDGE = 127; // forces unicode to stay in ATN
 
-  final Lexer recog;
+  final Lexer? recog;
 
   /// The current token's starting index into the character stream.
   ///  Shared across DFA to ATN simulation in case the ATN fails and the
@@ -103,7 +103,7 @@ class LexerATNSimulator extends ATNSimulator {
       if (dfa.s0 == null) {
         return matchATN(input);
       } else {
-        return execATN(input, dfa.s0);
+        return execATN(input, dfa.s0!);
       }
     } finally {
       input.release(mark);
@@ -127,7 +127,7 @@ class LexerATNSimulator extends ATNSimulator {
   }
 
   int matchATN(CharStream input) {
-    ATNState startState = atn.modeToStartState[mode];
+    ATNState startState = atn.modeToStartState[mode]!;
 
     if (debug) {
       log('matchATN mode $mode start: $startState\n', level: Level.FINE.value);
@@ -232,12 +232,12 @@ class LexerATNSimulator extends ATNSimulator {
   /// [t], or null if the target state for this edge is not
   /// already cached
 
-  DFAState getExistingTargetState(DFAState s, int t) {
+  DFAState? getExistingTargetState(DFAState s, int t) {
     if (s.edges == null || t < MIN_DFA_EDGE || t > MAX_DFA_EDGE) {
       return null;
     }
 
-    final target = s.edges[t - MIN_DFA_EDGE];
+    final target = s.edges![t - MIN_DFA_EDGE];
     if (debug && target != null) {
       log('reuse state ${s.stateNumber} edge to ${target.stateNumber}',
           level: Level.FINE.value);
@@ -262,7 +262,7 @@ class LexerATNSimulator extends ATNSimulator {
 
     // if we don't find an existing DFA state
     // Fill reach starting from closure, following t transitions
-    getReachableConfigSet(input, s.configs, reach, t);
+    getReachableConfigSet(input, s.configs!, reach, t);
 
     if (reach.isEmpty) {
       // we got nowhere on t from s
@@ -281,13 +281,13 @@ class LexerATNSimulator extends ATNSimulator {
   }
 
   int failOrAccept(
-      SimState prevAccept, CharStream input, ATNConfigSet reach, int t) {
+      SimState prevAccept, CharStream input, ATNConfigSet? reach, int t) {
     if (prevAccept.dfaState != null) {
       final lexerActionExecutor =
-          prevAccept.dfaState.lexerActionExecutor;
+          prevAccept.dfaState!.lexerActionExecutor;
       accept(input, lexerActionExecutor, startIndex, prevAccept.index,
           prevAccept.line, prevAccept.charPos);
-      return prevAccept.dfaState.prediction;
+      return prevAccept.dfaState!.prediction;
     } else {
       // if no accept and EOF is first char, return EOF
       if (t == IntStream.EOF && input.index == startIndex) {
@@ -318,10 +318,10 @@ class LexerATNSimulator extends ATNSimulator {
             level: Level.FINE.value);
       }
 
-      final n = c.state.numberOfTransitions;
+      final n = c.state!.numberOfTransitions;
       for (var ti = 0; ti < n; ti++) {
         // for each transition
-        final trans = c.state.transition(ti);
+        final trans = c.state!.transition(ti);
         final target = getReachableTarget(trans, t);
         if (target != null) {
           var lexerActionExecutor =
@@ -350,7 +350,7 @@ class LexerATNSimulator extends ATNSimulator {
     }
   }
 
-  void accept(CharStream input, LexerActionExecutor lexerActionExecutor,
+  void accept(CharStream input, LexerActionExecutor? lexerActionExecutor,
       int startIndex, int index, int line, int charPos) {
     if (debug) {
       log('ACTION $lexerActionExecutor\n', level: Level.FINE.value);
@@ -366,7 +366,7 @@ class LexerATNSimulator extends ATNSimulator {
     }
   }
 
-  ATNState getReachableTarget(Transition trans, int t) {
+  ATNState? getReachableTarget(Transition trans, int t) {
     if (trans.matches(t, Lexer.MIN_CHAR_VALUE, Lexer.MAX_CHAR_VALUE)) {
       return trans.target;
     }
@@ -408,15 +408,15 @@ class LexerATNSimulator extends ATNSimulator {
     if (config.state is RuleStopState) {
       if (debug) {
         if (recog != null) {
-          log('closure at ${recog.ruleNames[config.state.ruleIndex]} rule stop $config\n',
+          log('closure at ${recog!.ruleNames[config.state!.ruleIndex]} rule stop $config\n',
               level: Level.FINE.value);
         } else {
           log('closure at rule stop $config\n', level: Level.FINE.value);
         }
       }
 
-      if (config.context == null || config.context.hasEmptyPath()) {
-        if (config.context == null || config.context.isEmpty) {
+      if (config.context == null || config.context!.hasEmptyPath()) {
+        if (config.context == null || config.context!.isEmpty) {
           configs.add(config);
           return true;
         } else {
@@ -426,13 +426,13 @@ class LexerATNSimulator extends ATNSimulator {
         }
       }
 
-      if (config.context != null && !config.context.isEmpty) {
-        for (var i = 0; i < config.context.length; i++) {
-          if (config.context.getReturnState(i) !=
+      if (config.context != null && !config.context!.isEmpty) {
+        for (var i = 0; i < config.context!.length; i++) {
+          if (config.context!.getReturnState(i) !=
               PredictionContext.EMPTY_RETURN_STATE) {
             final newContext =
-                config.context.getParent(i); // "pop" return state
-            final returnState = atn.states[config.context.getReturnState(i)];
+                config.context!.getParent(i); // "pop" return state
+            final returnState = atn.states[config.context!.getReturnState(i)!];
             final c = LexerATNConfig.dup(config, returnState,
                 context: newContext);
             currentAltReachedAcceptState = closure(input, c, configs,
@@ -445,14 +445,14 @@ class LexerATNSimulator extends ATNSimulator {
     }
 
     // optimization
-    if (!config.state.onlyHasEpsilonTransitions()) {
+    if (!config.state!.onlyHasEpsilonTransitions()) {
       if (!currentAltReachedAcceptState ||
           !config.hasPassedThroughNonGreedyDecision()) {
         configs.add(config);
       }
     }
 
-    final p = config.state;
+    final p = config.state!;
     for (var i = 0; i < p.numberOfTransitions; i++) {
       final t = p.transition(i);
       final c = getEpsilonTarget(
@@ -468,19 +468,19 @@ class LexerATNSimulator extends ATNSimulator {
 
   // side-effect: can alter configs.hasSemanticContext
 
-  LexerATNConfig getEpsilonTarget(
+  LexerATNConfig? getEpsilonTarget(
       CharStream input,
       LexerATNConfig config,
       Transition t,
       ATNConfigSet configs,
       bool speculative,
       bool treatEofAsEpsilon) {
-    LexerATNConfig c;
+    LexerATNConfig? c;
     switch (t.type) {
       case TransitionType.RULE:
-        RuleTransition ruleTransition = t;
+        RuleTransition ruleTransition = t as RuleTransition;
         PredictionContext newContext = SingletonPredictionContext.create(
-            config.context, ruleTransition.followState.stateNumber);
+            config.context, ruleTransition.followState!.stateNumber);
         c = LexerATNConfig.dup(config, t.target, context: newContext);
         break;
 
@@ -506,7 +506,7 @@ class LexerATNSimulator extends ATNSimulator {
 				 states reached by traversing predicates. Since this is when we
 				 test them, we cannot cash the DFA state target of ID.
 			 */
-        PredicateTransition pt = t;
+        PredicateTransition pt = t as PredicateTransition;
         if (debug) {
           log('EVAL rule ${pt.ruleIndex}:${pt.predIndex}',
               level: Level.FINE.value);
@@ -517,7 +517,7 @@ class LexerATNSimulator extends ATNSimulator {
         }
         break;
       case TransitionType.ACTION:
-        if (config.context == null || config.context.hasEmptyPath()) {
+        if (config.context == null || config.context!.hasEmptyPath()) {
           // execute actions anywhere in the start rule for a token.
           //
           // TODO: if the entry rule is invoked recursively, some
@@ -595,7 +595,7 @@ class LexerATNSimulator extends ATNSimulator {
     }
 
     if (!speculative) {
-      return recog.sempred(null, ruleIndex, predIndex);
+      return recog!.sempred(null, ruleIndex, predIndex);
     }
 
     final savedCharPositionInLine = charPositionInLine;
@@ -604,7 +604,7 @@ class LexerATNSimulator extends ATNSimulator {
     final marker = input.mark();
     try {
       consume(input);
-      return recog.sempred(null, ruleIndex, predIndex);
+      return recog!.sempred(null, ruleIndex, predIndex);
     } finally {
       charPositionInLine = savedCharPositionInLine;
       line = savedLine;
@@ -656,8 +656,8 @@ class LexerATNSimulator extends ATNSimulator {
           level: Level.FINE.value);
     }
 
-    p.edges ??= List<DFAState>.filled(MAX_DFA_EDGE - MIN_DFA_EDGE + 1, null);
-    p.edges[t - MIN_DFA_EDGE] = q; // connect
+    p.edges ??= List<DFAState?>.filled(MAX_DFA_EDGE - MIN_DFA_EDGE + 1, null);
+    p.edges![t - MIN_DFA_EDGE] = q; // connect
   }
 
   /// Add a new DFA state if there isn't one with this set of
@@ -671,7 +671,7 @@ class LexerATNSimulator extends ATNSimulator {
     assert(!configs.hasSemanticContext);
 
     final proposed = DFAState(configs: configs);
-    ATNConfig firstConfigWithRuleStopState;
+    ATNConfig? firstConfigWithRuleStopState;
     for (var c in configs) {
       if (c.state is RuleStopState) {
         firstConfigWithRuleStopState = c;
@@ -685,7 +685,7 @@ class LexerATNSimulator extends ATNSimulator {
           (firstConfigWithRuleStopState as LexerATNConfig)
               .lexerActionExecutor;
       proposed.prediction =
-          atn.ruleToTokenType[firstConfigWithRuleStopState.state.ruleIndex];
+          atn.ruleToTokenType[firstConfigWithRuleStopState.state!.ruleIndex];
     }
 
     final dfa = decisionToDFA[mode];

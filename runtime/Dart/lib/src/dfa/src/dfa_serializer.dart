@@ -24,9 +24,9 @@ class DFASerializer {
     final states = dfa.getStates();
     for (var s in states) {
       var n = 0;
-      if (s.edges != null) n = s.edges.length;
+      if (s.edges != null) n = s.edges!.length;
       for (var i = 0; i < n; i++) {
-        final t = s.edges[i];
+        final t = s.edges![i];
         if (t != null && t.stateNumber != 0x7FFFFFFF) {
           buf.write(getStateString(s));
           final label = getEdgeLabel(i);

@@ -221,7 +221,7 @@ abstract class CharStream extends IntStream {
 // Vacuum all input from a string and then treat it like a buffer.
 class InputStream extends CharStream {
   final name = '<empty>';
-  List<int> data;
+  late List<int> data;
   int _index = 0;
   bool decodeToUnicodeCodePoints = false;
 

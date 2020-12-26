@@ -54,7 +54,7 @@ class LexerActionExecutor {
   /// @return A [LexerActionExecutor] for executing the combine actions
   /// of [lexerActionExecutor] and [lexerAction].
   static LexerActionExecutor append(
-      LexerActionExecutor lexerActionExecutor, LexerAction lexerAction) {
+      LexerActionExecutor? lexerActionExecutor, LexerAction lexerAction) {
     if (lexerActionExecutor == null) {
       return LexerActionExecutor([lexerAction]);
     }
@@ -93,7 +93,7 @@ class LexerActionExecutor {
   /// @return A [LexerActionExecutor] which stores input stream offsets
   /// for all position-dependent lexer actions.
   LexerActionExecutor fixOffsetBeforeMatch(int offset) {
-    List<LexerAction> updatedLexerActions;
+    List<LexerAction>? updatedLexerActions;
     for (var i = 0; i < lexerActions.length; i++) {
       if (lexerActions[i].isPositionDependent &&
           !(lexerActions[i] is LexerIndexedCustomAction)) {
@@ -128,15 +128,15 @@ class LexerActionExecutor {
   /// @param startIndex The token start index. This value may be passed to
   /// {@link IntStream#seek} to set the [input] position to the beginning
   /// of the token.
-  void execute(Lexer lexer, CharStream input, int startIndex) {
+  void execute(Lexer? lexer, CharStream input, int startIndex) {
     var requiresSeek = false;
     final stopIndex = input.index;
     try {
       for (var lexerAction in lexerActions) {
         if (lexerAction is LexerIndexedCustomAction) {
-          final offset = (lexerAction as LexerIndexedCustomAction).offset;
+          final offset = lexerAction.offset;
           input.seek(startIndex + offset);
-          lexerAction = (lexerAction as LexerIndexedCustomAction).action;
+          lexerAction = lexerAction.action;
           requiresSeek = (startIndex + offset) != stopIndex;
         } else if (lexerAction.isPositionDependent) {
           input.seek(stopIndex);

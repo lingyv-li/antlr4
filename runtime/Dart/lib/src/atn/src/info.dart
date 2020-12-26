@@ -37,7 +37,7 @@ class ContextSensitivityInfo extends DecisionEventInfo {
   /// @param startIndex The start index for the current prediction
   /// @param stopIndex The index at which the context sensitivity was
   /// identified during full-context prediction
-  ContextSensitivityInfo(int decision, ATNConfigSet configs, TokenStream input,
+  ContextSensitivityInfo(int decision, ATNConfigSet? configs, TokenStream? input,
       int startIndex, int stopIndex)
       : super(decision, configs, input, startIndex, stopIndex, true);
 }
@@ -64,10 +64,10 @@ class DecisionEventInfo {
   /// The configuration set containing additional information relevant to the
   /// prediction state when the current event occurred, or null if no
   /// additional information is relevant or available.
-  final ATNConfigSet configs;
+  final ATNConfigSet? configs;
 
   /// The input token stream which is being parsed.
-  final TokenStream input;
+  final TokenStream? input;
 
   /// The token index in the input stream at which the current prediction was
   /// originally invoked.
@@ -135,7 +135,7 @@ class DecisionInfo {
 
   /// Gets the [LookaheadEventInfo] associated with the event where the
   /// {@link #SLL_MaxLook} value was set.
-  LookaheadEventInfo SLL_MaxLookEvent;
+  LookaheadEventInfo? SLL_MaxLookEvent;
 
   /// The sum of the lookahead required for LL prediction for this decision.
   /// Note that LL prediction is only used when SLL prediction reaches a
@@ -158,7 +158,7 @@ class DecisionInfo {
 
   /// Gets the [LookaheadEventInfo] associated with the event where the
   /// {@link #LL_MaxLook} value was set.
-  LookaheadEventInfo LL_MaxLookEvent;
+  LookaheadEventInfo? LL_MaxLookEvent;
 
   /// A collection of [ContextSensitivityInfo] instances describing the
   /// context sensitivities encountered during LL prediction for this decision.
@@ -313,8 +313,8 @@ class AmbiguityInfo extends DecisionEventInfo {
   /// @param fullCtx [true] if the ambiguity was identified during LL
   /// prediction; otherwise, [false] if the ambiguity was identified
   /// during SLL prediction
-  AmbiguityInfo(int decision, ATNConfigSet configs, this.ambigAlts,
-      TokenStream input, int startIndex, int stopIndex, bool fullCtx)
+  AmbiguityInfo(int decision, ATNConfigSet? configs, this.ambigAlts,
+      TokenStream? input, int startIndex, int stopIndex, bool fullCtx)
       : super(decision, configs, input, startIndex, stopIndex, fullCtx);
 }
 
@@ -340,7 +340,7 @@ class ErrorInfo extends DecisionEventInfo {
   /// @param fullCtx [true] if the syntax error was identified during LL
   /// prediction; otherwise, [false] if the syntax error was identified
   /// during SLL prediction
-  ErrorInfo(int decision, ATNConfigSet configs, TokenStream input,
+  ErrorInfo(int decision, ATNConfigSet? configs, TokenStream? input,
       int startIndex, int stopIndex, bool fullCtx)
       : super(decision, configs, input, startIndex, stopIndex, fullCtx);
 }
@@ -369,7 +369,7 @@ class LookaheadEventInfo extends DecisionEventInfo {
   /// @param fullCtx [true] if the current lookahead is part of an LL
   /// prediction; otherwise, [false] if the current lookahead is part of
   /// an SLL prediction
-  LookaheadEventInfo(int decision, ATNConfigSet configs, this.predictedAlt,
+  LookaheadEventInfo(int decision, ATNConfigSet? configs, this.predictedAlt,
       TokenStream input, int startIndex, int stopIndex, bool fullCtx)
       : super(decision, configs, input, startIndex, stopIndex, fullCtx);
 }
@@ -415,7 +415,7 @@ class PredicateEvalInfo extends DecisionEventInfo {
   /// @see SemanticContext#eval(Recognizer, RuleContext)
   PredicateEvalInfo(
       int decision,
-      TokenStream input,
+      TokenStream? input,
       int startIndex,
       int stopIndex,
       this.semctx,

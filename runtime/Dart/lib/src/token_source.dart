@@ -29,7 +29,7 @@ abstract class TokenSource {
   /// [CharStream]). Do not fail/return upon lexing error; keep chewing
   /// on the characters until you get a good one; errors are not passed through
   /// to the parser.
-  Token nextToken();
+  Token? nextToken();
 
   /// Get the line number for the current position in the input stream. The
   /// first line in the input is line 1.
@@ -51,7 +51,7 @@ abstract class TokenSource {
   /// @return The [CharStream] associated with the current position in
   /// the input, or null if no input stream is available for the token
   /// source.
-  CharStream get inputStream;
+  CharStream? get inputStream;
 
   /// Gets the name of the underlying input source. This method returns a
   /// non-null, non-empty string. If such a name is not known, this method
@@ -81,7 +81,7 @@ class ListTokenSource implements TokenSource {
   /// The wrapped collection of [Token] objects to return.
   final List<Token> tokens;
 
-  final String _sourceName;
+  final String? _sourceName;
 
   /// The index into {@link #tokens} of token to return by the next call to
   /// {@link #nextToken}. The end of the input is indicated by this value
@@ -89,7 +89,7 @@ class ListTokenSource implements TokenSource {
   int i = 0;
 
   /// This field caches the EOF token for the token source.
-  Token eofToken;
+  Token? eofToken;
 
   /// This is the backing field for {@link #getTokenFactory} and
   /// [setTokenFactory].
@@ -129,7 +129,7 @@ class ListTokenSource implements TokenSource {
     if (i < tokens.length) {
       return tokens[i].charPositionInLine;
     } else if (eofToken != null) {
-      return eofToken.charPositionInLine;
+      return eofToken!.charPositionInLine;
     } else if (tokens.isNotEmpty) {
       // have to calculate the result from the line/column of the previous
       // token, along with the text of the token.
@@ -156,7 +156,7 @@ class ListTokenSource implements TokenSource {
   /// {@inheritDoc}
 
   @override
-  Token nextToken() {
+  Token? nextToken() {
     if (i >= tokens.length) {
       if (eofToken == null) {
         var start = -1;
@@ -191,7 +191,7 @@ class ListTokenSource implements TokenSource {
     if (i < tokens.length) {
       return tokens[i].line;
     } else if (eofToken != null) {
-      return eofToken.line;
+      return eofToken!.line;
     } else if (tokens.isNotEmpty) {
       // have to calculate the result from the line/column of the previous
       // token, along with the text of the token.
@@ -219,11 +219,11 @@ class ListTokenSource implements TokenSource {
   /// {@inheritDoc}
 
   @override
-  CharStream get inputStream {
+  CharStream? get inputStream {
     if (i < tokens.length) {
       return tokens[i].inputStream;
     } else if (eofToken != null) {
-      return eofToken.inputStream;
+      return eofToken!.inputStream;
     } else if (tokens.isNotEmpty) {
       return tokens[tokens.length - 1].inputStream;
     }

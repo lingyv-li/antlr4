@@ -56,12 +56,12 @@ abstract class ATNSimulator {
         'This ATN simulator does not support clearing the DFA.');
   }
 
-  PredictionContext getCachedContext(PredictionContext context) {
-    if (sharedContextCache == null) return context;
+  PredictionContext getCachedContext(PredictionContext? context) {
+    if (sharedContextCache == null) return context!;
 
     final visited = <PredictionContext, PredictionContext>{};
     return PredictionContext.getCachedContext(
-        context, sharedContextCache, visited);
+        context!, sharedContextCache, visited);
   }
 }
 
@@ -85,7 +85,7 @@ class PredictionContextCache {
     return ctx;
   }
 
-  PredictionContext operator [](PredictionContext ctx) {
+  PredictionContext? operator [](PredictionContext ctx) {
     return cache[ctx];
   }
 

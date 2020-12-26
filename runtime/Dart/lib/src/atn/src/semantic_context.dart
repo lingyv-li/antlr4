@@ -34,7 +34,7 @@ abstract class SemanticContext {
   /// capture context dependent predicates in the context in which we begin
   /// prediction, so we passed in the outer context here in case of context
   /// dependent predicate evaluation.</p>
-  bool eval(Recognizer parser, RuleContext parserCallStack);
+  bool eval(Recognizer parser, RuleContext? parserCallStack);
 
   /// Evaluate the precedence predicates for the context and reduce the result.
   ///
@@ -52,8 +52,8 @@ abstract class SemanticContext {
   /// <li>A non-null [SemanticContext]in the new simplified
   /// semantic context after precedence predicates are evaluated.</li>
   /// </ul>
-  SemanticContext evalPrecedence(Recognizer parser,
-      RuleContext parserCallStack) {
+  SemanticContext? evalPrecedence(Recognizer parser,
+      RuleContext? parserCallStack) {
     return this;
   }
 
@@ -70,7 +70,7 @@ abstract class SemanticContext {
 
   ///
   ///  @see ParserATNSimulator#getPredsForAmbigAlts
-  static SemanticContext or(SemanticContext a, SemanticContext b) {
+  static SemanticContext or(SemanticContext? a, SemanticContext b) {
     if (a == null) return b;
     if (b == null) return a;
     if (a == NONE || b == NONE) return NONE;
@@ -102,7 +102,7 @@ class Predicate extends SemanticContext {
       [this.ruleIndex = -1, this.predIndex = -1, this.isCtxDependent = false]);
 
   @override
-  bool eval(Recognizer parser, RuleContext parserCallStack) {
+  bool eval(Recognizer parser, RuleContext? parserCallStack) {
     final localctx = isCtxDependent ? parserCallStack : null;
     return parser.sempred(localctx, ruleIndex, predIndex);
   }
@@ -138,13 +138,13 @@ class PrecedencePredicate extends SemanticContext
   PrecedencePredicate([this.precedence = 0]);
 
   @override
-  bool eval(Recognizer parser, RuleContext parserCallStack) {
+  bool eval(Recognizer parser, RuleContext? parserCallStack) {
     return parser.precpred(parserCallStack, precedence);
   }
 
   @override
-  SemanticContext evalPrecedence(Recognizer parser,
-      RuleContext parserCallStack) {
+  SemanticContext? evalPrecedence(Recognizer parser,
+      RuleContext? parserCallStack) {
     if (parser.precpred(parserCallStack, precedence)) {
       return SemanticContext.NONE;
     } else {
@@ -253,7 +253,7 @@ class AND extends Operator {
   /// unordered.</p>
 
   @override
-  bool eval(Recognizer parser, RuleContext parserCallStack) {
+  bool eval(Recognizer parser, RuleContext? parserCallStack) {
     for (var opnd in opnds) {
       if (!opnd.eval(parser, parserCallStack)) return false;
     }
@@ -261,8 +261,8 @@ class AND extends Operator {
   }
 
   @override
-  SemanticContext evalPrecedence(Recognizer parser,
-      RuleContext parserCallStack) {
+  SemanticContext? evalPrecedence(Recognizer parser,
+      RuleContext? parserCallStack) {
     var differs = false;
     final operands = <SemanticContext>[];
     for (var context in opnds) {
@@ -359,7 +359,7 @@ class OR extends Operator {
   /// unordered.</p>
 
   @override
-  bool eval(Recognizer parser, RuleContext parserCallStack) {
+  bool eval(Recognizer parser, RuleContext? parserCallStack) {
     for (var opnd in opnds) {
       if (opnd.eval(parser, parserCallStack)) return true;
     }
@@ -367,8 +367,8 @@ class OR extends Operator {
   }
 
   @override
-  SemanticContext evalPrecedence(Recognizer parser,
-      RuleContext parserCallStack) {
+  SemanticContext? evalPrecedence(Recognizer parser,
+      RuleContext? parserCallStack) {
     var differs = false;
     final operands = <SemanticContext>[];
     for (var context in opnds) {

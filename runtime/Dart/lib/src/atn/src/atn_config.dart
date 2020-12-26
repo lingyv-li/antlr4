@@ -51,7 +51,7 @@ class ATNConfig {
   static final int SUPPRESS_PRECEDENCE_FILTER = 0x40000000;
 
   /// The ATN state associated with this configuration */
-  ATNState state;
+  ATNState? state;
 
   /// What alt (or lexer rule) is predicted by this configuration */
   int alt = 0;
@@ -59,7 +59,7 @@ class ATNConfig {
   /// The stack of invoking states leading to the rule/states associated
   ///  with this config.  We track only those contexts pushed during
   ///  execution of the ATN simulator.
-  PredictionContext context;
+  PredictionContext? context;
 
   /// We cannot execute predicates dependent upon local context unless
   /// we know for sure we are in the correct context. Because there is
@@ -90,10 +90,10 @@ class ATNConfig {
       [this.semanticContext = SemanticContext.NONE]);
 
   ATNConfig.dup(ATNConfig c,
-      {ATNState state,
-      int alt,
-      PredictionContext context,
-      SemanticContext semanticContext})
+      {ATNState? state,
+      int? alt,
+      PredictionContext? context,
+      SemanticContext? semanticContext})
       : state = state ?? c.state,
         alt = alt ?? c.alt,
         context = context ?? c.context,
@@ -125,7 +125,7 @@ class ATNConfig {
   @override
   bool operator ==(Object other) {
     if (other is ATNConfig) {
-      return state.stateNumber == other.state.stateNumber &&
+      return state!.stateNumber == other.state!.stateNumber &&
           alt == other.alt &&
           (context == other.context ||
               (context != null && context == other.context)) &&
@@ -139,7 +139,7 @@ class ATNConfig {
   @override
   int get hashCode {
     var hashCode = MurmurHash.initialize(7);
-    hashCode = MurmurHash.update(hashCode, state.stateNumber);
+    hashCode = MurmurHash.update(hashCode, state!.stateNumber);
     hashCode = MurmurHash.update(hashCode, alt);
     hashCode = MurmurHash.update(hashCode, context);
     hashCode = MurmurHash.update(hashCode, semanticContext);
@@ -148,7 +148,7 @@ class ATNConfig {
   }
 
   @override
-  String toString([Recognizer recog, bool showAlt = true]) {
+  String toString([Recognizer? recog, bool showAlt = true]) {
     final buf = StringBuffer();
     // if ( state.ruleIndex>=0 ) {
     //  if ( recog!=null ) buf.write(recog.ruleNames[state.ruleIndex]+":");
@@ -181,18 +181,18 @@ class ATNConfig {
 class LexerATNConfig extends ATNConfig {
   /// Gets the [LexerActionExecutor] capable of executing the embedded
   /// action(s) for the current configuration.
-  LexerActionExecutor lexerActionExecutor;
+  LexerActionExecutor? lexerActionExecutor;
 
   bool passedThroughNonGreedyDecision = false;
 
-  LexerATNConfig(ATNState state, int alt, PredictionContext context,
+  LexerATNConfig(ATNState? state, int alt, PredictionContext context,
       [this.lexerActionExecutor])
       : super(state, alt, context, SemanticContext.NONE) {
     passedThroughNonGreedyDecision = false;
   }
 
-  LexerATNConfig.dup(LexerATNConfig c, ATNState state,
-      {this.lexerActionExecutor, PredictionContext context})
+  LexerATNConfig.dup(LexerATNConfig c, ATNState? state,
+      {this.lexerActionExecutor, PredictionContext? context})
       : super.dup(c, state: state, context: context) {
     lexerActionExecutor = lexerActionExecutor ?? c.lexerActionExecutor;
     passedThroughNonGreedyDecision = checkNonGreedyDecision(c, state);
@@ -205,7 +205,7 @@ class LexerATNConfig extends ATNConfig {
   @override
   int get hashCode {
     var hashCode = MurmurHash.initialize(7);
-    hashCode = MurmurHash.update(hashCode, state.stateNumber);
+    hashCode = MurmurHash.update(hashCode, state!.stateNumber);
     hashCode = MurmurHash.update(hashCode, alt);
     hashCode = MurmurHash.update(hashCode, context);
     hashCode = MurmurHash.update(hashCode, semanticContext);
@@ -236,7 +236,7 @@ class LexerATNConfig extends ATNConfig {
     return false;
   }
 
-  static bool checkNonGreedyDecision(LexerATNConfig source, ATNState target) {
+  static bool checkNonGreedyDecision(LexerATNConfig source, ATNState? target) {
     return source.passedThroughNonGreedyDecision ||
         target is DecisionState && target.nonGreedy;
   }

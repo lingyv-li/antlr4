@@ -33,7 +33,7 @@ class TagChunk extends Chunk {
 
   /// The label assigned to this chunk, or null if no label is
   /// assigned to the chunk.
-  final String label;
+  final String? label;
 
   /// Construct a new instance of [TagChunk] using the specified label
   /// and tag.
@@ -56,7 +56,7 @@ class TagChunk extends Chunk {
   @override
   String toString() {
     if (label != null) {
-      return label + ':' + tag;
+      return label! + ':' + tag;
     }
 
     return tag;

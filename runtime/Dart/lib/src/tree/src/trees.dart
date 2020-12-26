@@ -19,7 +19,7 @@ class Trees {
   /// Print out a whole tree in LISP form. {@link #getNodeText} is used on the
   ///  node payloads to get the text for the nodes.  Detect
   ///  parse trees and extract data appropriately.
-  static String toStringTree(Tree t, {Parser recog, List<String> ruleNames}) {
+  static String toStringTree(Tree t, {Parser? recog, List<String>? ruleNames}) {
     ruleNames ??= recog?.ruleNames;
     var s = escapeWhitespace(getNodeText(t, ruleNames: ruleNames), false);
     if (t.childCount == 0) return s;
@@ -30,13 +30,13 @@ class Trees {
     buf.write(' ');
     for (var i = 0; i < t.childCount; i++) {
       if (i > 0) buf.write(' ');
-      buf.write(toStringTree(t.getChild(i), ruleNames: ruleNames));
+      buf.write(toStringTree(t.getChild(i)!, ruleNames: ruleNames));
     }
     buf.write(')');
     return buf.toString();
   }
 
-  static String getNodeText(Tree t, {Parser recog, List<String> ruleNames}) {
+  static String? getNodeText(Tree t, {Parser? recog, List<String>? ruleNames}) {
     ruleNames ??= recog?.ruleNames;
     if (ruleNames != null) {
       if (t is RuleContext) {
@@ -66,8 +66,8 @@ class Trees {
   }
 
   /// Return ordered list of all children of this node */
-  static List<Tree> getChildren(Tree t) {
-    final kids = <Tree>[];
+  static List<Tree?> getChildren(Tree t) {
+    final kids = <Tree?>[];
     for (var i = 0; i < t.childCount; i++) {
       kids.add(t.getChild(i));
     }
@@ -81,10 +81,10 @@ class Trees {
   static List<Tree> getAncestors(Tree t) {
     if (t.parent == null) return [];
     final ancestors = <Tree>[];
-    t = t.parent;
+    t = t.parent!;
     while (t != null) {
       ancestors.insert(0, t); // insert at start
-      t = t.parent;
+      t = t.parent!;
     }
     return ancestors;
   }
@@ -129,7 +129,7 @@ class Trees {
     }
     // check children
     for (var i = 0; i < t.childCount; i++) {
-      _findAllNodes(t.getChild(i), index, findTokens, nodes);
+      _findAllNodes(t.getChild(i)!, index, findTokens, nodes);
     }
   }
 
@@ -137,12 +137,12 @@ class Trees {
   ///
   /// @since 4.5.1
   static List<ParseTree> getDescendants(ParseTree t) {
-    final nodes = <ParseTree>[];
+    final List<ParseTree<ParseTree<dynamic>?>> nodes = <ParseTree>[];
     nodes.add(t);
 
     final n = t.childCount;
     for (var i = 0; i < n; i++) {
-      nodes.addAll(getDescendants(t.getChild(i)));
+      nodes.addAll(getDescendants(t.getChild(i)!));
     }
     return nodes;
   }
@@ -156,14 +156,14 @@ class Trees {
   ///  inclusively using postorder traversal.  Recursive depth-first-search.
   ///
   ///  @since 4.5.1
-  static ParserRuleContext getRootOfSubtreeEnclosingRegion(
+  static ParserRuleContext? getRootOfSubtreeEnclosingRegion(
       ParseTree t,
       int startTokenIndex, // inclusive
       int stopTokenIndex) // inclusive
   {
     final n = t.childCount;
     for (var i = 0; i < n; i++) {
-      final child = t.getChild(i);
+      final child = t.getChild(i)!;
       final r = getRootOfSubtreeEnclosingRegion(
           child, startTokenIndex, stopTokenIndex);
       if (r != null) return r;
@@ -171,8 +171,8 @@ class Trees {
     if (t is ParserRuleContext) {
       final r = t;
       if (startTokenIndex >=
-              r.start.tokenIndex && // is range fully contained in t?
-          (r.stop == null || stopTokenIndex <= r.stop.tokenIndex)) {
+              r.start!.tokenIndex && // is range fully contained in t?
+          (r.stop == null || stopTokenIndex <= r.stop!.tokenIndex)) {
         // note: r.getStop()==null likely implies that we bailed out of parser and there's nothing to the right
         return r;
       }
@@ -191,14 +191,14 @@ class Trees {
       ParserRuleContext root, int startIndex, int stopIndex) {
     if (t == null) return;
     for (var i = 0; i < t.childCount; i++) {
-      final child = t.getChild(i);
+      final child = t.getChild(i)!;
       final range = child.sourceInterval;
       if (child is ParserRuleContext &&
           (range.b < startIndex || range.a > stopIndex)) {
         if (isAncestorOf(child, root)) {
           // replace only if subtree doesn't have displayed root
           final abbrev = CommonToken(Token.INVALID_TYPE, text: '...');
-          t.children[i] = TerminalNodeImpl(abbrev);
+          t.children![i] = TerminalNodeImpl(abbrev);
         }
       }
     }
@@ -207,7 +207,7 @@ class Trees {
   /// Return first node satisfying the pred
   ///
   ///  @since 4.5.1
-  static Tree findNodeSuchThat(Tree t, Predicate<Tree> pred) {
+  static Tree? findNodeSuchThat(Tree? t, Predicate<Tree?> pred) {
     if (pred.test(t)) return t;
 
     if (t == null) return null;

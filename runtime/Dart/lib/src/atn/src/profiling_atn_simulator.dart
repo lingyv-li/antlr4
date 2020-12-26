@@ -25,7 +25,7 @@ class ProfilingATNSimulator extends ParserATNSimulator {
   int _llStopIndex = 0;
 
   int currentDecision = 0;
-  DFAState currentState;
+  DFAState? currentState;
 
   /// At the point of LL failover, we record how SLL would resolve the conflict so that
   ///  we can determine whether or not a decision / input pair is context-sensitive.
@@ -41,14 +41,14 @@ class ProfilingATNSimulator extends ParserATNSimulator {
 
   ProfilingATNSimulator(Parser parser)
       : decisions = List<DecisionInfo>.generate(
-            parser.interpreter.atn.decisionToState.length,
+            parser.interpreter!.atn.decisionToState.length,
             (i) => DecisionInfo(i)),
-        super(parser, parser.interpreter.atn, parser.interpreter.decisionToDFA,
-            parser.interpreter.sharedContextCache);
+        super(parser, parser.interpreter!.atn, parser.interpreter!.decisionToDFA,
+            parser.interpreter!.sharedContextCache);
 
   @override
   int adaptivePredict(
-      TokenStream input, int decision, ParserRuleContext outerContext) {
+      TokenStream input, int decision, ParserRuleContext? outerContext) {
     try {
       _sllStopIndex = -1;
       _llStopIndex = -1;
@@ -93,10 +93,10 @@ class ProfilingATNSimulator extends ParserATNSimulator {
   }
 
   @override
-  DFAState getExistingTargetState(DFAState previousD, int t) {
+  DFAState? getExistingTargetState(DFAState previousD, int t) {
     // this method is called after each time the input position advances
     // during SLL prediction
-    _sllStopIndex = input.index;
+    _sllStopIndex = input!.index;
 
     final existingTargetState = super.getExistingTargetState(previousD, t);
     if (existingTargetState != null) {
@@ -120,11 +120,11 @@ class ProfilingATNSimulator extends ParserATNSimulator {
   }
 
   @override
-  ATNConfigSet computeReachSet(ATNConfigSet closure, int t, bool fullCtx) {
+  ATNConfigSet? computeReachSet(ATNConfigSet closure, int t, bool fullCtx) {
     if (fullCtx) {
       // this method is called after each time the input position advances
       // during full context prediction
-      _llStopIndex = input.index;
+      _llStopIndex = input!.index;
     }
 
     final reachConfigs = super.computeReachSet(closure, t, fullCtx);
@@ -152,7 +152,7 @@ class ProfilingATNSimulator extends ParserATNSimulator {
 
   @override
   bool evalSemanticContextOne(SemanticContext pred,
-      ParserRuleContext parserCallStack, int alt, bool fullCtx) {
+      ParserRuleContext? parserCallStack, int alt, bool fullCtx) {
     final result =
         super.evalSemanticContextOne(pred, parserCallStack, alt, fullCtx);
     if (!(pred is PrecedencePredicate)) {
@@ -173,12 +173,12 @@ class ProfilingATNSimulator extends ParserATNSimulator {
   }
 
   @override
-  void reportAttemptingFullContext(DFA dfa, BitSet conflictingAlts,
-      ATNConfigSet configs, int startIndex, int stopIndex) {
+  void reportAttemptingFullContext(DFA dfa, BitSet? conflictingAlts,
+      ATNConfigSet? configs, int startIndex, int stopIndex) {
     if (conflictingAlts != null) {
       conflictingAltResolvedBySLL = conflictingAlts.nextset(0);
     } else {
-      conflictingAltResolvedBySLL = configs.alts.nextset(0);
+      conflictingAltResolvedBySLL = configs!.alts.nextset(0);
     }
     decisions[currentDecision].LL_Fallback++;
     super.reportAttemptingFullContext(
@@ -199,10 +199,10 @@ class ProfilingATNSimulator extends ParserATNSimulator {
 
   @override
   void reportAmbiguity(DFA dfa, DFAState D, int startIndex, int stopIndex,
-      bool exact, BitSet ambigAlts, ATNConfigSet configs) {
+      bool exact, BitSet ambigAlts, ATNConfigSet? configs) {
     final prediction =
-        ambigAlts != null ? ambigAlts.nextset(0) : configs.alts.nextset(0);
-    if (configs.fullCtx && prediction != conflictingAltResolvedBySLL) {
+        ambigAlts != null ? ambigAlts.nextset(0) : configs!.alts.nextset(0);
+    if (configs!.fullCtx && prediction != conflictingAltResolvedBySLL) {
       // Even though this is an ambiguity we are reporting, we can
       // still detect some context sensitivities.  Both SLL and LL
       // are showing a conflict, hence an ambiguity, but if they resolve

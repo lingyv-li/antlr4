@@ -11,16 +11,16 @@ Map<String, int> toMap(List<String> keys) {
   for (var i = 0; i < keys.length; i++) {
     m[keys[i]] = i;
   }
-  return m;
+  return m as Map<String, int>;
 }
 
 String arrayToString(a) {
   return '[' + a.join(', ') + ']';
 }
 
-String escapeWhitespace(String s, [bool escapeSpaces = false]) {
-  if (escapeSpaces) s = s.replaceAll(' ', '\u00B7');
-  s = s.replaceAll('\n', r'\n');
+String escapeWhitespace(String? s, [bool escapeSpaces = false]) {
+  if (escapeSpaces) s = s!.replaceAll(' ', '\u00B7');
+  s = s!.replaceAll('\n', r'\n');
   s = s.replaceAll('\r', r'\r');
   s = s.replaceAll('\t', r'\t');
   return s;

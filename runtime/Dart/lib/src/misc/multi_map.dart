@@ -12,7 +12,7 @@ class MultiMap<K, V> extends DelegatingMap<K, List<V>> {
   MultiMap() : super({});
 
   void put(K key, V value) {
-    var elementsForKey = this[key];
+    List<V>? elementsForKey = this[key];
     if (elementsForKey == null) {
       elementsForKey = [];
       this[key] = elementsForKey;
@@ -23,7 +23,7 @@ class MultiMap<K, V> extends DelegatingMap<K, List<V>> {
   List<Pair<K, V>> get pairs {
     final pairs = <Pair<K, V>>[];
     for (var key in keys) {
-      for (var value in this[key]) {
+      for (var value in this[key]!) {
         pairs.add(Pair<K, V>(key, value));
       }
     }

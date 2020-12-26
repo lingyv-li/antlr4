@@ -54,7 +54,7 @@ class ParserInterpreter extends Parser {
   ///
   ///  Those values are used to create new recursive rule invocation contexts
   ///  associated with left operand of an alt like "expr '*' expr".
-  final DoubleLinkedQueue<Pair<ParserRuleContext, int>> _parentContextStack =
+  final DoubleLinkedQueue<Pair<ParserRuleContext?, int>> _parentContextStack =
       DoubleLinkedQueue();
 
   /// We need a map from (decision,inputIndex)->forced alt for computing ambiguous
@@ -68,7 +68,7 @@ class ParserInterpreter extends Parser {
   /// What is the current context when we override a decisions?  This tells
   ///  us what the root of the parse tree is when using override
   ///  for an ambiguity/lookahead check.
-  InterpreterRuleContext overrideDecisionRoot;
+  InterpreterRuleContext? overrideDecisionRoot;
 
   /// Return the root of the parse, which can be useful if the parser
   ///  bails out. You still can access the top node. Note that,
@@ -77,7 +77,7 @@ class ParserInterpreter extends Parser {
   ///  called and left recursive rule that fails.
   ///
   /// @since 4.5.1
-  InterpreterRuleContext rootContext;
+  InterpreterRuleContext? rootContext;
 
   ParserInterpreter(this.grammarFileName, this.vocabulary, this.ruleNames,
       this.atn, TokenStream input)
@@ -102,24 +102,24 @@ class ParserInterpreter extends Parser {
   }
 
   /// Begin parsing at startRuleIndex */
-  ParserRuleContext parse(int startRuleIndex) {
-    final startRuleStartState = atn.ruleToStartState[startRuleIndex];
+  ParserRuleContext? parse(int startRuleIndex) {
+    final startRuleStartState = atn.ruleToStartState[startRuleIndex]!;
 
     rootContext = createInterpreterRuleContext(
         null, ATNState.INVALID_STATE_NUMBER, startRuleIndex);
     if (startRuleStartState.isLeftRecursiveRule) {
       enterRecursionRule(
-          rootContext, startRuleStartState.stateNumber, startRuleIndex, 0);
+          rootContext!, startRuleStartState.stateNumber, startRuleIndex, 0);
     } else {
       enterRule(rootContext, startRuleStartState.stateNumber, startRuleIndex);
     }
 
     while (true) {
-      final p = atnState;
+      final p = atnState!;
       switch (p.stateType) {
         case StateType.RULE_STOP:
           // pop; return from rule
-          if (context.isEmpty) {
+          if (context!.isEmpty) {
             if (startRuleStartState.isLeftRecursiveRule) {
               final result = context;
               final parentContext = _parentContextStack.removeLast();
@@ -138,8 +138,8 @@ class ParserInterpreter extends Parser {
           try {
             visitState(p);
           } on RecognitionException catch (e) {
-            state = atn.ruleToStopState[p.ruleIndex].stateNumber;
-            context.exception = e;
+            state = atn.ruleToStopState[p.ruleIndex]!.stateNumber;
+            context!.exception = e;
             errorHandler.reportError(this, e);
             recover(e);
           }
@@ -152,12 +152,12 @@ class ParserInterpreter extends Parser {
   @override
   void enterRecursionRule(
       ParserRuleContext localctx, int state, int ruleIndex, int precedence) {
-    final pair = Pair<ParserRuleContext, int>(context, localctx.invokingState);
+    final pair = Pair<ParserRuleContext?, int>(context, localctx.invokingState);
     _parentContextStack.add(pair);
     super.enterRecursionRule(localctx, state, ruleIndex, precedence);
   }
 
-  ATNState get atnState {
+  ATNState? get atnState {
     return atn.states[state];
   }
 
@@ -179,9 +179,9 @@ class ParserInterpreter extends Parser {
           final localctx = createInterpreterRuleContext(
               _parentContextStack.last.a,
               _parentContextStack.last.b,
-              context.ruleIndex);
+              context!.ruleIndex);
           pushNewRecursionContext(localctx,
-              atn.ruleToStartState[p.ruleIndex].stateNumber, context.ruleIndex);
+              atn.ruleToStartState[p.ruleIndex]!.stateNumber, context!.ruleIndex);
         }
         break;
 
@@ -193,7 +193,7 @@ class ParserInterpreter extends Parser {
       case TransitionType.SET:
       case TransitionType.NOT_SET:
         if (!transition.matches(
-            inputStream.LA(1), Token.MIN_USER_TOKEN_TYPE, 65535)) {
+            inputStream!.LA(1), Token.MIN_USER_TOKEN_TYPE, 65535)) {
           recoverInline();
         }
         matchWildcard();
@@ -204,7 +204,7 @@ class ParserInterpreter extends Parser {
         break;
 
       case TransitionType.RULE:
-        RuleStartState ruleStartState = transition.target;
+        RuleStartState ruleStartState = transition.target as RuleStartState;
         final ruleIndex = ruleStartState.ruleIndex;
         final newctx =
             createInterpreterRuleContext(context, p.stateNumber, ruleIndex);
@@ -212,12 +212,12 @@ class ParserInterpreter extends Parser {
           enterRecursionRule(newctx, ruleStartState.stateNumber, ruleIndex,
               (transition as RuleTransition).precedence);
         } else {
-          enterRule(newctx, transition.target.stateNumber, ruleIndex);
+          enterRule(newctx, transition.target!.stateNumber, ruleIndex);
         }
         break;
 
       case TransitionType.PREDICATE:
-        PredicateTransition predicateTransition = transition;
+        PredicateTransition predicateTransition = transition as PredicateTransition;
         if (!sempred(context, predicateTransition.ruleIndex,
             predicateTransition.predIndex)) {
           throw FailedPredicateException(this);
@@ -226,7 +226,7 @@ class ParserInterpreter extends Parser {
         break;
 
       case TransitionType.ACTION:
-        ActionTransition actionTransition = transition;
+        ActionTransition actionTransition = transition as ActionTransition;
         action(
             context, actionTransition.ruleIndex, actionTransition.actionIndex);
         break;
@@ -235,7 +235,7 @@ class ParserInterpreter extends Parser {
         if (!precpred(context,
             (transition as PrecedencePredicateTransition).precedence)) {
           throw FailedPredicateException(this,
-              'precpred(context, ${(transition as PrecedencePredicateTransition).precedence})');
+              'precpred(context, ${transition.precedence})');
         }
         break;
 
@@ -243,7 +243,7 @@ class ParserInterpreter extends Parser {
         throw UnsupportedError('Unrecognized ATN transition type.');
     }
 
-    state = transition.target.stateNumber;
+    state = transition.target!.stateNumber;
   }
 
   /// Method visitDecisionState() is called when the interpreter reaches
@@ -255,13 +255,13 @@ class ParserInterpreter extends Parser {
       errorHandler.sync(this);
       final decision = p.decision;
       if (decision == overrideDecision &&
-          inputStream.index == overrideDecisionInputIndex &&
+          inputStream!.index == overrideDecisionInputIndex &&
           !overrideDecisionReached) {
         predictedAlt = overrideDecisionAlt;
         overrideDecisionReached = true;
       } else {
         predictedAlt =
-            interpreter.adaptivePredict(inputStream, decision, context);
+            interpreter!.adaptivePredict(inputStream!, decision, context);
       }
     }
     return predictedAlt;
@@ -270,12 +270,12 @@ class ParserInterpreter extends Parser {
   /// Provide simple "factory" for InterpreterRuleContext's.
   ///  @since 4.5.1
   InterpreterRuleContext createInterpreterRuleContext(
-      ParserRuleContext parent, int invokingStateNumber, int ruleIndex) {
+      ParserRuleContext? parent, int invokingStateNumber, int ruleIndex) {
     return InterpreterRuleContext(parent, invokingStateNumber, ruleIndex);
   }
 
   void visitRuleStopState(ATNState p) {
-    final ruleStartState = atn.ruleToStartState[p.ruleIndex];
+    final ruleStartState = atn.ruleToStartState[p.ruleIndex]!;
     if (ruleStartState.isLeftRecursiveRule) {
       final parentContext = _parentContextStack.removeLast();
       unrollRecursionContexts(parentContext.a);
@@ -284,8 +284,8 @@ class ParserInterpreter extends Parser {
       exitRule();
     }
 
-    RuleTransition ruleTransition = atn.states[state].transition(0);
-    state = ruleTransition.followState.stateNumber;
+    RuleTransition ruleTransition = atn.states[state]!.transition(0) as RuleTransition;
+    state = ruleTransition.followState!.stateNumber;
   }
 
   /// Override this parser interpreters normal decision-making process
@@ -337,42 +337,42 @@ class ParserInterpreter extends Parser {
   ///  to recover, add an error node. Otherwise, nothing is seen in the parse
   ///  tree.
   void recover(RecognitionException e) {
-    final i = inputStream.index;
+    final i = inputStream!.index;
     errorHandler.recover(this, e);
-    if (inputStream.index == i) {
+    if (inputStream!.index == i) {
       // no input consumed, better add an error node
       if (e is InputMismatchException) {
         final ime = e;
-        final tok = e.offendingToken;
+        final tok = e.offendingToken!;
         var expectedTokenType = Token.INVALID_TYPE;
-        if (!ime.expectedTokens.isNil) {
-          expectedTokenType = ime.expectedTokens.minElement; // get any element
+        if (!ime.expectedTokens!.isNil) {
+          expectedTokenType = ime.expectedTokens!.minElement; // get any element
         }
         final errToken = tokenFactory.create(
             expectedTokenType,
             tok.text,
-            Pair(tok.tokenSource, tok.tokenSource.inputStream),
+            Pair(tok.tokenSource, tok.tokenSource!.inputStream),
             Token.DEFAULT_CHANNEL,
             -1,
             -1,
             // invalid start/stop
             tok.line,
             tok.charPositionInLine);
-        context.addErrorNode(createErrorNode(context, errToken));
+        context!.addErrorNode(createErrorNode(context, errToken));
       } else {
         // NoViableAlt
-        final tok = e.offendingToken;
+        final tok = e.offendingToken!;
         final errToken = tokenFactory.create(
             Token.INVALID_TYPE,
             tok.text,
-            Pair(tok.tokenSource, tok.tokenSource.inputStream),
+            Pair(tok.tokenSource, tok.tokenSource!.inputStream),
             Token.DEFAULT_CHANNEL,
             -1,
             -1,
             // invalid start/stop
             tok.line,
             tok.charPositionInLine);
-        context.addErrorNode(createErrorNode(context, errToken));
+        context!.addErrorNode(createErrorNode(context, errToken));
       }
     }
   }

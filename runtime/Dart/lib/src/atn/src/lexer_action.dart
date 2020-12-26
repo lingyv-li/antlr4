@@ -60,7 +60,7 @@ abstract class LexerAction {
   /// positioned correctly prior to calling this method.</p>
   ///
   /// @param lexer The lexer instance.
-  void execute(Lexer lexer);
+  void execute(Lexer? lexer);
 }
 
 /// Implements the [channel] lexer action by calling
@@ -88,8 +88,8 @@ class LexerChannelAction implements LexerAction {
   /// <p>This action is implemented by calling {@link Lexer#setChannel} with the
   /// value provided by {@link #getChannel}.</p>
   @override
-  void execute(Lexer lexer) {
-    lexer.channel = channel;
+  void execute(Lexer? lexer) {
+    lexer!.channel = channel;
   }
 
   @override
@@ -173,8 +173,8 @@ class LexerCustomAction implements LexerAction {
   /// appropriate rule and action indexes.</p>
 
   @override
-  void execute(Lexer lexer) {
-    lexer.action(null, ruleIndex, actionIndex);
+  void execute(Lexer? lexer) {
+    lexer!.action(null, ruleIndex, actionIndex);
   }
 
   @override
@@ -229,8 +229,8 @@ class LexerModeAction implements LexerAction {
   /// value provided by {@link #getMode}.</p>
 
   @override
-  void execute(Lexer lexer) {
-    lexer.mode(mode);
+  void execute(Lexer? lexer) {
+    lexer!.mode(mode);
   }
 
   @override
@@ -283,8 +283,8 @@ class LexerMoreAction implements LexerAction {
   /// <p>This action is implemented by calling {@link Lexer#more}.</p>
 
   @override
-  void execute(Lexer lexer) {
-    lexer.more();
+  void execute(Lexer? lexer) {
+    lexer!.more();
   }
 
   @override
@@ -332,8 +332,8 @@ class LexerPopModeAction implements LexerAction {
   /// <p>This action is implemented by calling {@link Lexer#popMode}.</p>
 
   @override
-  void execute(Lexer lexer) {
-    lexer.popMode();
+  void execute(Lexer? lexer) {
+    lexer!.popMode();
   }
 
   @override
@@ -386,8 +386,8 @@ class LexerPushModeAction implements LexerAction {
   /// value provided by {@link #getMode}.</p>
 
   @override
-  void execute(Lexer lexer) {
-    lexer.pushMode(mode);
+  void execute(Lexer? lexer) {
+    lexer!.pushMode(mode);
   }
 
   @override
@@ -440,8 +440,8 @@ class LexerSkipAction implements LexerAction {
   ///
   /// <p>This action is implemented by calling {@link Lexer#skip}.</p>
   @override
-  void execute(Lexer lexer) {
-    lexer.skip();
+  void execute(Lexer? lexer) {
+    lexer!.skip();
   }
 
   @override
@@ -492,8 +492,8 @@ class LexerTypeAction implements LexerAction {
   /// value provided by {@link #getType}.</p>
 
   @override
-  void execute(Lexer lexer) {
-    lexer.type = type;
+  void execute(Lexer? lexer) {
+    lexer!.type = type;
   }
 
   @override
@@ -576,7 +576,7 @@ class LexerIndexedCustomAction implements LexerAction {
   /// using the provided [lexer].</p>
 
   @override
-  void execute(Lexer lexer) {
+  void execute(Lexer? lexer) {
 // assume the input stream position was properly set by the calling code
     action.execute(lexer);
   }

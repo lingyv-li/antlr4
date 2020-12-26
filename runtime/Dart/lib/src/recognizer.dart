@@ -21,7 +21,7 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
   final List<ErrorListener> _listeners = [ConsoleErrorListener.INSTANCE];
 
   /// The ATN interpreter used by the recognizer for prediction.
-  ATNInterpreter interpreter;
+  ATNInterpreter? interpreter;
   int _stateNumber = -1;
 
   List<String> get ruleNames;
@@ -111,14 +111,14 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
   ///  for each decision in recognizer in a ParseInfo object.
   ///
   /// @since 4.3
-  ParseInfo get parseInfo {
+  ParseInfo? get parseInfo {
     return null;
   }
 
   /// What is the error header, normally line/character position information? */
   String getErrorHeader(RecognitionException e) {
-    final line = e.offendingToken.line;
-    final charPositionInLine = e.offendingToken.charPositionInLine;
+    final line = e.offendingToken!.line;
+    final charPositionInLine = e.offendingToken!.charPositionInLine;
     return 'line $line:$charPositionInLine';
   }
 
@@ -149,15 +149,15 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
 
   // subclass needs to override these if there are sempreds or actions
   // that the ATN interp needs to execute
-  bool sempred(RuleContext _localctx, int ruleIndex, int actionIndex) {
+  bool sempred(RuleContext? _localctx, int ruleIndex, int actionIndex) {
     return true;
   }
 
-  bool precpred(RuleContext localctx, int precedence) {
+  bool precpred(RuleContext? localctx, int precedence) {
     return true;
   }
 
-  void action(RuleContext _localctx, int ruleIndex, int actionIndex) {}
+  void action(RuleContext? _localctx, int ruleIndex, int actionIndex) {}
 
   int get state {
     return _stateNumber;
@@ -175,9 +175,9 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
 //		if ( traceATNStates ) _ctx.trace(atnState);
   }
 
-  IntStream get inputStream;
+  IntStream? get inputStream;
 
-  set inputStream(IntStream input);
+  set inputStream(IntStream? input);
 
   TokenFactory get tokenFactory;
 

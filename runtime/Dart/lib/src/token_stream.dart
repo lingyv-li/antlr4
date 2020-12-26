@@ -19,7 +19,7 @@ abstract class TokenStream extends IntStream {
   /// {@code LT(k).getType()==LA(k)}.
   ///
   /// @see IntStream#LA
-  Token LT(int k);
+  Token? LT(int k);
 
   /// Gets the [Token] at the specified [index] in the stream. When
   /// the preconditions of this method are met, the return value is non-null.
@@ -70,7 +70,7 @@ abstract class TokenStream extends IntStream {
   /// for.
   /// @return The text of all tokens / within the specified interval in this
   /// stream.
-  String getText([Interval interval]);
+  String getText([Interval? interval]);
 
   String get text;
 
@@ -114,7 +114,7 @@ abstract class TokenStream extends IntStream {
   ///
   /// @throws UnsupportedOperationException if this stream does not support
   /// this method for the specified tokens
-  String getTextRange(Token start, Token stop);
+  String getTextRange(Token? start, Token? stop);
 }
 
 /// This implementation of [TokenStream] loads tokens from a
@@ -241,7 +241,7 @@ class BufferedTokenStream implements TokenStream {
     }
 
     for (var i = 0; i < n; i++) {
-      final t = tokenSource.nextToken();
+      final t = tokenSource.nextToken()!;
       if (t is WritableToken) {
         t.tokenIndex = tokens.length;
       }
@@ -264,7 +264,7 @@ class BufferedTokenStream implements TokenStream {
   }
 
   /// Get all tokens from start..stop inclusively */
-  List<Token> getRange(int start, int stop) {
+  List<Token>? getRange(int start, int stop) {
     if (start < 0 || stop < 0) return null;
     lazyInit();
     final subset = <Token>[];
@@ -279,16 +279,16 @@ class BufferedTokenStream implements TokenStream {
 
   @override
   int LA(int i) {
-    return LT(i).type;
+    return LT(i)!.type;
   }
 
-  Token LB(int k) {
+  Token? LB(int k) {
     if ((p - k) < 0) return null;
     return tokens[p - k];
   }
 
   @override
-  Token LT(int k) {
+  Token? LT(int k) {
     lazyInit();
     if (k == 0) return null;
     if (k < 0) return LB(-k);
@@ -344,15 +344,15 @@ class BufferedTokenStream implements TokenStream {
   /// Given a start and stop index, return a List of all tokens in
   ///  the token type BitSet.  Return null if no tokens were found.  This
   ///  method looks at both on and off channel tokens.
-  List<Token> getTokens(
-      [int start, int stop, Set<int> types]) {
+  List<Token>? getTokens(
+      [int? start, int? stop, Set<int>? types]) {
     if (start == null && stop == null) {
       return tokens;
     }
     lazyInit();
-    if (start < 0 || start >= tokens.length) {
+    if (start! < 0 || start >= tokens.length) {
       throw RangeError.index(start, tokens);
-    } else if (stop < 0 || stop >= tokens.length) {
+    } else if (stop! < 0 || stop >= tokens.length) {
       throw RangeError.index(stop, tokens);
     }
     if (start > stop) return null;
@@ -425,7 +425,7 @@ class BufferedTokenStream implements TokenStream {
   /// Collect all tokens on specified channel to the right of
   ///  the current token up until we see a token on DEFAULT_TOKEN_CHANNEL or
   ///  EOF. If channel is -1, find any non default channel token.
-  List<Token> getHiddenTokensToRight(int tokenIndex, [int channel = -1]) {
+  List<Token>? getHiddenTokensToRight(int tokenIndex, [int channel = -1]) {
     lazyInit();
     if (tokenIndex < 0 || tokenIndex >= tokens.length) {
       throw RangeError.index(tokenIndex, tokens);
@@ -443,7 +443,7 @@ class BufferedTokenStream implements TokenStream {
   /// Collect all tokens on specified channel to the left of
   ///  the current token up until we see a token on DEFAULT_TOKEN_CHANNEL.
   ///  If channel is -1, find any non default channel token.
-  List<Token> getHiddenTokensToLeft(int tokenIndex, [int channel = -1]) {
+  List<Token>? getHiddenTokensToLeft(int tokenIndex, [int channel = -1]) {
     lazyInit();
     if (tokenIndex < 0 || tokenIndex >= tokens.length) {
       throw RangeError.index(tokenIndex, tokens);
@@ -464,7 +464,7 @@ class BufferedTokenStream implements TokenStream {
     return filterForChannel(from, to, channel);
   }
 
-  List<Token> filterForChannel(int from, int to, int channel) {
+  List<Token>? filterForChannel(int from, int to, int channel) {
     final hidden = <Token>[];
     for (var i = from; i <= to; i++) {
       final t = tokens[i];
@@ -485,7 +485,7 @@ class BufferedTokenStream implements TokenStream {
   String get text => getText();
 
   @override
-  String getText([Interval interval]) {
+  String getText([Interval? interval]) {
     interval = interval ??
         Interval.of(0, size - 1); // Get the text of all tokens in this buffer.
     final start = interval.a;
@@ -509,7 +509,7 @@ class BufferedTokenStream implements TokenStream {
   }
 
   @override
-  String getTextRange(Token start, Token stop) {
+  String getTextRange(Token? start, Token? stop) {
     if (start != null && stop != null) {
       return getText(Interval.of(start.tokenIndex, stop.tokenIndex));
     }
@@ -578,7 +578,7 @@ class CommonTokenStream extends BufferedTokenStream {
   }
 
   @override
-  Token LB(int k) {
+  Token? LB(int k) {
     if (k == 0 || (p - k) < 0) return null;
 
     var i = p;
@@ -594,7 +594,7 @@ class CommonTokenStream extends BufferedTokenStream {
   }
 
   @override
-  Token LT(int k) {
+  Token? LT(int k) {
     //System.out.println("enter LT("+k+")");
     lazyInit();
     if (k == 0) return null;

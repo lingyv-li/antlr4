@@ -16,7 +16,7 @@ import 'transition.dart';
 class ATN {
   static final INVALID_ALT_NUMBER = 0;
 
-  List<ATNState> states = [];
+  List<ATNState?> states = [];
 
   /// Each subrule/rule is a decision point and we must track them so we
   ///  can go back later and build DFA predictors for them.  This includes
@@ -24,10 +24,10 @@ class ATN {
   List<DecisionState> decisionToState = [];
 
   /// Maps from rule index to starting state number.
-  List<RuleStartState> ruleToStartState;
+  late List<RuleStartState?> ruleToStartState;
 
   /// Maps from rule index to stop state number.
-  List<RuleStopState> ruleToStopState;
+  late List<RuleStopState?> ruleToStopState;
 
   Map<String, TokensStartState> modeNameToStartState = {};
 
@@ -42,13 +42,13 @@ class ATN {
   /// type if the
   /// {@link ATNDeserializationOptions#isGenerateRuleBypassTransitions}
   /// deserialization option was specified; otherwise, this is null.
-  List<int> ruleToTokenType;
+  late List<int> ruleToTokenType;
 
   /// For lexer ATNs, this is an array of [LexerAction] objects which may
   /// be referenced by action transitions in the ATN.
-  List<LexerAction> lexerActions;
+  late List<LexerAction> lexerActions;
 
-  List<TokensStartState> modeToStartState = [];
+  List<TokensStartState?> modeToStartState = [];
 
   /// Used for runtime deserialization of ATNs from strings */
   ATN(this.grammarType, this.maxTokenType);
@@ -62,17 +62,17 @@ class ATN {
   ///  Compute the set of valid tokens that can occur starting in [s] and
   ///  staying in same rule. {@link Token#EPSILON} is in set if we reach end of
   ///  rule.
-  IntervalSet nextTokens(ATNState s, [RuleContext ctx]) {
+  IntervalSet? nextTokens(ATNState? s, [RuleContext? ctx]) {
     if (ctx != null) {
       return LL1Analyzer(this).LOOK(s, ctx);
     }
-    if (s.nextTokenWithinRule != null) return s.nextTokenWithinRule;
+    if (s!.nextTokenWithinRule != null) return s.nextTokenWithinRule;
     s.nextTokenWithinRule = LL1Analyzer(this).LOOK(s, null);
-    s.nextTokenWithinRule.setReadonly(true);
+    s.nextTokenWithinRule!.setReadonly(true);
     return s.nextTokenWithinRule;
   }
 
-  void addState(ATNState state) {
+  void addState(ATNState? state) {
     if (state != null) {
       state.atn = this;
       state.stateNumber = states.length;
@@ -92,7 +92,7 @@ class ATN {
     return s.decision;
   }
 
-  DecisionState getDecisionState(int decision) {
+  DecisionState? getDecisionState(int decision) {
     if (decisionToState.isNotEmpty) {
       return decisionToState[decision];
     }
@@ -135,14 +135,14 @@ class ATN {
   /// specified state in the specified context.
   /// @throws IllegalArgumentException if the ATN does not contain a state with
   /// number [stateNumber]
-  IntervalSet getExpectedTokens(int stateNumber, RuleContext context) {
+  IntervalSet getExpectedTokens(int stateNumber, RuleContext? context) {
     if (stateNumber < 0 || stateNumber >= states.length) {
       throw RangeError.index(stateNumber, states, 'stateNumber');
     }
 
     var ctx = context;
     final s = states[stateNumber];
-    var following = nextTokens(s);
+    var following = nextTokens(s)!;
     if (!following.contains(Token.EPSILON)) {
       return following;
     }
@@ -153,9 +153,9 @@ class ATN {
     while (ctx != null &&
         ctx.invokingState >= 0 &&
         following.contains(Token.EPSILON)) {
-      final invokingState = states[ctx.invokingState];
-      RuleTransition rt = invokingState.transition(0);
-      following = nextTokens(rt.followState);
+      final invokingState = states[ctx.invokingState]!;
+      RuleTransition rt = invokingState.transition(0) as RuleTransition;
+      following = nextTokens(rt.followState)!;
       expected.addAll(following);
       expected.remove(Token.EPSILON);
       ctx = ctx.parent;
