@@ -57,8 +57,6 @@ abstract class ATNSimulator {
   }
 
   PredictionContext getCachedContext(PredictionContext? context) {
-    if (sharedContextCache == null) return context!;
-
     final visited = <PredictionContext, PredictionContext>{};
     return PredictionContext.getCachedContext(
         context!, sharedContextCache, visited);

@@ -141,12 +141,10 @@ class RuntimeMetaData {
     var runtimeConflictsWithGeneratingTool = false;
     var runtimeConflictsWithCompileTimeTool = false;
 
-    if (generatingToolVersion != null) {
-      runtimeConflictsWithGeneratingTool =
-          !(runtimeVersion == generatingToolVersion) &&
-              !(getMajorMinorVersion(runtimeVersion) ==
-                  getMajorMinorVersion(generatingToolVersion));
-    }
+    runtimeConflictsWithGeneratingTool =
+        !(runtimeVersion == generatingToolVersion) &&
+            !(getMajorMinorVersion(runtimeVersion) ==
+                getMajorMinorVersion(generatingToolVersion));
 
     runtimeConflictsWithCompileTimeTool =
         !(runtimeVersion == compileTimeVersion) &&

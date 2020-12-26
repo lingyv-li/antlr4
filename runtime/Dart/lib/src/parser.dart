@@ -320,10 +320,6 @@ abstract class Parser extends Recognizer<ParserATNSimulator> {
   /// implement the {@link #getSerializedATN()} method.
   ATN get ATNWithBypassAlts {
     final serializedAtn = serializedATN;
-    if (serializedAtn == null) {
-      throw UnsupportedError(
-          'The current parser does not support an ATN with bypass alternatives.');
-    }
 
     var result = bypassAltsAtnCache[serializedAtn];
     if (result == null) {

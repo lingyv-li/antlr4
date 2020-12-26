@@ -159,11 +159,7 @@ class BufferedTokenStream implements TokenStream {
   /// <ul>
   bool fetchedEOF = false;
 
-  BufferedTokenStream(this._tokenSource) {
-    if (_tokenSource == null) {
-      throw ArgumentError.notNull('tokenSource');
-    }
-  }
+  BufferedTokenStream(this._tokenSource);
 
   @override
   int get index => p;

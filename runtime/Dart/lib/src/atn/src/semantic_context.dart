@@ -58,8 +58,8 @@ abstract class SemanticContext {
   }
 
   static SemanticContext and(SemanticContext a, SemanticContext b) {
-    if (a == null || a == NONE) return b;
-    if (b == null || b == NONE) return a;
+    if (a == NONE) return b;
+    if (b == NONE) return a;
     final result = AND(a, b);
     if (result.opnds.length == 1) {
       return result.opnds[0];
@@ -72,7 +72,6 @@ abstract class SemanticContext {
   ///  @see ParserATNSimulator#getPredsForAmbigAlts
   static SemanticContext or(SemanticContext? a, SemanticContext b) {
     if (a == null) return b;
-    if (b == null) return a;
     if (a == NONE || b == NONE) return NONE;
     final result = OR(a, b);
     if (result.opnds.length == 1) {

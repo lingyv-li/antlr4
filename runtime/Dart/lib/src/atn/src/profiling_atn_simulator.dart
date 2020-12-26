@@ -200,8 +200,7 @@ class ProfilingATNSimulator extends ParserATNSimulator {
   @override
   void reportAmbiguity(DFA dfa, DFAState D, int startIndex, int stopIndex,
       bool exact, BitSet ambigAlts, ATNConfigSet? configs) {
-    final prediction =
-        ambigAlts != null ? ambigAlts.nextset(0) : configs!.alts.nextset(0);
+    final prediction = ambigAlts.nextset(0);
     if (configs!.fullCtx && prediction != conflictingAltResolvedBySLL) {
       // Even though this is an ambiguity we are reporting, we can
       // still detect some context sensitivities.  Both SLL and LL

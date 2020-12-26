@@ -69,10 +69,6 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
   /// <p>Used for XPath and tree pattern compilation.</p>
   Map<String, int> get ruleIndexMap {
     final _ruleNames = ruleNames;
-    if (_ruleNames == null) {
-      throw UnsupportedError(
-          'The current recognizer does not provide a list of rule names.');
-    }
 
     var result = ruleIndexMapCache[_ruleNames];
     if (result == null) {
@@ -124,10 +120,6 @@ abstract class Recognizer<ATNInterpreter extends ATNSimulator> {
 
   /// @exception NullPointerException if [listener] is null.
   void addErrorListener(ErrorListener listener) {
-    if (listener == null) {
-      throw ArgumentError.notNull('listener');
-    }
-
     _listeners.add(listener);
   }
 

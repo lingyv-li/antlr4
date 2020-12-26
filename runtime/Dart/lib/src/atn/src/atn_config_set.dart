@@ -45,7 +45,6 @@ class ATNConfigSet extends Iterable<ATNConfig> {
   /// All configs but hashed by (s, i, _, pi) not including context. Wiped out
   /// when we go readonly as this set becomes a DFA state.
   Set<ATNConfig>? configLookup = HashSet<ATNConfig>(equals: (a, b) {
-    if (a == null || b == null) return false;
     return a.state!.stateNumber == b.state!.stateNumber &&
         a.alt == b.alt &&
         a.semanticContext == b.semanticContext;

@@ -457,7 +457,6 @@ abstract class PredictionContext {
   }
 
   static String toDOTString(PredictionContext context) {
-    if (context == null) return '';
     final buf = StringBuffer();
     buf.write('digraph G {\n');
     buf.write('rankdir=LR;\n');
@@ -657,26 +656,16 @@ abstract class PredictionContext {
           offset += bits;
         }
 
-        if (recognizer != null) {
           if (localBuffer.length > 1) {
             // first char is '[', if more than that this isn't the first rule
             localBuffer.write(' ');
           }
 
-          final atn = recognizer.getATN();
-          final s = atn.states[stateNumber!]!;
-          final ruleName = recognizer.ruleNames[s.ruleIndex];
-          localBuffer.write(ruleName);
-        } else if (p.getReturnState(index) != EMPTY_RETURN_STATE) {
-          if (!p.isEmpty) {
-            if (localBuffer.length > 1) {
-              // first char is '[', if more than that this isn't the first rule
-              localBuffer.write(' ');
-            }
+        final atn = recognizer.getATN();
+        final s = atn.states[stateNumber!]!;
+        final ruleName = recognizer.ruleNames[s.ruleIndex];
+        localBuffer.write(ruleName);
 
-            localBuffer.write(p.getReturnState(index));
-          }
-        }
         stateNumber = p.getReturnState(index);
         p = p.getParent(index)!;
       }
@@ -803,8 +792,8 @@ class ArrayPredictionContext extends PredictionContext {
   ArrayPredictionContext(
       List<PredictionContext?> parents, List<int?> returnStates)
       : super(PredictionContext.calculateHashCode(parents, returnStates)) {
-    assert(parents != null && parents.isNotEmpty);
-    assert(returnStates != null && returnStates.isNotEmpty);
+    assert(parents.isNotEmpty);
+    assert(returnStates.isNotEmpty);
 //		System.err.println("CREATE ARRAY: "+Arrays.toString(parents)+", "+Arrays.toString(returnStates));
     this.parents = parents;
     this.returnStates = returnStates;

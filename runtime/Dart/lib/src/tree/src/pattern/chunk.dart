@@ -45,8 +45,8 @@ class TagChunk extends Chunk {
   ///
   /// @exception ArgumentError if [tag] is null or empty.
   TagChunk(this.tag, {this.label}) {
-    if (tag == null || tag.isEmpty) {
-      throw ArgumentError.value(tag, 'tag', 'cannot be null or empty');
+    if (tag.isEmpty) {
+      throw ArgumentError.value(tag, 'tag', 'cannot be empty');
     }
   }
 
@@ -73,11 +73,7 @@ class TextChunk extends Chunk {
   ///
   /// @param text The text of this chunk.
   /// @exception IllegalArgumentException if [text] is null.
-  TextChunk(this.text) {
-    if (text == null) {
-      throw ArgumentError.notNull('text');
-    }
-  }
+  TextChunk(this.text);
 
   /// {@inheritDoc}
   ///

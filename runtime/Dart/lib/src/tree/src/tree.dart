@@ -282,8 +282,6 @@ class TerminalNodeImpl extends TerminalNode {
 
   @override
   Interval get sourceInterval {
-    if (symbol == null) return Interval.INVALID;
-
     final tokenIndex = symbol.tokenIndex;
     return Interval(tokenIndex, tokenIndex);
   }

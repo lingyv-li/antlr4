@@ -177,7 +177,7 @@ class VocabularyImpl implements Vocabulary {
   /// @return A [Vocabulary] instance which uses [tokenNames] for
   /// the display names of tokens.
   static Vocabulary fromTokenNames(List<String> tokenNames) {
-    if (tokenNames == null || tokenNames.isEmpty) {
+    if (tokenNames.isEmpty) {
       return EMPTY_VOCABULARY;
     }
 
@@ -185,10 +185,6 @@ class VocabularyImpl implements Vocabulary {
     final symbolicNames = List<String?>.from(tokenNames);
     for (var i = 0; i < tokenNames.length; i++) {
       final tokenName = tokenNames[i];
-      if (tokenName == null) {
-        continue;
-      }
-
       if (tokenName.isNotEmpty) {
         final firstChar = tokenName[0];
         if (firstChar == '\'') {
@@ -234,9 +230,7 @@ class VocabularyImpl implements Vocabulary {
   String getDisplayName(int tokenType) {
     if (tokenType >= 0 && tokenType < displayNames.length) {
       final displayName = displayNames[tokenType];
-      if (displayName != null) {
-        return displayName;
-      }
+      return displayName;
     }
 
     final literalName = getLiteralName(tokenType);

@@ -60,19 +60,7 @@ class ParseTreeMatch {
   /// @exception ArgumentError.notNull) if [tree] is null
   /// @exception ArgumentError.notNull) if [pattern] is null
   /// @exception ArgumentError.notNull) if [labels] is null
-  ParseTreeMatch(this.tree, this.pattern, this.labels, this.mismatchedNode) {
-    if (tree == null) {
-      throw ArgumentError.notNull('tree');
-    }
-
-    if (pattern == null) {
-      throw ArgumentError.notNull('pattern');
-    }
-
-    if (labels == null) {
-      throw ArgumentError.notNull('labels');
-    }
-  }
+  ParseTreeMatch(this.tree, this.pattern, this.labels, this.mismatchedNode);
 
   /// Get the last node associated with a specific [label].
   ///
@@ -287,12 +275,12 @@ class ParseTreePatternMatcher {
   /// @exception ArgumentError if [start] is null or empty.
   /// @exception ArgumentError if [stop] is null or empty.
   void setDelimiters(String start, String stop, String escapeLeft) {
-    if (start == null || start.isEmpty) {
-      throw ArgumentError.value(start, 'start', 'cannot be null or empty');
+    if (start.isEmpty) {
+      throw ArgumentError.value(start, 'start', 'cannot be empty');
     }
 
-    if (stop == null || stop.isEmpty) {
-      throw ArgumentError.value(stop, 'stop', 'cannot be null or empty');
+    if (stop.isEmpty) {
+      throw ArgumentError.value(stop, 'stop', 'cannot be empty');
     }
 
     this.start = start;

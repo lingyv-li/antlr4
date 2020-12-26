@@ -85,7 +85,7 @@ class DiagnosticErrorListener extends BaseErrorListener {
     }
 
     final ruleName = ruleNames[ruleIndex];
-    if (ruleName == null || ruleName.isEmpty) {
+    if (ruleName.isEmpty) {
       return decision.toString();
     }
 
@@ -102,15 +102,6 @@ class DiagnosticErrorListener extends BaseErrorListener {
   /// @return Returns [reportedAlts] if it is not null, otherwise
   /// returns the set of alternatives represented in [configs].
   BitSet getConflictingAlts(BitSet reportedAlts, ATNConfigSet? configs) {
-    if (reportedAlts != null) {
-      return reportedAlts;
-    }
-
-    final result = BitSet();
-    for (var config in configs!) {
-      result.set(config.alt);
-    }
-
-    return result;
+    return reportedAlts;
   }
 }

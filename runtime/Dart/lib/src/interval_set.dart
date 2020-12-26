@@ -306,7 +306,7 @@ class IntervalSet {
 
   /// {@inheritDoc} */
   IntervalSet? complement(IntervalSet vocabulary) {
-    if (vocabulary == null || vocabulary.isNil) {
+    if (vocabulary.isNil) {
       return null; // nothing in common with null set
     }
     IntervalSet vocabularyIS;
@@ -321,7 +321,7 @@ class IntervalSet {
   }
 
   IntervalSet operator -(IntervalSet a) {
-    if (a == null || a.isNil) {
+    if (a.isNil) {
       return IntervalSet.ofSet(this);
     }
 
@@ -338,12 +338,12 @@ class IntervalSet {
   /// operation is {@code left - right}. If either of the input sets is
   /// null, it is treated as though it was an empty set.
   static IntervalSet subtract(IntervalSet left, IntervalSet right) {
-    if (left == null || left.isNil) {
+    if (left.isNil) {
       return IntervalSet();
     }
 
     final result = IntervalSet.ofSet(left);
-    if (right == null || right.isNil) {
+    if (right.isNil) {
       // right set has no elements; just return the copy of the current set
       return result;
     }
@@ -490,7 +490,7 @@ class IntervalSet {
   /// {@inheritDoc} */
 
   bool get isNil {
-    return intervals == null || intervals.isEmpty;
+    return intervals.isEmpty;
   }
 
   /// Returns the maximum value contained in the set if not isNil().
@@ -540,7 +540,7 @@ class IntervalSet {
 
   @override
   String toString({bool elemAreChar = false, Vocabulary? vocabulary}) {
-    if (intervals == null || intervals.isEmpty) {
+    if (intervals.isEmpty) {
       return '{}';
     }
 

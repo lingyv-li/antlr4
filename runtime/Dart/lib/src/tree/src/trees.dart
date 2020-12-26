@@ -51,10 +51,8 @@ class Trees {
         return t.toString();
       } else if (t is TerminalNode) {
         final symbol = (t).symbol;
-        if (symbol != null) {
-          final s = symbol.text;
-          return s;
-        }
+        final s = symbol.text;
+        return s;
       }
     }
     // no recog for rule names
@@ -94,7 +92,7 @@ class Trees {
   ///
   ///  @since 4.5.1
   static bool isAncestorOf(Tree t, Tree u) {
-    if (t == null || u == null || t.parent == null) return false;
+    if (t.parent == null) return false;
     var p = u.parent;
     while (p != null) {
       if (t == p) return true;
@@ -189,7 +187,6 @@ class Trees {
   ///  @since 4.5.1
   static void stripChildrenOutOfRange(ParserRuleContext t,
       ParserRuleContext root, int startIndex, int stopIndex) {
-    if (t == null) return;
     for (var i = 0; i < t.childCount; i++) {
       final child = t.getChild(i)!;
       final range = child.sourceInterval;

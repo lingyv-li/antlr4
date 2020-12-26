@@ -165,7 +165,7 @@ class ATNConfig {
       buf.write(context.toString());
       buf.write(']');
     }
-    if (semanticContext != null && semanticContext != SemanticContext.NONE) {
+    if (semanticContext != SemanticContext.NONE) {
       buf.write(',');
       buf.write(semanticContext);
     }

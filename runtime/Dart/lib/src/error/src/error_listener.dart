@@ -197,11 +197,7 @@ class ConsoleErrorListener extends BaseErrorListener {
 class ProxyErrorListener implements ErrorListener {
   final List<ErrorListener> delegates;
 
-  ProxyErrorListener(this.delegates) {
-    if (delegates == null) {
-      throw ArgumentError.notNull('delegates');
-    }
-  }
+  ProxyErrorListener(this.delegates);
 
   @override
   void syntaxError(Recognizer recognizer, Object? offendingSymbol, int line,

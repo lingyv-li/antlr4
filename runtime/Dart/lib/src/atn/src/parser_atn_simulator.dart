@@ -22,7 +22,6 @@ import '../../token.dart';
 import '../../token_stream.dart';
 import '../../util/bit_set.dart';
 import '../../util/murmur_hash.dart';
-import '../../vocabulary.dart';
 import 'atn.dart';
 import 'atn_config.dart';
 import 'atn_config_set.dart';
@@ -1201,7 +1200,6 @@ class ParserATNSimulator extends ATNSimulator {
       final pred = altToPred[i]!;
 
       // unpredicated is indicated by SemanticContext.NONE
-      assert(pred != null);
 
       if (ambigAlts != null && ambigAlts[i]) {
         pairs.add(PredPrediction(pred, i));
@@ -1714,7 +1712,7 @@ class ParserATNSimulator extends ATNSimulator {
   }
 
   String getRuleName(int index) {
-    if (parser != null && index >= 0) return parser.ruleNames[index];
+    if (index >= 0) return parser.ruleNames[index];
     return '<rule $index>';
   }
 
@@ -1772,9 +1770,7 @@ class ParserATNSimulator extends ATNSimulator {
       bool fullCtx) {
     if (debug) {
       log('PRED (collectPredicates=$collectPredicates) ${pt.precedence}>=_p, ctx dependent=true');
-      if (parser != null) {
-        log('context surrounding pred is ${parser.getRuleInvocationStack()}');
-      }
+      log('context surrounding pred is ${parser.getRuleInvocationStack()}');
     }
 
     ATNConfig? c;
@@ -1810,9 +1806,7 @@ class ParserATNSimulator extends ATNSimulator {
       bool collectPredicates, bool inContext, bool fullCtx) {
     if (debug) {
       log('PRED (collectPredicates=$collectPredicates) ' '${pt.ruleIndex}:${pt.predIndex}' ', ctx dependent=${pt.isCtxDependent}');
-      if (parser != null) {
-        log('context surrounding pred is ${parser.getRuleInvocationStack()}');
-      }
+      log('context surrounding pred is ${parser.getRuleInvocationStack()}');
     }
 
     ATNConfig? c;
@@ -1921,9 +1915,7 @@ class ParserATNSimulator extends ATNSimulator {
       return 'EOF';
     }
 
-    final vocabulary = parser != null
-        ? parser.vocabulary
-        : VocabularyImpl.EMPTY_VOCABULARY;
+    final vocabulary = parser.vocabulary;
     final displayName = vocabulary.getDisplayName(t);
     if (displayName == t.toString()) {
       return displayName;
@@ -2000,7 +1992,7 @@ class ParserATNSimulator extends ATNSimulator {
     }
 
     to = addDFAState(dfa, to); // used existing if possible not incoming
-    if (from == null || t < -1 || t > atn.maxTokenType) {
+    if (t < -1 || t > atn.maxTokenType) {
       return to;
     }
 
@@ -2010,9 +2002,7 @@ class ParserATNSimulator extends ATNSimulator {
 
     if (debug) {
       log('DFA=\n' +
-          dfa.toString(parser != null
-              ? parser.vocabulary
-              : VocabularyImpl.EMPTY_VOCABULARY));
+          dfa.toString(parser.vocabulary));
     }
 
     return to;
@@ -2056,10 +2046,8 @@ class ParserATNSimulator extends ATNSimulator {
       log('reportAttemptingFullContext decision=${dfa.decision}:$configs' ', input=' +
           parser.tokenStream!.getText(interval));
     }
-    if (parser != null) {
-      parser.errorListenerDispatch.reportAttemptingFullContext(
-          parser, dfa, startIndex, stopIndex, conflictingAlts, configs);
-    }
+    parser.errorListenerDispatch.reportAttemptingFullContext(
+        parser, dfa, startIndex, stopIndex, conflictingAlts, configs);
   }
 
   void reportContextSensitivity(DFA dfa, int prediction, ATNConfigSet configs,
@@ -2069,10 +2057,8 @@ class ParserATNSimulator extends ATNSimulator {
       log('reportContextSensitivity decision=${dfa.decision}:$configs' ', input=' +
           parser.tokenStream!.getText(interval));
     }
-    if (parser != null) {
-      parser.errorListenerDispatch.reportContextSensitivity(
-          parser, dfa, startIndex, stopIndex, prediction, configs);
-    }
+    parser.errorListenerDispatch.reportContextSensitivity(
+        parser, dfa, startIndex, stopIndex, prediction, configs);
   }
 
   /// If context sensitive parsing, we know it's ambiguity not conflict */
@@ -2090,10 +2076,8 @@ class ParserATNSimulator extends ATNSimulator {
       log('reportAmbiguity $ambigAlts:$configs' ', input=' +
           parser.tokenStream!.getText(interval));
     }
-    if (parser != null) {
-      parser.errorListenerDispatch.reportAmbiguity(
-          parser, dfa, startIndex, stopIndex, exact, ambigAlts, configs);
-    }
+    parser.errorListenerDispatch.reportAmbiguity(
+        parser, dfa, startIndex, stopIndex, exact, ambigAlts, configs);
   }
 }
 
@@ -2559,7 +2543,6 @@ extension PredictionModeExtension on PredictionMode {
     final configToAlts =
     HashMap<ATNConfig, BitSet>(equals: (ATNConfig a, ATNConfig b) {
       if (identical(a, b)) return true;
-      if (a == null || b == null) return false;
       return a.state!.stateNumber == b.state!.stateNumber &&
           a.context == b.context;
     }, hashCode: (ATNConfig o) {

@@ -272,9 +272,9 @@ class RuleTagToken implements Token {
   /// @exception ArgumentError.value(value) if [ruleName] is null
   /// or empty.
   RuleTagToken(this.ruleName, this.bypassTokenType, [this.label]) {
-    if (ruleName == null || ruleName.isEmpty) {
+    if (ruleName.isEmpty) {
       throw ArgumentError.value(
-          ruleName, 'ruleName', 'cannot be null or empty.');
+          ruleName, 'ruleName', 'cannot be empty.');
     }
   }
 
