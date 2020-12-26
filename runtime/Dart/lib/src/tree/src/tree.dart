@@ -21,8 +21,6 @@ abstract class Tree {
 
   Tree getChild<T>(int i);
 
-//  Tree getChild(int i);
-
   int get childCount;
 
   String toStringTree();
@@ -46,10 +44,10 @@ abstract class SyntaxTree extends Tree {
   Interval get sourceInterval;
 }
 
-abstract class ParseTree extends SyntaxTree {
+abstract class ParseTree<R extends ParseTree<dynamic>> extends SyntaxTree {
   // the following methods narrow the return type; they are not additional methods
   @override
-  ParseTree get parent;
+  R get parent;
 
   @override
   ParseTree getChild<T>(int i);
@@ -68,7 +66,7 @@ abstract class ParseTree extends SyntaxTree {
   ///  minimal change, which is to add this method.
   ///
   ///  @since 4.7
-  set parent(RuleContext parent);
+  set parent(R parent);
 
   /// The [ParseTreeVisitor] needs a double dispatch method. */
   T accept<T>(ParseTreeVisitor<T> visitor);
@@ -84,7 +82,7 @@ abstract class ParseTree extends SyntaxTree {
   String toStringTree({Parser parser});
 }
 
-abstract class RuleNode extends ParseTree {
+abstract class RuleNode<T extends ParseTree<T>> extends ParseTree<T> {
   RuleContext get ruleContext;
 }
 
@@ -270,7 +268,7 @@ class TerminalNodeImpl extends TerminalNode {
   @override
   Token symbol;
   @override
-  ParseTree parent;
+  ParseTree<dynamic> parent;
 
   TerminalNodeImpl(this.symbol);
 

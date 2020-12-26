@@ -60,7 +60,7 @@ import 'tree/tree.dart';
 ///  ParserRuleContext.
 ///
 ///  @see ParserRuleContext
-abstract class RuleContext extends RuleNode {
+abstract class RuleContext extends RuleNode<RuleContext> {
   /// What context invoked this rule?
   @override
   RuleContext parent;
