@@ -1168,14 +1168,14 @@ class ParserATNSimulator extends ATNSimulator {
     List<SemanticContext?>? altToPred = List<SemanticContext?>.filled(nalts + 1, null);
     for (var c in configs) {
       if (ambigAlts![c.alt]) {
-        altToPred![c.alt] =
+        altToPred[c.alt] =
             SemanticContext.or(altToPred[c.alt], c.semanticContext);
       }
     }
 
     var nPredAlts = 0;
     for (var i = 1; i <= nalts; i++) {
-      if (altToPred![i] == null) {
+      if (altToPred[i] == null) {
         altToPred[i] = SemanticContext.NONE;
       } else if (altToPred[i] != SemanticContext.NONE) {
         nPredAlts++;
@@ -1997,10 +1997,6 @@ class ParserATNSimulator extends ATNSimulator {
   DFAState addDFAEdge(DFA dfa, DFAState from, int t, DFAState to) {
     if (debug) {
       log('EDGE $from -> $to upon ' + getTokenName(t));
-    }
-
-    if (to == null) {
-      return null;
     }
 
     to = addDFAState(dfa, to); // used existing if possible not incoming

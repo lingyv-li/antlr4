@@ -413,11 +413,6 @@ class IntervalSet {
 
   /// {@inheritDoc} */
   IntervalSet operator +(IntervalSet other) {
-    if (other == null) {
-      //|| !(other is IntervalSet) ) {
-      return null; // nothing in common with null set
-    }
-
     final myIntervals = intervals;
     final theirIntervals = (other).intervals;
     IntervalSet? intersection;

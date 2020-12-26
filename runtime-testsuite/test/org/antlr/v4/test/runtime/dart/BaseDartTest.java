@@ -128,6 +128,7 @@ public class BaseDartTest implements RuntimeTestSupport {
 	protected StringBuilder antlrToolErrors;
 
 	private static String cacheDartPackages;
+	private static String cacheDartPackageConfig;
 
 	private String getPropertyPrefix() {
 		return "antlr-dart";
@@ -538,7 +539,14 @@ public class BaseDartTest implements RuntimeTestSupport {
 			"name: \"test\"\n" +
 				"dependencies:\n" +
 				"  antlr4:\n" +
-				"    path: " + runtime + "\n");
+				"    path: " + runtime + "\n" +
+				"analyzer:\n" +
+				"  enable-experiment:\n" +
+				"    - non-nullable\n" +
+				"environment:\n" +
+				"  sdk: '>=2.8.0 <3.0.0'\n"
+		);
+		final File dartToolDir = new File(tmpdir, ".dart_tool");
 		if (cacheDartPackages == null) {
 			try {
 				Process process = Runtime.getRuntime().exec(new String[]{locatePub(), "get"}, null, new File(tmpdir));
@@ -555,8 +563,12 @@ public class BaseDartTest implements RuntimeTestSupport {
 				return false;
 			}
 			cacheDartPackages = readFile(tmpdir, ".packages");
+			cacheDartPackageConfig = readFile(dartToolDir.getAbsolutePath(), "package_config.json");
 		} else {
 			writeFile(tmpdir, ".packages", cacheDartPackages);
+			//noinspection ResultOfMethodCallIgnored
+			dartToolDir.mkdir();
+			writeFile(dartToolDir.getAbsolutePath(), "package_config.json", cacheDartPackageConfig);
 		}
 		return true; // allIsWell: no compile
 	}

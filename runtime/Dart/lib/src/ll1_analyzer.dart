@@ -31,10 +31,6 @@ class LL1Analyzer {
   /// @return the expected symbols for each outgoing transition of [s].
   List<IntervalSet?> getDecisionLookahead(ATNState s) {
 //		System.out.println("LOOK("+s.stateNumber+")");
-    if (s == null) {
-      return null;
-    }
-
     final look = List<IntervalSet?>.filled(s.numberOfTransitions, null);
     for (var alt = 0; alt < s.numberOfTransitions; alt++) {
       look[alt] = IntervalSet();

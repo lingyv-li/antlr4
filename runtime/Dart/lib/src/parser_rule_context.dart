@@ -139,7 +139,7 @@ class ParserRuleContext extends RuleContext {
       return null;
     }
 
-    if (T == null) {
+    if (T == dynamic) {
       return children![i];
     }
     var j = -1; // what element have we found with ctxType?

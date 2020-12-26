@@ -358,7 +358,7 @@ class BufferedTokenStream implements TokenStream {
     if (start > stop) return null;
 
     // list = tokens[start:stop]:{T t, t.getType() in types}
-    var filteredTokens = <Token>[];
+    List<Token>? filteredTokens = <Token>[];
     for (var i = start; i <= stop; i++) {
       final t = tokens[i];
       if (types == null || types.contains(t.type)) {

@@ -90,7 +90,7 @@ class ParseTreeMatch {
   /// label, or null if no parse tree matched a tag with the label.
 
   ParseTree? get(String label) {
-    final List<ParseTree<ParseTree<dynamic>>>? parseTrees = labels[label];
+    final parseTrees = labels[label];
     if (parseTrees == null || parseTrees.isEmpty) {
       return null;
     }
@@ -121,7 +121,7 @@ class ParseTreeMatch {
   /// is returned.
 
   List<ParseTree> getAll(String label) {
-    final List<ParseTree<ParseTree<dynamic>>>? nodes = labels[label];
+    final nodes = labels[label];
     if (nodes == null) {
       return [];
     }
@@ -318,8 +318,8 @@ class ParseTreePatternMatcher {
   /// string representation of a tree pattern.
 
   ParseTreeMatch match(ParseTree tree,
-      {ParseTreePattern? pattern, required String patternStr, required int patternRuleIndex}) {
-    pattern ??= compile(patternStr, patternRuleIndex);
+      {ParseTreePattern? pattern, String? patternStr, int? patternRuleIndex}) {
+    pattern ??= compile(patternStr!, patternRuleIndex!);
 
     final labels = MultiMap<String?, ParseTree>();
     final mismatchedNode =
@@ -351,7 +351,7 @@ class ParseTreePatternMatcher {
     } on RecognitionException {
       rethrow;
     } catch (e) {
-      throw CannotInvokeStartRule(e);
+      throw CannotInvokeStartRule(e.toString());
     }
 
     // Make sure tree pattern compilation checks for a complete parse

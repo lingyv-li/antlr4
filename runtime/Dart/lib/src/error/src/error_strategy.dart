@@ -396,7 +396,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
     final msg = 'mismatched input ' +
         getTokenErrorDisplay(e.offendingToken) +
         ' expecting ' +
-        e.expectedTokens.toString(vocabulary: recognizer.vocabulary);
+        e.expectedTokens!.toString(vocabulary: recognizer.vocabulary);
     recognizer.notifyErrorListeners(msg, e.offendingToken, e);
   }
 
