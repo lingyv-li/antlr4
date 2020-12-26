@@ -204,7 +204,7 @@ class ParserInterpreter extends Parser {
         break;
 
       case TransitionType.RULE:
-        RuleStartState ruleStartState = transition.target as RuleStartState;
+        var ruleStartState = transition.target as RuleStartState;
         final ruleIndex = ruleStartState.ruleIndex;
         final newctx =
             createInterpreterRuleContext(context, p.stateNumber, ruleIndex);
@@ -217,7 +217,7 @@ class ParserInterpreter extends Parser {
         break;
 
       case TransitionType.PREDICATE:
-        PredicateTransition predicateTransition = transition as PredicateTransition;
+        var predicateTransition = transition as PredicateTransition;
         if (!sempred(context, predicateTransition.ruleIndex,
             predicateTransition.predIndex)) {
           throw FailedPredicateException(this);
@@ -226,7 +226,7 @@ class ParserInterpreter extends Parser {
         break;
 
       case TransitionType.ACTION:
-        ActionTransition actionTransition = transition as ActionTransition;
+        var actionTransition = transition as ActionTransition;
         action(
             context, actionTransition.ruleIndex, actionTransition.actionIndex);
         break;
@@ -284,7 +284,7 @@ class ParserInterpreter extends Parser {
       exitRule();
     }
 
-    RuleTransition ruleTransition = atn.states[state]!.transition(0) as RuleTransition;
+    var ruleTransition = atn.states[state]!.transition(0) as RuleTransition;
     state = ruleTransition.followState!.stateNumber;
   }
 

@@ -186,7 +186,7 @@ class FailedPredicateException extends RecognitionException {
             formatMessage(predicate, message)) {
     final s = recognizer.interpreter!.atn.states[recognizer.state]!;
 
-    AbstractPredicateTransition trans = s.transition(0) as AbstractPredicateTransition;
+    var trans = s.transition(0) as AbstractPredicateTransition;
     if (trans is PredicateTransition) {
       ruleIndex = trans.ruleIndex;
       predIndex = trans.predIndex;

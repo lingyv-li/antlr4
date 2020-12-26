@@ -160,7 +160,7 @@ class LexerActionExecutor {
       return false;
     }
 
-    LexerActionExecutor other = obj;
+    var other = obj;
     return hashCode == other.hashCode &&
         ListEquality().equals(lexerActions, other.lexerActions);
   }

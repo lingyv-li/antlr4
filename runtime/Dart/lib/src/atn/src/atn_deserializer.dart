@@ -272,7 +272,7 @@ class ATNDeserializer {
     atn.ruleToStartState = List<RuleStartState?>.filled(nrules, null);
     for (var i = 0; i < nrules; i++) {
       final s = readInt();
-      RuleStartState? startState = atn.states[s] as RuleStartState?;
+      var startState = atn.states[s] as RuleStartState?;
       atn.ruleToStartState[i] = startState;
       if (atn.grammarType == ATNType.LEXER) {
         var tokenType = readInt();
@@ -296,7 +296,7 @@ class ATNDeserializer {
         continue;
       }
 
-      RuleStopState stopState = state;
+      var stopState = state;
       atn.ruleToStopState[state.ruleIndex] = stopState;
       atn.ruleToStartState[state.ruleIndex]!.stopState = stopState;
     }
@@ -410,7 +410,7 @@ class ATNDeserializer {
     final ndecisions = readInt();
     for (var i = 1; i <= ndecisions; i++) {
       final s = readInt();
-      DecisionState decState = atn.states[s] as DecisionState;
+      var decState = atn.states[s] as DecisionState;
       atn.decisionToState.add(decState);
       decState.decision = i - 1;
     }

@@ -127,7 +127,7 @@ class DFAState {
       return false;
     }
 
-    DFAState other = o;
+    var other = o;
     // TODO (sam): what to do when configs==null?
     final sameSet = configs == other.configs;
 //		System.out.println("DFAState.equals: "+configs+(sameSet?"==":"!=")+other.configs);

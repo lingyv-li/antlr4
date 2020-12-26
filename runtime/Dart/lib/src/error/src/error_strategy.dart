@@ -814,7 +814,7 @@ class DefaultErrorStrategy implements ErrorStrategy {
     while (ctx != null && ctx.invokingState >= 0) {
       // compute what follows who invoked us
       final invokingState = atn.states[ctx.invokingState]!;
-      RuleTransition rt = invokingState.transition(0) as RuleTransition;
+      var rt = invokingState.transition(0) as RuleTransition;
       final follow = atn.nextTokens(rt.followState);
       recoverSet.addAll(follow);
       ctx = ctx.parent;

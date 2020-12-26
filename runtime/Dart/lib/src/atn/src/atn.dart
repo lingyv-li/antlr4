@@ -154,7 +154,7 @@ class ATN {
         ctx.invokingState >= 0 &&
         following.contains(Token.EPSILON)) {
       final invokingState = states[ctx.invokingState]!;
-      RuleTransition rt = invokingState.transition(0) as RuleTransition;
+      var rt = invokingState.transition(0) as RuleTransition;
       following = nextTokens(rt.followState)!;
       expected.addAll(following);
       expected.remove(Token.EPSILON);

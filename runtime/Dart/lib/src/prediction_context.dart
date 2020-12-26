@@ -66,7 +66,7 @@ abstract class PredictionContext {
     parent = PredictionContext.fromRuleContext(atn, outerContext.parent);
 
     final state = atn!.states[outerContext.invokingState]!;
-    RuleTransition transition = state.transition(0) as RuleTransition;
+    var transition = state.transition(0) as RuleTransition;
     return SingletonPredictionContext.create(
         parent, transition.followState!.stateNumber);
   }
@@ -479,7 +479,7 @@ abstract class PredictionContext {
         buf.write('\"];\n');
         continue;
       }
-      ArrayPredictionContext arr = current as ArrayPredictionContext;
+      var arr = current as ArrayPredictionContext;
       buf.write('  s');
       buf.write(arr.id);
       buf.write(' [shape=box, label=\"');
@@ -572,7 +572,7 @@ abstract class PredictionContext {
       updated = SingletonPredictionContext.create(
           parents[0], context.getReturnState(0));
     } else {
-      ArrayPredictionContext arrayPredictionContext = context as ArrayPredictionContext;
+      var arrayPredictionContext = context as ArrayPredictionContext;
       updated = ArrayPredictionContext(
           parents, arrayPredictionContext.returnStates!);
     }
@@ -636,7 +636,7 @@ abstract class PredictionContext {
     for (var perm = 0;; perm++) {
       var offset = 0;
       var last = true;
-      PredictionContext p = this;
+      var p = this;
       int? stateNumber = currentState;
       final localBuffer = StringBuffer();
       localBuffer.write('[');

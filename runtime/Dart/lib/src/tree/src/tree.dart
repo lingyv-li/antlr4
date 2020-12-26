@@ -340,7 +340,7 @@ class ParseTreeWalker {
       listener.visitTerminal(t);
       return;
     }
-    RuleNode r = t as RuleNode<ParseTree<dynamic>?>;
+    var r = t as RuleNode<ParseTree<dynamic>?>;
     enterRule(listener, r);
     for (var i = 0; i < r.childCount; i++) {
       walk(listener, r.getChild(i));
@@ -353,13 +353,13 @@ class ParseTreeWalker {
   /// [RuleContext]-specific event. First we trigger the generic and then
   /// the rule specific. We to them in reverse order upon finishing the node.
   void enterRule(ParseTreeListener listener, RuleNode r) {
-    ParserRuleContext ctx = r.ruleContext as ParserRuleContext;
+    var ctx = r.ruleContext as ParserRuleContext;
     listener.enterEveryRule(ctx);
     ctx.enterRule(listener);
   }
 
   void exitRule(ParseTreeListener listener, RuleNode r) {
-    ParserRuleContext ctx = r.ruleContext as ParserRuleContext;
+    var ctx = r.ruleContext as ParserRuleContext;
     ctx.exitRule(listener);
     listener.exitEveryRule(ctx);
   }

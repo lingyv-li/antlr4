@@ -169,7 +169,7 @@ class PrecedencePredicate extends SemanticContext
     if (!(obj is PrecedencePredicate)) {
       return false;
     }
-    PrecedencePredicate other = obj;
+    var other = obj;
     return precedence == other.precedence;
   }
 
@@ -237,7 +237,7 @@ class AND extends Operator {
   @override
   bool operator ==(Object obj) {
     if (!(obj is AND)) return false;
-    AND other = obj;
+    var other = obj;
     return ListEquality().equals(opnds, other.opnds);
   }
 
@@ -343,7 +343,7 @@ class OR extends Operator {
   @override
   bool operator ==(Object obj) {
     if (!(obj is OR)) return false;
-    OR other = obj;
+    var other = obj;
     return ListEquality().equals(opnds, other.opnds);
   }
 

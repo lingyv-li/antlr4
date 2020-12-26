@@ -391,7 +391,7 @@ class ParseTreePatternMatcher {
       if (t1.symbol.type == t2.symbol.type) {
         if (t2.symbol is TokenTagToken) {
           // x and <ID>
-          TokenTagToken tokenTagToken = t2.symbol as TokenTagToken;
+          var tokenTagToken = t2.symbol as TokenTagToken;
           // track label->list-of-nodes for both token name and label (if any)
           labels.put(tokenTagToken.tokenName, tree);
           if (tokenTagToken.label != null) {
@@ -458,7 +458,7 @@ class ParseTreePatternMatcher {
     if (t is RuleNode) {
       final r = t;
       if (r.childCount == 1 && r.getChild(0) is TerminalNode) {
-        TerminalNode c = r.getChild(0) as TerminalNode;
+        var c = r.getChild(0) as TerminalNode;
         if (c.symbol is RuleTagToken) {
 //					System.out.println("rule tag subtree "+t.toStringTree(parser));
           return c.symbol as RuleTagToken?;
@@ -506,7 +506,7 @@ class ParseTreePatternMatcher {
               'invalid tag: ' + tagChunk.tag + ' in pattern: ' + pattern);
         }
       } else {
-        TextChunk textChunk = chunk as TextChunk;
+        var textChunk = chunk as TextChunk;
         final inputStream =
             InputStream.fromString(textChunk.text);
         lexer.inputStream = inputStream;

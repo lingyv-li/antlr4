@@ -627,7 +627,7 @@ abstract class Parser extends Recognizer<ParserATNSimulator> {
         ctx.invokingState >= 0 &&
         following.contains(Token.EPSILON)) {
       final invokingState = atn.states[ctx.invokingState]!;
-      RuleTransition rt = invokingState.transition(0) as RuleTransition;
+      var rt = invokingState.transition(0) as RuleTransition;
       following = atn.nextTokens(rt.followState)!;
       if (following.contains(symbol)) {
         return true;

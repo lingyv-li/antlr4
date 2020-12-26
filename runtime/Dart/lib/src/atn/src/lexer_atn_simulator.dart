@@ -478,7 +478,7 @@ class LexerATNSimulator extends ATNSimulator {
     LexerATNConfig? c;
     switch (t.type) {
       case TransitionType.RULE:
-        RuleTransition ruleTransition = t as RuleTransition;
+        var ruleTransition = t as RuleTransition;
         PredictionContext newContext = SingletonPredictionContext.create(
             config.context, ruleTransition.followState!.stateNumber);
         c = LexerATNConfig.dup(config, t.target, context: newContext);
@@ -506,7 +506,7 @@ class LexerATNSimulator extends ATNSimulator {
 				 states reached by traversing predicates. Since this is when we
 				 test them, we cannot cash the DFA state target of ID.
 			 */
-        PredicateTransition pt = t as PredicateTransition;
+        var pt = t as PredicateTransition;
         if (debug) {
           log('EVAL rule ${pt.ruleIndex}:${pt.predIndex}',
               level: Level.FINE.value);
@@ -562,7 +562,6 @@ class LexerATNSimulator extends ATNSimulator {
         break;
       case TransitionType.INVALID:
         throw ArgumentError.value(t.type, 'TransitionType');
-        break;
     }
 
     return c;

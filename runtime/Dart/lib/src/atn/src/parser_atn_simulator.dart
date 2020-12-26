@@ -1665,9 +1665,9 @@ class ParserATNSimulator extends ATNSimulator {
       if (returnState.ruleIndex != p.ruleIndex) return false;
     }
 
-    BlockStartState decisionStartState = p.transition(0).target as BlockStartState;
+    var decisionStartState = p.transition(0).target as BlockStartState;
     final blockEndStateNum = decisionStartState.endState!.stateNumber;
-    BlockEndState? blockEndState = atn.states[blockEndStateNum] as BlockEndState?;
+    var blockEndState = atn.states[blockEndStateNum] as BlockEndState?;
 
     // Verify that the top of each stack context leads to loop entry/exit
     // state through epsilon edges and w/o leaving rule.

@@ -137,7 +137,7 @@ class Trees {
   ///
   /// @since 4.5.1
   static List<ParseTree> getDescendants(ParseTree t) {
-    final List<ParseTree<ParseTree<dynamic>?>> nodes = <ParseTree>[];
+    final nodes = <ParseTree>[];
     nodes.add(t);
 
     final n = t.childCount;
