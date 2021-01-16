@@ -79,10 +79,11 @@ class Trees {
   static List<Tree> getAncestors(Tree t) {
     if (t.parent == null) return [];
     final ancestors = <Tree>[];
-    t = t.parent!;
-    while (t != null) {
-      ancestors.insert(0, t); // insert at start
-      t = t.parent!;
+    Tree? nullableT = t;
+    nullableT = nullableT.parent;
+    while (nullableT != null) {
+      ancestors.insert(0, nullableT); // insert at start
+      nullableT = nullableT.parent;
     }
     return ancestors;
   }
